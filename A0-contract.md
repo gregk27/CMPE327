@@ -35,9 +35,9 @@ We each promise to make our best effort to ensure that the team works together a
 
 Team Member #1:
 
-Name:
+Name: Gregory Kelly
 
-Student Number:	
+Student Number:	20169913
 
 
 Team Member #2:
