@@ -1,4 +1,4 @@
-lign="center"> :fire: CISC / CMPE 327 - Course Project :fire: </h1>
+<h1 align="center"> :fire: CISC / CMPE 327 - Course Project :fire: </h1>
 <h3 align="center"> Assignment #0: Choose Teams </h3>
 
 #### The Course Project
