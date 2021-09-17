@@ -42,9 +42,9 @@ Student Number:	20169913
 
 Team Member #2:
 
-Name:
+Name: Dennis Huynh
 
-Student Number:	
+Student Number:	20056402
 
 
 Team Member #3:
