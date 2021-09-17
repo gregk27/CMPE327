@@ -49,13 +49,13 @@ Student Number:	20056402
 
 Team Member #3:
 
-Name:Divaydeep Singh
+Name: Divaydeep Singh
 
-Student Number:20143859	
+Student Number: 20143859	
 
 
 Team Member #4:
 
-Name:
+Name: Damien Smith
 
-Student Number:	
+Student Number:	20182218
