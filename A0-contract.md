@@ -56,6 +56,6 @@ Student Number:20143859
 
 Team Member #4:
 
-Name:
+Name: Damien Smith
 
-Student Number:	
+Student Number:	20182218
