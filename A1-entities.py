@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
+from sqlalchemy.dialects.postgresql import UUID
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -49,3 +50,12 @@ class ProductPicture(Base, Image):
     productId = db.Column(db.Integer, ForeignKey('product.id'), primary_key=True)
     product = relationship('Product')
     __tablename__ = 'product_picture'
+
+#Using postgresql for UUID
+class Sessions(db.Model):
+"""Session model."""
+    userId = db.Column(db.String)
+	sessionId = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+	expiry = db.Column(db.String)
+	ipAddress = db.Column(db.String)
+    csrfToken = db.Column(db.String)
