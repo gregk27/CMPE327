@@ -84,3 +84,13 @@ class Transaction(db.Model):
     expiryDate = db.Column(db.Date(), nullable=False)
     billAddress = db.Column(db.String, nullable=False)
     __tablename__ = "transaction"
+
+class Review(db.Model):
+    """Product Review model."""
+    id = db.Column(db.String, primary_key=True)
+    productId = db.Column(db.Integer, nullable=False)
+    userId = db.Column(db.String, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    content = db.Column(db.String, nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False)
+    __tablename__ = "review"
