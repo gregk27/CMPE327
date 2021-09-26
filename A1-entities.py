@@ -21,13 +21,15 @@ Base = declarative_base()
 
 class User(db.Model):
     """User model."""
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
+    balance = db.Column(db.Float, nullable=False)
+    __tablename__ = "user"
 
     def __repr__(self):
         return '<User %r>' % self.username
-
 
 # Source: https://sqlalchemy-imageattach.readthedocs.io/en/1.1.0/guide/declare.html
 # Used for including product image
