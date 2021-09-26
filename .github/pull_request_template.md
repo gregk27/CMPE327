@@ -16,7 +16,7 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 
 # Checklist:
 
-- [ ] Code follows [PEP8 gudelines](https://www.python.org/dev/peps/pep-0008/)
+- [ ] Code follows [PEP8 guidelines](https://www.python.org/dev/peps/pep-0008/)
 - [ ] Code is commented where appropriate
 - [ ] Documentation is updated to reflect changes
-- [ ] No new warnings are occuring
+- [ ] No new warnings are occurring
