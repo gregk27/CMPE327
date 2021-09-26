@@ -1,3 +1,4 @@
+from enum import unique
 import uuid
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -6,6 +7,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import BigInteger
+from sqlalchemy import Date
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 app = Flask(__name__)
@@ -65,3 +68,17 @@ class Sessions(db.Model):
     ipAddress = db.Column(db.String)
     csrfToken = db.Column(db.String)
     __tablename__ = "session"
+
+
+# Used to process transactions
+class Transaction(db.Model):
+    """Transaction model."""
+    paymentId = db.Column(db.Integer, primary_key=True)
+    customerId = db.Column(db.String, nullable=False)
+    netAmount = db.Column(db.Float, nullable=False)
+    merchant = db.Column(db.String, nullable=False)
+    cardId = db.Column(db.BigInteger, nullable=False, unique=True)
+    cvv = db.Column(db.Integer, nullable=False)
+    expiryDate = db.Column(db.Date(), nullable=False)
+    billAddress = db.Column(db.String, nullable=False)
+    __tablename__ = "transaction"
