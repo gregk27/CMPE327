@@ -65,3 +65,16 @@ class Sessions(db.Model):
     ipAddress = db.Column(db.String)
     csrfToken = db.Column(db.String)
     __tablename__ = "session"
+
+
+# Used to process transactions
+class Transaction(db.Model):
+    """Transaction Model"""
+    paymentID = db.Column(db.Integer, primary_key=True)
+    customerID = db.Column(db.String)
+    netamount = db.Column(db.Float, nullable=False)
+    merchant = db.Column(db.String, nullable=False)
+    cardID = db.Column(db.String, nullable=False)
+    cvv = db.Column(db.Integer, nullable=False)
+    expirydate = db.Column(db.String, nullable=False)
+    billaddress = db.Column(db.String, nullable=False)
