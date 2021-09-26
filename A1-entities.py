@@ -1,3 +1,4 @@
+from enum import unique
 import uuid
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -6,6 +7,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import BigInteger
+from sqlalchemy import Date
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 app = Flask(__name__)
@@ -69,12 +72,13 @@ class Sessions(db.Model):
 
 # Used to process transactions
 class Transaction(db.Model):
-    """Transaction Model"""
-    paymentID = db.Column(db.Integer, primary_key=True)
-    customerID = db.Column(db.String)
-    netamount = db.Column(db.Float, nullable=False)
+    """Transaction model."""
+    paymentId = db.Column(db.Integer, primary_key=True)
+    customerId = db.Column(db.String, nullable=False)
+    netAmount = db.Column(db.Float, nullable=False)
     merchant = db.Column(db.String, nullable=False)
-    cardID = db.Column(db.String, nullable=False)
+    cardId = db.Column(db.BigInteger, nullable=False, unique=True)
     cvv = db.Column(db.Integer, nullable=False)
-    expirydate = db.Column(db.String, nullable=False)
-    billaddress = db.Column(db.String, nullable=False)
+    expiryDate = db.Column(db.Date(), nullable=False)
+    billAddress = db.Column(db.String, nullable=False)
+    __tablename__ = "transaction"
