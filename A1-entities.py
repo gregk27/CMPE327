@@ -89,9 +89,9 @@ class Transaction(db.Model):
 
 class Review(db.Model):
     """Product Review model."""
-    id = db.Column(db.String, primary_key=True)
-    productId = db.Column(db.Integer, nullable=False)
-    userId = db.Column(db.String, nullable=False)
+    id = db.Column(db.String, primary_key=True, unique=True)
+    productId = db.Column(db.Integer, ForeignKey('product.id'), nullable=False)
+    userId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     content = db.Column(db.String, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
