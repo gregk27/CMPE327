@@ -1,4 +1,3 @@
-from enum import unique
 import uuid
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -7,8 +6,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import BigInteger
-from sqlalchemy import Date
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 app = Flask(__name__)
@@ -31,7 +28,9 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-# Source: https://sqlalchemy-imageattach.readthedocs.io/en/1.1.0/guide/declare.html
+
+# Source:
+#   https://sqlalchemy-imageattach.readthedocs.io/en/1.1.0/guide/declare.html
 # Used for including product image
 class Product(Base):
     """Product model."""
@@ -56,7 +55,8 @@ class Product(Base):
 class ProductPicture(Base, Image):
     """Product picture model."""
 
-    productId = db.Column(db.Integer, ForeignKey('product.id'), primary_key=True)
+    productId = db.Column(db.Integer, ForeignKey('product.id'),
+                          primary_key=True)
     product = relationship('Product')
     __tablename__ = 'product_picture'
 
@@ -65,7 +65,8 @@ class ProductPicture(Base, Image):
 class Sessions(db.Model):
     """Session model."""
     userId = db.Column(db.String)
-    sessionId = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    sessionId = db.Column(UUID(as_uuid=True),
+                          primary_key=True, default=uuid.uuid4)
     expiry = db.Column(db.String)
     ipAddress = db.Column(db.String)
     csrfToken = db.Column(db.String)
@@ -84,6 +85,7 @@ class Transaction(db.Model):
     expiryDate = db.Column(db.Date(), nullable=False)
     billAddress = db.Column(db.String, nullable=False)
     __tablename__ = "transaction"
+
 
 class Review(db.Model):
     """Product Review model."""
