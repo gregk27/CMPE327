@@ -17,6 +17,9 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 # Checklist:
 
 - [ ] Code follows [PEP8 guidelines](https://www.python.org/dev/peps/pep-0008/)
+- [ ] Flake8 analysis passed
+- [ ] All tests passed
 - [ ] Code is commented where appropriate
 - [ ] Documentation is updated to reflect changes
+- [ ] Tests are updated to reflect chages
 - [ ] No new warnings are occurring
