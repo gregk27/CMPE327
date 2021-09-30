@@ -1,11 +1,9 @@
 from qbay import app
-import uuid
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
-from sqlalchemy.dialects.postgresql import UUID
 
 db = SQLAlchemy(app)
 
@@ -62,12 +60,10 @@ class ProductPicture(Base, Image):
     __tablename__ = 'product_picture'
 
 
-# Using postgresql for UUID
 class Sessions(db.Model):
     """Session model."""
     userId = db.Column(db.String)
-    sessionId = db.Column(UUID(as_uuid=True),
-                          primary_key=True, default=uuid.uuid4)
+    sessionId = db.Column(db.String, primary_key=True)
     expiry = db.Column(db.String)
     ipAddress = db.Column(db.String)
     csrfToken = db.Column(db.String)
