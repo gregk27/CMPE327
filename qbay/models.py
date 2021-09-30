@@ -1,6 +1,5 @@
 from qbay import app
 import uuid
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
@@ -16,6 +15,7 @@ Base = declarative_base()
 '''
 This file defines data models and related business logics
 '''
+
 
 class User(db.Model):
     """User model."""
