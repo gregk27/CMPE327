@@ -2,13 +2,9 @@ from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_imageattach.entity import Image, image_attachment
 
 db = SQLAlchemy(app)
-
-# Declare a base
-Base = declarative_base()
 
 '''
 This file defines data models and related business logics
@@ -31,7 +27,7 @@ class User(db.Model):
 # Source:
 #   https://sqlalchemy-imageattach.readthedocs.io/en/1.1.0/guide/declare.html
 # Used for including product image
-class Product(Base):
+class Product(db.Model):
     """Product model."""
     id = db.Column(db.String, primary_key=True)
     productName = db.Column(db.String, nullable=False)
@@ -51,7 +47,7 @@ class Product(Base):
     __tablename__ = "product"
 
 
-class ProductPicture(Base, Image):
+class ProductPicture(db.Model, Image):
     """Product picture model."""
 
     productId = db.Column(db.String, ForeignKey('product.id'),
@@ -67,6 +63,7 @@ class Sessions(db.Model):
     expiry = db.Column(db.String)
     ipAddress = db.Column(db.String)
     csrfToken = db.Column(db.String)
+    test = db.Column(db.String, ForeignKey('product.id'))
     __tablename__ = "session"
 
 
@@ -94,8 +91,9 @@ class Review(db.Model):
     datetime = db.Column(db.DateTime, nullable=False)
     __tablename__ = "review"
 
+
 # create all tables
-# db.create_all()
+db.create_all()
 
 
 def register(name, email, password):
