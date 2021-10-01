@@ -18,6 +18,12 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     balance = db.Column(db.Float, nullable=False)
+
+    sessions = relationship('sessions', back_populates='user')
+    products = relationship('product', back_populates='user')
+    reviews = relationship('review', back_populates='user')
+    buyTransactions = relationship('transaction', back_populates='user')
+    sellTransactions = relationship('transaction', back_populates='user')
     __tablename__ = "user"
 
     def __repr__(self):
@@ -31,6 +37,7 @@ class Product(db.Model):
     """Product model."""
     id = db.Column(db.String, primary_key=True)
     productName = db.Column(db.String, nullable=False)
+    userId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
     brand = db.Column(db.String)
     size = db.Column(db.Float)
     width = db.Column(db.Float)
@@ -44,6 +51,9 @@ class Product(db.Model):
     category = db.Column(db.String)
     bidder = db.Column(db.String)
     image = image_attachment('ProductPicture')
+
+    user = relationship('user', back_populates='products')
+    reviews = relationship('product', back_populates='reviews')
     __tablename__ = "product"
 
 
@@ -58,12 +68,14 @@ class ProductPicture(db.Model, Image):
 
 class Sessions(db.Model):
     """Session model."""
-    userId = db.Column(db.String)
     sessionId = db.Column(db.String, primary_key=True)
+    userId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
     expiry = db.Column(db.String)
     ipAddress = db.Column(db.String)
     csrfToken = db.Column(db.String)
     test = db.Column(db.String, ForeignKey('product.id'))
+
+    user = relationship('user', back_populates='sessions')
     __tablename__ = "session"
 
 
@@ -71,13 +83,18 @@ class Sessions(db.Model):
 class Transaction(db.Model):
     """Transaction model."""
     paymentId = db.Column(db.String, primary_key=True)
-    customerId = db.Column(db.String, nullable=False)
+    customerId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
+    merchantId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
+    productId = db.Column(db.String, ForeignKey('product.id'), nullable=False)
     netAmount = db.Column(db.Float, nullable=False)
-    merchant = db.Column(db.String, nullable=False)
     cardId = db.Column(db.BigInteger, nullable=False, unique=True)
     cvv = db.Column(db.Integer, nullable=False)
     expiryDate = db.Column(db.Date(), nullable=False)
     billAddress = db.Column(db.String, nullable=False)
+
+    customer = relationship('user', back_populates='buyTransactions')
+    merchant = relationship('user', back_populates='sellTransactions')
+    product = relationship('product', back_populates='transaction')
     __tablename__ = "transaction"
 
 
@@ -89,6 +106,9 @@ class Review(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     content = db.Column(db.String, nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
+
+    product = relationship('product', back_populates='reviews')
+    user = relationship('user', back_populates='reviews')
     __tablename__ = "review"
 
 
