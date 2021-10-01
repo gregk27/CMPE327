@@ -21,5 +21,5 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - [ ] All tests passed
 - [ ] Code is commented where appropriate
 - [ ] Documentation is updated to reflect changes
-- [ ] Tests are updated to reflect chages
+- [ ] Tests are updated to reflect changes
 - [ ] No new warnings are occurring
