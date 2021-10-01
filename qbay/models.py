@@ -13,10 +13,10 @@ This file defines data models and related business logics
 
 class User(db.Model):
     """User model."""
-    id = db.Column(db.String, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    id = db.Column(db.String(36), primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    password = db.Column(db.String(32), nullable=False)
     balance = db.Column(db.Float, nullable=False)
 
     sessions = relationship('sessions', back_populates='user')
@@ -35,21 +35,21 @@ class User(db.Model):
 # Used for including product image
 class Product(db.Model):
     """Product model."""
-    id = db.Column(db.String, primary_key=True)
-    productName = db.Column(db.String, nullable=False)
-    userId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
-    brand = db.Column(db.String)
+    id = db.Column(db.String(36), primary_key=True)
+    productName = db.Column(db.String(128), nullable=False)
+    userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
+    brand = db.Column(db.String(128))
     size = db.Column(db.Float)
     width = db.Column(db.Float)
     height = db.Column(db.Float)
-    colour = db.Column(db.String)
+    colour = db.Column(db.String(64))
     currentPrice = db.Column(db.Float, nullable=False)
     startingBid = db.Column(db.Float, nullable=False)
-    description = db.Column(db.String, nullable=False)
-    address = db.Column(db.String, nullable=False)
+    description = db.Column(db.String(65535), nullable=False)
+    address = db.Column(db.String(128), nullable=False)
     shipCost = db.Column(db.Float, nullable=False)
-    category = db.Column(db.String)
-    bidder = db.Column(db.String)
+    category = db.Column(db.String(64))
+    bidder = db.Column(db.String(64))
     image = image_attachment('ProductPicture')
 
     user = relationship('user', back_populates='products')
@@ -60,7 +60,7 @@ class Product(db.Model):
 class ProductPicture(db.Model, Image):
     """Product picture model."""
 
-    productId = db.Column(db.String, ForeignKey('product.id'),
+    productId = db.Column(db.String(36), ForeignKey('product.id'),
                           primary_key=True)
     product = relationship('Product')
     __tablename__ = 'product_picture'
@@ -68,12 +68,12 @@ class ProductPicture(db.Model, Image):
 
 class Sessions(db.Model):
     """Session model."""
-    sessionId = db.Column(db.String, primary_key=True)
-    userId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
-    expiry = db.Column(db.String)
-    ipAddress = db.Column(db.String)
-    csrfToken = db.Column(db.String)
-    test = db.Column(db.String, ForeignKey('product.id'))
+    sessionId = db.Column(db.String(36), primary_key=True)
+    userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
+    expiry = db.Column(db.DateTime)
+    ipAddress = db.Column(db.String(15))
+    csrfToken = db.Column(db.String(32))
+    user = db.Column(db.String(36), ForeignKey('product.id'))
 
     user = relationship('user', back_populates='sessions')
     __tablename__ = "session"
@@ -82,15 +82,18 @@ class Sessions(db.Model):
 # Used to process transactions
 class Transaction(db.Model):
     """Transaction model."""
-    paymentId = db.Column(db.String, primary_key=True)
-    customerId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
-    merchantId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
-    productId = db.Column(db.String, ForeignKey('product.id'), nullable=False)
+    paymentId = db.Column(db.String(36), primary_key=True)
+    customerId = db.Column(db.String(36), ForeignKey('user.id'),
+                           nullable=False)
+    merchantId = db.Column(db.String(36), ForeignKey('user.id'),
+                           nullable=False)
+    productId = db.Column(db.String(36), ForeignKey('product.id'),
+                          nullable=False)
     netAmount = db.Column(db.Float, nullable=False)
     cardId = db.Column(db.BigInteger, nullable=False, unique=True)
     cvv = db.Column(db.Integer, nullable=False)
     expiryDate = db.Column(db.Date(), nullable=False)
-    billAddress = db.Column(db.String, nullable=False)
+    billAddress = db.Column(db.String(128), nullable=False)
 
     customer = relationship('user', back_populates='buyTransactions')
     merchant = relationship('user', back_populates='sellTransactions')
@@ -100,11 +103,12 @@ class Transaction(db.Model):
 
 class Review(db.Model):
     """Product Review model."""
-    id = db.Column(db.String, primary_key=True, unique=True)
-    productId = db.Column(db.String, ForeignKey('product.id'), nullable=False)
-    userId = db.Column(db.String, ForeignKey('user.id'), nullable=False)
+    id = db.Column(db.String(36), primary_key=True, unique=True)
+    productId = db.Column(db.String(36), ForeignKey('product.id'),
+                          nullable=False)
+    userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    content = db.Column(db.String, nullable=False)
+    content = db.Column(db.String(65535), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
 
     product = relationship('product', back_populates='reviews')
