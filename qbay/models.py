@@ -120,41 +120,41 @@ class Review(db.Model):
 db.create_all()
 
 
-def register(name, email, password):
-    '''
-    Register a new user
-      Parameters:
-        name (string):     user name
-        email (string):    user email
-        password (string): user password
-      Returns:
-        True if registration succeeded otherwise False
-    '''
-    # check if the email has been used:
-    existed = User.query.filter_by(email=email).all()
-    if len(existed) > 0:
-        return False
+# def register(name, email, password):
+#     '''
+#     Register a new user
+#       Parameters:
+#         name (string):     user name
+#         email (string):    user email
+#         password (string): user password
+#       Returns:
+#         True if registration succeeded otherwise False
+#     '''
+#     # check if the email has been used:
+#     existed = User.query.filter_by(email=email).all()
+#     if len(existed) > 0:
+#         return False
 
-    # create a new user
-    user = User(username=name, email=email, password=password)
-    # add it to the current database session
-    db.session.add(user)
-    # actually save the user object
-    db.session.commit()
+#     # create a new user
+#     user = User(username=name, email=email, password=password)
+#     # add it to the current database session
+#     db.session.add(user)
+#     # actually save the user object
+#     db.session.commit()
 
-    return True
+#     return True
 
 
-def login(email, password):
-    '''
-    Check login information
-      Parameters:
-        email (string):    user email
-        password (string): user password
-      Returns:
-        The user object if login succeeded otherwise None
-    '''
-    valids = User.query.filter_by(email=email, password=password).all()
-    if len(valids) != 1:
-        return None
-    return valids[0]
+# def login(email, password):
+#     '''
+#     Check login information
+#       Parameters:
+#         email (string):    user email
+#         password (string): user password
+#       Returns:
+#         The user object if login succeeded otherwise None
+#     '''
+#     valids = User.query.filter_by(email=email, password=password).all()
+#     if len(valids) != 1:
+#         return None
+#     return valids[0]
