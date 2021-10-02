@@ -1,6 +1,9 @@
 from qbay.models import * # NOQA
 
 
+def test1():
+    assert True
+
 # def test_r1_7_user_register():
 #     '''
 #     Testing R1-7: If the email has been used, the operation failed.
