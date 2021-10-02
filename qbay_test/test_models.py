@@ -1,4 +1,4 @@
-from qbay.models import register, login
+from qbay.models import * # NOQA
 
 
 # def test_r1_7_user_register():
