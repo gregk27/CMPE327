@@ -16,7 +16,7 @@ class User(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(180), nullable=False)
     balance = db.Column(db.Float, nullable=False)
 
     sessions = relationship('sessions', back_populates='user')
