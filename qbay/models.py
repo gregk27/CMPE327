@@ -1,8 +1,11 @@
+from datetime import datetime
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
+import hashlib
+import uuid
 
 db = SQLAlchemy(app)
 
@@ -147,16 +150,33 @@ db.create_all()
 #     return True
 
 
-# def login(email, password):
-#     '''
-#     Check login information
-#       Parameters:
-#         email (string):    user email
-#         password (string): user password
-#       Returns:
-#         The user object if login succeeded otherwise None
-#     '''
-#     valids = User.query.filter_by(email=email, password=password).all()
-#     if len(valids) != 1:
-#         return None
-#     return valids[0]
+def login(email, password, ip):
+    '''
+    Check login information
+      Parameters:
+        email (string):    user email
+        password (string): user password
+      Returns:
+        A session for the user on the current machine, None if login fails
+    '''
+    matches = User.query.filter_by(email=email).all()
+    user = None
+    # Check results for a password match
+    for m in matches:
+        # Extract salt from string
+        salt = m.password.split(":")[0]
+        # Hash input with salt and compare to target
+        if(m.password == salt + ":"
+           + hashlib.sha512((password + salt).encode('utf-8')).hexdigest()):
+            user = m
+            break
+    if user is None:
+        return None
+    s = Sessions()
+    s.ipAddress = ip
+    s.user = user
+    s.userId = user.id
+    s.sessionId = str(uuid.uuid4())
+    time = datetime.now()
+    s.expiry = datetime(time.year, time.month, time.day+30)
+    return s
