@@ -1,3 +1,4 @@
+from datetime import datetime
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -161,3 +162,14 @@ db.create_all()
 #     if len(valids) != 1:
 #         return None
 #     return valids[0]
+
+def updateProduct(productId, **kwargs):
+    product = Product.query.filter_by(id=productId).first()
+    if product is None:
+        return False
+    for key, val in kwargs.items():
+        # Update property
+        if key in product:
+            product[key] = val
+    product.lastModifiedDate = datetime.now()
+    return True
