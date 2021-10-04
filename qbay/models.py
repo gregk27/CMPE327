@@ -167,9 +167,40 @@ def updateProduct(productId, **kwargs):
     product = Product.query.filter_by(id=productId).first()
     if product is None:
         return False
+
+    # Update price if it's higher
+    if 'price' in kwargs:
+        if(kwargs['price'] > product.price):
+            product.price = kwargs['price']
+        kwargs.remove('price')
+
+    # Update name if it's alphanumeric and under 80 chars
+    if 'name' in kwargs:
+        # TODO: Take name validation from creation function
+        product.name = kwargs['name']
+        kwargs.remove('name')
+
+    # Update description if it's within size limits
+    if 'description' in kwargs:
+        desc = kwargs['description']
+        if(len(desc) >= 20 and len(desc) <= 2000
+           and len(desc) > len(product.title)):
+            product.description = desc
+
+    # Check price is in range
+    if 'price' in kwargs:
+        price = kwargs['price']
+        if(price >= 10 and price <= 10000):
+            product.price = price
+
+    # Assign remaining properties directly
     for key, val in kwargs.items():
-        # Update property
-        if key in product:
+        # Some properties cannot be chagned
+        if key == 'userId' or key == 'ownerEmail' or key == 'lastModifiedDate':
+            continue
+        # If there's no special condition, just update directly
+        elif key in product:
             product[key] = val
+
     product.lastModifiedDate = datetime.now()
     return True
