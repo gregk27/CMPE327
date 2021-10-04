@@ -172,11 +172,9 @@ def login(email, password, ip):
             break
     if user is None:
         return None
-    s = Sessions()
-    s.ipAddress = ip
-    s.user = user
-    s.userId = user.id
-    s.sessionId = str(uuid.uuid4())
+
     time = datetime.now()
-    s.expiry = datetime(time.year, time.month, time.day+30)
+    s = Sessions(user=user, userId=user.id, ipAddress=ip,
+                 sessionId=str(uuid.uuid4()),
+                 expiry=datetime(time.year, time.month, time.day+30))
     return s
