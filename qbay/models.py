@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
+import re
+from validate_email import validate_email
 
 db = SQLAlchemy(app)
 
@@ -18,6 +20,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(32), nullable=False)
     balance = db.Column(db.Float, nullable=False)
+    shippingAddress = db.Column(db.String(64))
+    postalCode = db.Column(db.String(36))
 
     sessions = relationship('sessions', back_populates='user')
     products = relationship('product', back_populates='user')
@@ -161,3 +165,109 @@ db.create_all()
 #     if len(valids) != 1:
 #         return None
 #     return valids[0]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def validatePswd(password):
+    valid = True
+
+    specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-', '+', '=', '{', '[', '}', ']', '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.', '?', '/']
+
+    if len(password) < 6:
+        print("Password must be at least 6 characters")
+        valid = False
+          
+    if not any(char.isupper() for char in password):
+        print('Password must contain at least one uppercase letter')
+        valid = False
+          
+    if not any(char.islower() for char in password):
+        print('Password must contain at least one lowercase letter')
+        valid = False
+
+    if not any(char in specialChars for char in password):
+        print('Password must contain at least one special character')
+        valid = False
+
+    if valid:
+        return valid
+
+
+def validateUser(username):
+  valid = True
+
+  if len(username) < 3:
+    print("Username must be at least 3 character")
+    valid = False
+
+  if len(username) > 20:
+    print("Username exceeded characters. Maximum allowed is 20.")
+    valid = False
+
+  alnum = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
+  for x in username:
+    if x not in alnum:
+      valid = False
+
+  if username[0] == " " or username[len(username)-1] == " ":
+    valid = False
+
+  for i in range(len(username)):
+    if username[i] == " " and username[i+1] == " ":
+      valid = False
+
+  return valid
+
+
+def validateEmail(email):
+
+  valid = True
+
+  if len(email) == 0:
+    valid = False
+
+  if validate_email(email) == False:
+    valid = False
+
+  exists = User.query.filter_by(email=email).all()
+     if len(exists) > 0:
+         valid = False
+
+  return valid
+
+
+ def register(name, email, password):
+
+    registered = False
+
+    if validateEmail(email) == True  and validateUser(name) == True and validatePswd(password) == True:
+      user = User(username=name, email=email, password=password, shippingAddress="", postalCode="", balance=100)
+      db.session.add(user)
+      db.session.commit()
+
+      registered = True
+
+
+  return registered
+     
+
+
+
+
+
+
+
+
+
+
