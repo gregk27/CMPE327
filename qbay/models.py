@@ -176,12 +176,12 @@ def createProduct(title, description, price, last_modified_date, owner_email):
       Returns:
         True if product creation succeeded, otherwise False
     """
-    # If the title without spaces is not alphanumeric-only, 
-    # or begins or ends in a space 
+    # If the title without spaces is not alphanumeric-only,
+    # or begins or ends in a space
     # or is longer than 80 chars, return False
-    if (title.replace(" ", "").isalnum() == False or 
-            title[0] == " " or 
-            title[-1] == " " or 
+    if (not title.replace(" ", "").isalnum() or
+            title[0] == " " or
+            title[-1] == " " or
             len(title) > 80):
         return False
 
@@ -197,7 +197,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
         return False
 
     # Check acceptable last_modified_date range
-    if (last_modified_date < dt.datetime(2021, 1, 2) or 
+    if (last_modified_date < dt.datetime(2021, 1, 2) or
             last_modified_date > dt.datetime(2025, 1, 2)):
         return False
 
@@ -207,7 +207,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
         return False
 
     # Check if user has already used this title
-    userProducts = Product.query.filter_by(ownerEmail=owner_email, 
+    userProducts = Product.query.filter_by(ownerEmail=owner_email,
                                            productName=title)
     if (len(userProducts) == 1):
         return False
@@ -219,11 +219,11 @@ def createProduct(title, description, price, last_modified_date, owner_email):
                       lastModifiedDate=last_modified_date,
                       ownerEmail=owner_email
                       )
-    
+
     # Add it to the current database session
     db.session.add(product)
 
     # Save the product object
     db.session.commit()
-    
+
     return True
