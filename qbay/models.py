@@ -1,9 +1,9 @@
+from operator import and_
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
-import re
 from validate_email import validate_email
 
 db = SQLAlchemy(app)
@@ -166,34 +166,21 @@ db.create_all()
 #         return None
 #     return valids[0]
 
-
-
-
-
-
-
-
-
-
-
-
-
 def validatePswd(password):
     valid = True
-
     specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
-        '(', ')', '_', '-', '+', '=', '{', '[', '}', ']', 
-        '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
-        '?', '/']
+                    '(', ')', '_', '-', '+', '=', '{', '[', '}', ']', 
+                    '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
+                    '?', '/']
 
     if len(password) < 6:
         print("Password must be at least 6 characters")
         valid = False
-          
+
     if not any(char.isupper() for char in password):
         print('Password must contain at least one uppercase letter')
         valid = False
-          
+
     if not any(char.islower() for char in password):
         print('Password must contain at least one lowercase letter')
         valid = False
@@ -217,7 +204,8 @@ def validateUser(username):
         print("Username exceeded characters. Maximum allowed is 20.")
         valid = False
 
-    alnum = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
+    alnum = list("abcdefghijklmnopqrstuvwxyz" +
+                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
     for x in username:
         if x not in alnum:
             valid = False
@@ -229,22 +217,21 @@ def validateUser(username):
         if username[i] == " " and username[i+1] == " ":
             valid = False
 
-  return valid
+    return valid
 
 
 def validateEmail(email):
-
     valid = True
 
     if len(email) == 0:
         valid = False
 
-    if validate_email(email) == False:
+    if validate_email(email):
         valid = False
 
     exists = User.query.filter_by(email=email).all()
-        if len(exists) > 0:
-            valid = False
+    if len(exists) > 0:
+        valid = False
 
     return valid
 
@@ -252,15 +239,12 @@ def validateEmail(email):
 def register(name, email, password):
 
     registered = False
-
-    if validateEmail(email) == True  and validateUser(name) == True and validatePswd(password) == True:
-        user = User(username=name, email=email, password=password, shippingAddress="", postalCode="", balance=100)
+    if validateEmail(email) and validateUser(name) and validatePswd(password):
+        user = User(username=name, email=email, password=password, 
+                    shippingAddress="", postalCode="", balance=100)
         db.session.add(user)
         db.session.commit()
-
-        registered = True
-
-
+    registered = True
     return registered
      
 
