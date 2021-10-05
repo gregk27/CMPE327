@@ -1,4 +1,4 @@
-#from operator import and_  #not used in program
+# from operator import and_ not used in program
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -11,6 +11,7 @@ db = SQLAlchemy(app)
 '''
 This file defines data models and related business logics
 '''
+
 
 class User(db.Model):
     """User model."""
