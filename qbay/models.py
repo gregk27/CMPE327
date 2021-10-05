@@ -1,4 +1,4 @@
-from operator import and_
+#from operator import and_  #not used in program
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -12,7 +12,6 @@ db = SQLAlchemy(app)
 This file defines data models and related business logics
 '''
 
-    
 class User(db.Model):
     """User model."""
     id = db.Column(db.String(36), primary_key=True)
@@ -169,7 +168,7 @@ db.create_all()
 def validatePswd(password):
     valid = True
     specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
-                    '(', ')', '_', '-', '+', '=', '{', '[', '}', ']', 
+                    '(', ')', '_', '-', '+', '=', '{', '[', '}', ']',
                     '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
                     '?', '/']
 
@@ -240,20 +239,9 @@ def register(name, email, password):
 
     registered = False
     if validateEmail(email) and validateUser(name) and validatePswd(password):
-        user = User(username=name, email=email, password=password, 
+        user = User(username=name, email=email, password=password,
                     shippingAddress="", postalCode="", balance=100)
         db.session.add(user)
         db.session.commit()
     registered = True
     return registered
-     
-
-
-
-
-
-
-
-
-
-
