@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 This file defines data models and related business logics
 '''
 
-
+    
 class User(db.Model):
     """User model."""
     id = db.Column(db.String(36), primary_key=True)
@@ -178,11 +178,13 @@ db.create_all()
 
 
 
-
 def validatePswd(password):
     valid = True
 
-    specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '-', '+', '=', '{', '[', '}', ']', '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.', '?', '/']
+    specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
+        '(', ')', '_', '-', '+', '=', '{', '[', '}', ']', 
+        '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
+        '?', '/']
 
     if len(password) < 6:
         print("Password must be at least 6 characters")
@@ -205,61 +207,61 @@ def validatePswd(password):
 
 
 def validateUser(username):
-  valid = True
+    valid = True
 
-  if len(username) < 3:
-    print("Username must be at least 3 character")
-    valid = False
+    if len(username) < 3:
+        print("Username must be at least 3 character")
+        valid = False
 
-  if len(username) > 20:
-    print("Username exceeded characters. Maximum allowed is 20.")
-    valid = False
+    if len(username) > 20:
+        print("Username exceeded characters. Maximum allowed is 20.")
+        valid = False
 
-  alnum = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
-  for x in username:
-    if x not in alnum:
-      valid = False
+    alnum = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
+    for x in username:
+        if x not in alnum:
+            valid = False
 
-  if username[0] == " " or username[len(username)-1] == " ":
-    valid = False
+    if username[0] == " " or username[len(username)-1] == " ":
+        valid = False
 
-  for i in range(len(username)):
-    if username[i] == " " and username[i+1] == " ":
-      valid = False
+    for i in range(len(username)):
+        if username[i] == " " and username[i+1] == " ":
+            valid = False
 
   return valid
 
 
 def validateEmail(email):
 
-  valid = True
+    valid = True
 
-  if len(email) == 0:
-    valid = False
+    if len(email) == 0:
+        valid = False
 
-  if validate_email(email) == False:
-    valid = False
+    if validate_email(email) == False:
+        valid = False
 
-  exists = User.query.filter_by(email=email).all()
-     if len(exists) > 0:
-         valid = False
+    exists = User.query.filter_by(email=email).all()
+        if len(exists) > 0:
+            valid = False
 
-  return valid
+    return valid
 
 
- def register(name, email, password):
+def register(name, email, password):
 
     registered = False
 
     if validateEmail(email) == True  and validateUser(name) == True and validatePswd(password) == True:
-      user = User(username=name, email=email, password=password, shippingAddress="", postalCode="", balance=100)
-      db.session.add(user)
-      db.session.commit()
+        user = User(username=name, email=email, password=password, shippingAddress="", postalCode="", balance=100)
+        db.session.add(user)
+        db.session.commit()
 
-      registered = True
+        registered = True
 
 
-  return registered
+    return registered
      
 
 
