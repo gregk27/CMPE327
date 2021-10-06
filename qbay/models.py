@@ -203,7 +203,8 @@ def updateProduct(productId, **kwargs):
     # Assign remaining properties directly
     for key, val in kwargs.items():
         # Some properties cannot be chagned
-        if key == 'userId' or key == 'ownerEmail' or key == 'lastModifiedDate':
+        if key == 'userId' or key == 'ownerEmail' \
+          or key == 'lastModifiedDate' or key == "id":
             continue
         # If there's no special condition, just update directly
         elif key in kwargs:
