@@ -168,6 +168,7 @@ db.create_all()
 #     return valids[0]
 
 def updateProduct(productId, **kwargs):
+    print(productId)
     product = Product.query.filter_by(id=productId).first()
     if product is None:
         return False
@@ -176,26 +177,28 @@ def updateProduct(productId, **kwargs):
     if 'price' in kwargs:
         if(kwargs['price'] > product.price):
             product.price = kwargs['price']
-        kwargs.remove('price')
+        kwargs.pop('price')
 
     # Update name if it's alphanumeric and under 80 chars
     if 'name' in kwargs:
         # TODO: Take name validation from creation function
         product.name = kwargs['name']
-        kwargs.remove('name')
+        kwargs.pop('name')
 
     # Update description if it's within size limits
     if 'description' in kwargs:
         desc = kwargs['description']
         if(len(desc) >= 20 and len(desc) <= 2000
-           and len(desc) > len(product.title)):
+           and len(desc) > len(product.productName)):
             product.description = desc
+        kwargs.pop('description')
 
     # Check price is in range
     if 'price' in kwargs:
         price = kwargs['price']
         if(price >= 10 and price <= 10000):
             product.price = price
+        kwargs.pop('price')
 
     # Assign remaining properties directly
     for key, val in kwargs.items():
@@ -203,8 +206,9 @@ def updateProduct(productId, **kwargs):
         if key == 'userId' or key == 'ownerEmail' or key == 'lastModifiedDate':
             continue
         # If there's no special condition, just update directly
-        elif key in product:
-            product[key] = val
+        elif key in kwargs:
+            setattr(product, key, val)
 
     product.lastModifiedDate = datetime.now()
+    db.session.commit()
     return True
