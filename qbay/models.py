@@ -206,7 +206,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
         return False
 
     # Check if owner email is null
-    if (owner_email == "" or owner_email == None):
+    if (owner_email == "" or owner_email is None):
         return False
 
     # Check if owner of the corresponding product exists
