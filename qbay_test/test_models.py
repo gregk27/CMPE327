@@ -80,34 +80,38 @@ def test_r5_updateProduct(target, newVals, shouldChange):
         buyTransactions=[],
         sellTransactions=[]
     )
-    orgProd = Product(
-        id=str(uuid.uuid4()),
-        productName=f"Test Product {target}",
-        userId=u.id,
-        ownerEmail=u.email,
-        price=500,
-        description="Lorem Ipsum Dolar Set Amet",
-        lastModifiedDate=datetime.now(),
-        user=u
-    )
+
+    orgVals = {
+        "id": str(uuid.uuid4()),
+        "productName": f"Test Product {target}",
+        "userId": u.id,
+        "ownerEmail": u.email,
+        "price": 500,
+        "description": "Lorem Ipsum Dolar Set Amet",
+        "lastModifiedDate": datetime.now(),
+        "user": u
+    }
+
+    prod = Product(**orgVals)
 
     db.session.add(u)
-    db.session.add(orgProd)
+    db.session.add(prod)
     db.session.commit()
 
-    assert updateProduct(orgProd.id, **newVals) is True
+    assert updateProduct(prod.id, **newVals) is True
 
-    modProd = Product.query.filter_by(id=orgProd.id).first()
+    modProd = Product.query.filter_by(id=orgVals["id"]).first()
 
     # TODO: Test that changes are proprely comitted to the database file
 
     # Check that values are correct
     assert modProd is not None
-    assert modProd.id == orgProd.id
+    assert modProd.id == orgVals["id"]
     assert (modProd.productName == newVals['productName']) \
         is shouldChange['productName']
-    assert modProd.userId == orgProd.userId
-    assert modProd.ownerEmail == orgProd.ownerEmail
+    assert modProd.userId == orgVals["userId"]
+    assert modProd.ownerEmail == orgVals["ownerEmail"]
     assert (modProd.price == newVals['price']) is shouldChange['price']
     assert (modProd.description == newVals['description']) \
         is shouldChange['description']
+    assert modProd.lastModifiedDate != orgVals["lastModifiedDate"]
