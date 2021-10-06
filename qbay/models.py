@@ -181,5 +181,6 @@ def login(email, password, ip):
     time = datetime.now()
     s = Session(user=user, userId=user.id, ipAddress=ip,
                 sessionId=str(uuid.uuid4()),
-                expiry=datetime(time.year, time.month, time.day+30))
+                # Session expires after a year
+                expiry=datetime(time.year+1, time.month, time.day))
     return s
