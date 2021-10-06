@@ -23,11 +23,13 @@ class User(db.Model):
     shippingAddress = db.Column(db.String(64))
     postalCode = db.Column(db.String(36))
 
-    sessions = relationship('sessions', back_populates='user')
-    products = relationship('product', back_populates='user')
-    reviews = relationship('review', back_populates='user')
-    buyTransactions = relationship('transaction', back_populates='user')
-    sellTransactions = relationship('transaction', back_populates='user')
+    sessions = relationship('Session', back_populates='user')
+    products = relationship('Product', back_populates='user')
+    reviews = relationship('Review', back_populates='user')
+    buyTransactions = relationship('Transaction', back_populates='customer',
+                                   foreign_keys="Transaction.customerId")
+    sellTransactions = relationship('Transaction', back_populates='merchant',
+                                    foreign_keys="Transaction.merchantId")
     __tablename__ = "user"
 
     def __repr__(self):
@@ -42,8 +44,7 @@ class Product(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     productName = db.Column(db.String(80), nullable=False, unique=True)
     userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
-    ownerEmail = db.Column(db.String(120), ForeignKey('user.email'),
-                           nullable=False)
+    ownerEmail = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(2000), nullable=False)
     lastModifiedDate = db.Column(db.DateTime, nullable=False)
@@ -59,8 +60,9 @@ class Product(db.Model):
     # bidder = db.Column(db.String(64))
     image = image_attachment('ProductPicture')
 
-    user = relationship('user', back_populates='products')
-    reviews = relationship('product', back_populates='reviews')
+    user = relationship('User', back_populates='products')
+    reviews = relationship('Review', back_populates='product')
+    transaction = relationship('Transaction', back_populates='product')
     __tablename__ = "product"
 
 
@@ -69,11 +71,11 @@ class ProductPicture(db.Model, Image):
 
     productId = db.Column(db.String(36), ForeignKey('product.id'),
                           primary_key=True)
-    product = relationship('Product')
+    product = relationship('Product', back_populates="image")
     __tablename__ = 'product_picture'
 
 
-class Sessions(db.Model):
+class Session(db.Model):
     """Session model."""
     sessionId = db.Column(db.String(36), primary_key=True)
     userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
@@ -82,7 +84,7 @@ class Sessions(db.Model):
     csrfToken = db.Column(db.String(32))
     user = db.Column(db.String(36), ForeignKey('product.id'))
 
-    user = relationship('user', back_populates='sessions')
+    user = relationship('User', back_populates='sessions')
     __tablename__ = "session"
 
 
@@ -102,9 +104,11 @@ class Transaction(db.Model):
     expiryDate = db.Column(db.Date(), nullable=False)
     billAddress = db.Column(db.String(128), nullable=False)
 
-    customer = relationship('user', back_populates='buyTransactions')
-    merchant = relationship('user', back_populates='sellTransactions')
-    product = relationship('product', back_populates='transaction')
+    customer = relationship('User', back_populates='buyTransactions',
+                            uselist=False, foreign_keys=[customerId])
+    merchant = relationship('User', back_populates='sellTransactions',
+                            uselist=False, foreign_keys=[merchantId])
+    product = relationship('Product', back_populates='transaction')
     __tablename__ = "transaction"
 
 
@@ -118,8 +122,8 @@ class Review(db.Model):
     content = db.Column(db.String(65535), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
 
-    product = relationship('product', back_populates='reviews')
-    user = relationship('user', back_populates='reviews')
+    product = relationship('Product', back_populates='reviews')
+    user = relationship('User', back_populates='reviews')
     __tablename__ = "review"
 
 
