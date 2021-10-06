@@ -166,7 +166,15 @@ db.create_all()
 #         return None
 #     return valids[0]
 
+
 def validatePswd(password):
+    '''
+    Validatation of password
+      Parameters:
+        password (string): user password
+      Returns:
+        True if input password matches all required critera, otherwise False
+    '''
     valid = True
     specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
                     '(', ')', '_', '-', '+', '=', '{', '[', '}', ']',
@@ -194,6 +202,13 @@ def validatePswd(password):
 
 
 def validateUser(username):
+    '''
+    Validatation of username
+      Parameters:
+        username (string): user name
+      Returns:
+        True if input username matches all required critera, otherwise False
+    '''
     valid = True
 
     if len(username) < 3:
@@ -221,6 +236,13 @@ def validateUser(username):
 
 
 def validateEmail(email):
+    '''
+    Validatation of email
+      Parameters:
+        email (string): user email
+      Returns:
+        True if input email follows addr-spec defined in RFC 5322 and if email is unique, otherwise False
+    '''
     valid = True
 
     if len(email) == 0:
@@ -229,6 +251,7 @@ def validateEmail(email):
     if validate_email(email):
         valid = False
 
+    #check email exists in database
     exists = User.query.filter_by(email=email).all()
     if len(exists) > 0:
         valid = False
@@ -237,12 +260,23 @@ def validateEmail(email):
 
 
 def register(name, email, password):
-
+    '''
+    Register a new user
+      Parameters:
+        name (string):     user name
+        email (string):    user email
+        password (string): user password
+      Returns:
+        True if registration succeeded otherwise False
+    '''
     registered = False
     if validateEmail(email) and validateUser(name) and validatePswd(password):
+        # create a new user
         user = User(username=name, email=email, password=password,
                     shippingAddress="", postalCode="", balance=100)
+        # add it to the current database session
         db.session.add(user)
+        # actually save the user object
         db.session.commit()
     registered = True
     return registered
