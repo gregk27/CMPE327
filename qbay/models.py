@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from validate_email import validate_email
 from uuid import uuid4
+import hashlib
 
 db = SQLAlchemy(app)
 
@@ -180,7 +181,6 @@ def validatePswd(password):
       Returns:
         True if input password matches all required critera, otherwise False
     '''
-    valid = True
     specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
                     '(', ')', '_', '-', '+', '=', '{', '[', '}', ']',
                     '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
@@ -188,22 +188,21 @@ def validatePswd(password):
 
     if len(password) < 6:
         print("Password must be at least 6 characters")
-        valid = False
+        return False
 
     if not any(char.isupper() for char in password):
         print('Password must contain at least one uppercase letter')
-        valid = False
+        return False
 
     if not any(char.islower() for char in password):
         print('Password must contain at least one lowercase letter')
-        valid = False
+        return False
 
     if not any(char in specialChars for char in password):
         print('Password must contain at least one special character')
-        valid = False
+        return False
 
-    if valid:
-        return valid
+    return True
 
 
 def validateUser(username):
@@ -214,34 +213,29 @@ def validateUser(username):
       Returns:
         True if input username matches all required critera, otherwise False
     '''
-    valid = True
-
-    if username == None:
-        return False
-
     if len(username) < 3:
         print("Username must be at least 3 character")
-        valid = False
-        return valid
+        return False
 
     if len(username) > 20:
         print("Username exceeded characters. Maximum allowed is 20.")
-        valid = False
+        return False
 
     alnum = list("abcdefghijklmnopqrstuvwxyz" +
                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
     for x in username:
         if x not in alnum:
-            valid = False
+            print("Username must be alphanumeric")
+            return False
 
     if username[0] == " " or username[len(username)-1] == " ":
-        valid = False
+        return False
 
     for i in range(len(username)):
         if username[i] == " " and username[i+1] == " ":
-            valid = False
+            return False
 
-    return valid
+    return True
 
 
 def validateEmail(email):
@@ -250,23 +244,22 @@ def validateEmail(email):
       Parameters:
         email (string): user email
       Returns:
-        True if input email follows addr-spec defined in RFC 5322 and if email is unique, otherwise False
+        True if input email follows addr-spec defined in RFC 5322 and if email
+        is unique, otherwise False
     '''
-    valid = True
-
     if len(email) == 0:
-        valid = False
+        return False
 
     if not validate_email(email):
-        valid = False
+        return False
 
-    #check email exists in database
+    # check email exists in database
     exists = User.query.filter_by(email=email).all()
     print(exists)
     if len(exists) > 0:
-        valid = False
+        return False
 
-    return valid
+    return True
 
 
 def register(name, email, password):
@@ -279,16 +272,19 @@ def register(name, email, password):
       Returns:
         True if registration succeeded otherwise False
     '''
-    registered = False
     if validateEmail(email) and validateUser(name) and validatePswd(password):
-        registered = True
         # create a new user
-        user = User(id= str(uuid4()), username=name, email=email, password=password,
-                    shippingAddress="", postalCode="", balance=100)
+        salt = uuid4()
+        # Generate string from salt and hashed password
+        hashed = str(salt) + ":" + hashlib.sha512((password + str(salt))
+                                                  .encode('utf-8')).hexdigest()
+        user = User(id=str(uuid4()), username=name, email=email,
+                    password=hashed, shippingAddress="",
+                    postalCode="", balance=100)
         # add it to the current database session
         db.session.add(user)
         # actually save the user object
         db.session.commit()
+        return True
 
-
-    return registered
+    return False
