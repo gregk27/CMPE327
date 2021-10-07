@@ -377,50 +377,33 @@ def test_r5_updateProduct(target, newVals, shouldChange):
     '''
     Testing all R5-x requirements using parameterization
     '''
-    u = User(
-        id=str(uuid.uuid4()),
-        username=f"Test User {target}",
-        email=f"test{target}@example.com",
-        password="",
-        balance=0,
-        sessions=[],
-        products=[],
-        reviews=[],
-        buyTransactions=[],
-        sellTransactions=[]
-    )
+    email = f"test{target}@example.com"
+    assert register(f"Test User {target.replace('.', ' ')}",
+                    email, "Password1!")
 
     orgVals = {
-        "id": str(uuid.uuid4()),
-        "productName": f"Test Product {target}",
-        "userId": u.id,
-        "ownerEmail": u.email,
+        "title": f"Test Product {target.replace('.', ' ')}",
+        "owner_email": email,
         "price": 500,
         "description": "Lorem Ipsum Dolar Set Amet",
-        "lastModifiedDate": dt.datetime.now(),
-        "user": u
+        "last_modified_date": dt.datetime.now(),
     }
 
-    prod = Product(**orgVals)
-
-    db.session.add(u)
-    db.session.add(prod)
-    db.session.commit()
-
+    assert createProduct(**orgVals)
+    prod = Product.query.filter_by(productName=orgVals["title"],
+                                   ownerEmail=orgVals["owner_email"]).first()
+    orgVals['id'] = prod.id
     assert updateProduct(prod.id, **newVals) is True
 
     modProd = Product.query.filter_by(id=orgVals["id"]).first()
-
-    # TODO: Test that changes are proprely comitted to the database file
 
     # Check that values are correct
     assert modProd is not None
     assert modProd.id == orgVals["id"]
     assert (modProd.productName == newVals['productName']) \
         is shouldChange['productName']
-    assert modProd.userId == orgVals["userId"]
-    assert modProd.ownerEmail == orgVals["ownerEmail"]
+    assert modProd.ownerEmail == orgVals["owner_email"]
     assert (modProd.price == newVals['price']) is shouldChange['price']
     assert (modProd.description == newVals['description']) \
         is shouldChange['description']
-    assert modProd.lastModifiedDate != orgVals["lastModifiedDate"]
+    assert modProd.lastModifiedDate != orgVals["last_modified_date"]

@@ -279,6 +279,8 @@ def createProduct(title, description, price, last_modified_date, owner_email):
     # If the title without spaces is not alphanumeric-only,
     # or begins or ends in a space
     # or is longer than 80 chars, return False
+    print(1)
+    print(title)
     if (not title.replace(" ", "").isalnum() or
             title[0] == " " or
             title[-1] == " " or
@@ -288,24 +290,29 @@ def createProduct(title, description, price, last_modified_date, owner_email):
     # If description is less than 20 or greater than 20
     # or length of description is less than or equal to length of title,
     # return False
+    print(2)
     if ((len(description) < 20 or len(description) > 2000) or
             len(description) <= len(title)):
         return False
 
     # Check acceptable price range [10, 10000]
+    print(3)
     if (price < 10.0 or price > 10000.0):
         return False
 
     # Check acceptable last_modified_date range
+    print(4)
     if (last_modified_date <= dt.datetime(2021, 1, 2) or
             last_modified_date >= dt.datetime(2025, 1, 2)):
         return False
 
     # Check if owner email is null
+    print(5)
     if (owner_email == "" or owner_email is None):
         return False
 
     # Check if owner of the corresponding product exists
+    print(6)
     owner = User.query.filter_by(email=owner_email).all()
     if (len(owner) == 0):
         return False
@@ -313,6 +320,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
     # Check if user has already used this title
     userProducts = Product.query.filter_by(ownerEmail=owner_email,
                                            productName=title).all()
+    print(7)
     if (len(userProducts) == 1):
         return False
 
