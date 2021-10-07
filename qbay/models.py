@@ -1,8 +1,13 @@
+# from operator import and_ not used in program
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
+from validate_email import validate_email
+from uuid import uuid4
+import hashlib
+import json
 
 db = SQLAlchemy(app)
 
@@ -16,8 +21,10 @@ class User(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(165), nullable=False)
     balance = db.Column(db.Float, nullable=False)
+    shippingAddress = db.Column(db.String(64))
+    postalCode = db.Column(db.String(36))
 
     sessions = relationship('Session', back_populates='user')
     products = relationship('Product', back_populates='user')
@@ -29,7 +36,10 @@ class User(db.Model):
     __tablename__ = "user"
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return ("{\"user\":\"%s\",\"email\":\"%s\", \"shippingAddress\":\"%s\""
+                % (self.username, self.email, self.shippingAddress)
+                + ", \"postalCode\":\"%s\", \"balance\":\"%d\"}"
+                % (self.postalCode, self.balance))
 
 
 # Source:
@@ -165,3 +175,130 @@ db.create_all()
 #     if len(valids) != 1:
 #         return None
 #     return valids[0]
+
+
+def validatePswd(password):
+    '''
+    Validatation of password
+      Parameters:
+        password (string): user password
+      Returns:
+        True if input password matches all required critera, otherwise False
+    '''
+    specialChars = ['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
+                    '(', ')', '_', '-', '+', '=', '{', '[', '}', ']',
+                    '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
+                    '?', '/']
+
+    if len(password) < 6:
+        print("Password must be at least 6 characters")
+        return False
+
+    if not any(char.isupper() for char in password):
+        print('Password must contain at least one uppercase letter')
+        return False
+
+    if not any(char.islower() for char in password):
+        print('Password must contain at least one lowercase letter')
+        return False
+
+    if not any(char in specialChars for char in password):
+        print('Password must contain at least one special character')
+        return False
+
+    return True
+
+
+def validateUser(username):
+    '''
+    Validatation of username
+      Parameters:
+        username (string): user name
+      Returns:
+        True if input username matches all required critera, otherwise False
+    '''
+    if len(username) < 3:
+        print("Username must be at least 3 character")
+        return False
+
+    if len(username) > 20:
+        print("Username exceeded characters. Maximum allowed is 20.")
+        return False
+
+    # Username must be alphamerical, whitepsace in prefix or suffix not allowed
+    if (not username.replace(" ", "").isalnum() or username[0] == " "
+            or username[-1] == " "):
+        return False
+
+    return True
+
+
+def validateEmail(email):
+    '''
+    Validatation of email
+      Parameters:
+        email (string): user email
+      Returns:
+        True if input email follows addr-spec defined in RFC 5322 and if email
+        is unique, otherwise False
+    '''
+    if len(email) == 0:
+        return False
+
+    if not validate_email(email):
+        return False
+
+    # check email exists in database
+    exists = User.query.filter_by(email=email).all()
+    if len(exists) > 0:
+        return False
+
+    return True
+
+
+def register(name, email, password):
+    '''
+    Register a new user
+      Parameters:
+        name (string):     user name
+        email (string):    user email
+        password (string): user password
+      Returns:
+        True if registration succeeded otherwise False
+    '''
+    if validateEmail(email) and validateUser(name) and validatePswd(password):
+        # create a new user
+        salt = uuid4()
+        # Generate string from salt and hashed password
+        hashed = str(salt) + ":" + hashlib.sha512((password + str(salt))
+                                                  .encode('utf-8')).hexdigest()
+        user = User(id=str(uuid4()), username=name, email=email,
+                    password=hashed, balance=100, shippingAddress="",
+                    postalCode="")
+        # add it to the current database session
+        db.session.add(user)
+        # actually save the user object
+        db.session.commit()
+        return True
+
+    return False
+
+
+def queryUser(email, attribute, value):
+    '''
+    Check if specified user attribute matches expected value
+      Parameters:
+        email (string):     user email
+        attribute (string)  user dbColumn
+        value (string)      user attribute value
+      Return: True if query matches value
+    '''
+    user = User.query.filter_by(email=email).all()
+    # stringify user object
+    temp = str(user[0])
+    # create JSON object
+    access = json.loads(temp)
+    if access[attribute] == value:
+        return True
+
+    return False
