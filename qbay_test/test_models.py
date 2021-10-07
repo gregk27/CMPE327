@@ -1,4 +1,6 @@
-from qbay.models import login, register, queryUser
+from qbay.models import db, User, login, register, queryUser
+from uuid import uuid4
+import hashlib
 import pytest
 
 
@@ -139,3 +141,44 @@ def test_r2_1_login(email, password, ip, resultA, resultB):
     else:
         # Otherwise, make sure no session was created incorrectly
         assert session is None
+
+
+@pytest.mark.parametrize("email, password, result", [
+    # Baseline with valid credentials
+    ['R2.2@test.com', 'P&ssw0rd', True],
+    # R1-1 Empty email
+    ['R2.2@test.com', '', False],
+    # R1-3 Invalid email
+    ['test@..@test.com', 'P&ssw0rd', False],
+    # R1-4a Passowrd too short
+    ['R2.2@test.com', 'P&s5', False],
+    # R1-4b Passowrd missing caps
+    ['R2.2@test.com', 'p&ssw0rd', False],
+    # R1-4c Passowrd missing special/num
+    ['R2.2@test.com', 'Password', False],
+])
+def test_r2_2_login(email, password, result):
+    '''
+    Testing R2-1: A user can log in using her/his email address
+      and the password.
+    '''
+
+    # Create a new user from parameters
+    # Can't use register since this user breaks database restrictions
+    salt = uuid4()
+    hashed = str(salt) + ":" + hashlib.sha512((password + str(salt))
+                                              .encode('utf-8')).hexdigest()
+    user = User(id=str(uuid4()), username="R2 2 test", email=email,
+                password=hashed, balance=100, shippingAddress="",
+                postalCode="")
+    db.session.add(user)
+    db.session.commit()
+
+    # Attempt to log in and validate result
+    session = login(email, password, '123.456.789.123')
+
+    # Delete user when done
+    db.session.delete(user)
+    db.session.commit()
+
+    assert (session is not None) is result
