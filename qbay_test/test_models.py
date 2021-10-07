@@ -1,5 +1,5 @@
 from qbay.models import register
-from qbay.models import User
+from qbay.models import queryUser
 from qbay.models import * # NOQA
 
 
@@ -37,7 +37,7 @@ def test_r1_2_r1_7_register():
     Testing R1-2 and R1-7: A user is uniquely identified by their email
     address. If the email has been used, the operation failed.
     '''
-    assert register('damien smith', 'dambam07@gmail.com', 
+    assert register('damien smith', 'dambam07@gmail.com',
                     'asdjDD123asd/&$') is True
     # Expected False due to duplicate email
     assert register('jonathon', 'dambam07@gmail.com', 'askdhD123%$#') is False
@@ -47,10 +47,10 @@ def test_r1_3_register():
     '''
     Testing R1-3: The email has to follow addr-spec defined in RFC 5322
     '''
-    assert register('jon123', 'jon#$^asd@gmail.com', 
+    assert register('jon123', 'jon#$^asd@gmail.com',
                     'asdDi8uh18798asd$') is True
     # Expected False due to email not following addr-spec defined in RFC 5322
-    assert register('damien smith', 'test@..@test.com', 
+    assert register('damien smith', 'test@..@test.com',
                     'password123$') is False
 
 
@@ -60,7 +60,7 @@ def test_r1_4_register():
     length 6, at least one upper case, at least one lower case, and at least
     one special character.
     '''
-    assert register('jacob', 'jacobkie@gmail.com', 
+    assert register('jacob', 'jacobkie@gmail.com',
                     'ValidPassword123$$') is True
     # Expected False due to lack of password complexity
     assert register('daniel fran', 'danfran@gmail.com', 'password') is False
@@ -99,22 +99,14 @@ def test_r1_8_register():
     '''
     Testing R1-8: Shipping address is empty at the time of registration.
     '''
-    exists = User.query.filter_by(shippingAddress="").all()
-    if len(exists) > 0:
-        return False
-
-    assert exists
+    assert queryUser('dambam07@gmail.com', 'shippingAddress', '') is True
 
 
 def test_r1_9_register():
     '''
     Testing R1-9: Postal code is empty at the time of registration.
     '''
-    exists = User.query.filter_by(postalCode="").all()
-    if len(exists) > 0:
-        return False
-
-    assert exists
+    assert queryUser('dambam07@gmail.com', 'postalCode', '') is True
 
 
 def test_r1_10_register():
@@ -122,8 +114,4 @@ def test_r1_10_register():
     Testing R1-10: Balance should be initialized as 100 at the
     time of registration.
     '''
-    initialized = User.query.filter_by(balance=100).all()
-    if len(initialized) > 0:
-        return False
-
-    assert initialized
+    assert queryUser('dambam07@gmail.com', 'balance', '100') is True

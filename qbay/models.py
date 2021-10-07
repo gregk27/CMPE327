@@ -7,6 +7,7 @@ from sqlalchemy_imageattach.entity import Image, image_attachment
 from validate_email import validate_email
 from uuid import uuid4
 import hashlib
+import json
 
 db = SQLAlchemy(app)
 
@@ -20,7 +21,7 @@ class User(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(165), nullable=False)
     balance = db.Column(db.Float, nullable=False)
     shippingAddress = db.Column(db.String(64))
     postalCode = db.Column(db.String(36))
@@ -35,7 +36,10 @@ class User(db.Model):
     __tablename__ = "user"
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return ("{\"user\":\"%s\",\"email\":\"%s\", \"shippingAddress\":\"%s\""
+                % (self.username, self.email, self.shippingAddress)
+                + ", \"postalCode\":\"%s\", \"balance\":\"%d\"}"
+                % (self.postalCode, self.balance))
 
 
 # Source:
@@ -221,16 +225,12 @@ def validateUser(username):
         print("Username exceeded characters. Maximum allowed is 20.")
         return False
 
-    alnum = list("abcdefghijklmnopqrstuvwxyz" +
-                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
-    for x in username:
-        if x not in alnum:
-            print("Username must be alphanumeric")
-            return False
-
-    if username[0] == " " or username[len(username)-1] == " ":
+    # Username must be alphamerical, whitepsace in prefix or suffix not allowed
+    if (not username.replace(" ", "").isalnum() or username[0] == " "
+            or username[-1] == " "):
         return False
 
+    # To handle double whitespace
     for i in range(len(username)):
         if username[i] == " " and username[i+1] == " ":
             return False
@@ -255,7 +255,6 @@ def validateEmail(email):
 
     # check email exists in database
     exists = User.query.filter_by(email=email).all()
-    print(exists)
     if len(exists) > 0:
         return False
 
@@ -279,12 +278,32 @@ def register(name, email, password):
         hashed = str(salt) + ":" + hashlib.sha512((password + str(salt))
                                                   .encode('utf-8')).hexdigest()
         user = User(id=str(uuid4()), username=name, email=email,
-                    password=hashed, shippingAddress="",
-                    postalCode="", balance=100)
+                    password=hashed, balance=100, shippingAddress="",
+                    postalCode="")
         # add it to the current database session
         db.session.add(user)
         # actually save the user object
         db.session.commit()
+        return True
+
+    return False
+
+
+def queryUser(email, attribute, value):
+    '''
+    Check if specified user attribute matches expected value
+      Parameters:
+        email (string):     user email
+        attribute (string)  user dbColumn
+        value (string)      user attribute value
+      Return: True if query matches value
+    '''
+    user = User.query.filter_by(email=email).all()
+    # stringify user object
+    temp = str(user[0])
+    # create JSON object
+    access = json.loads(temp)
+    if access[attribute] == value:
         return True
 
     return False

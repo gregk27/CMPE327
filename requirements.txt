@@ -5,4 +5,4 @@ flake8
 sqlalchemy_imageattach
 wand
 validate_email
-uuid4
+uuid
