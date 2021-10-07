@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
 from validate_email import validate_email
+from uuid import uuid4
 
 db = SQLAlchemy(app)
 
@@ -215,9 +216,13 @@ def validateUser(username):
     '''
     valid = True
 
+    if username == None:
+        return False
+
     if len(username) < 3:
         print("Username must be at least 3 character")
         valid = False
+        return valid
 
     if len(username) > 20:
         print("Username exceeded characters. Maximum allowed is 20.")
@@ -252,11 +257,12 @@ def validateEmail(email):
     if len(email) == 0:
         valid = False
 
-    if validate_email(email):
+    if not validate_email(email):
         valid = False
 
     #check email exists in database
     exists = User.query.filter_by(email=email).all()
+    print(exists)
     if len(exists) > 0:
         valid = False
 
@@ -275,12 +281,14 @@ def register(name, email, password):
     '''
     registered = False
     if validateEmail(email) and validateUser(name) and validatePswd(password):
+        registered = True
         # create a new user
-        user = User(username=name, email=email, password=password,
+        user = User(id= str(uuid4()), username=name, email=email, password=password,
                     shippingAddress="", postalCode="", balance=100)
         # add it to the current database session
         db.session.add(user)
         # actually save the user object
         db.session.commit()
-    registered = True
+
+
     return registered
