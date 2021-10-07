@@ -9,6 +9,8 @@ from uuid import uuid4
 import hashlib
 import json
 
+import datetime as dt
+
 db = SQLAlchemy(app)
 
 '''
@@ -48,7 +50,7 @@ class User(db.Model):
 class Product(db.Model):
     """Product model."""
     id = db.Column(db.String(36), primary_key=True)
-    productName = db.Column(db.String(80), nullable=False, unique=True)
+    productName = db.Column(db.String(80), nullable=False)
     userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
     ownerEmail = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
@@ -137,40 +139,15 @@ class Review(db.Model):
 db.create_all()
 
 
-# def register(name, email, password):
-#     '''
-#     Register a new user
-#       Parameters:
-#         name (string):     user name
-#         email (string):    user email
-#         password (string): user password
-#       Returns:
-#         True if registration succeeded otherwise False
-#     '''
-#     # check if the email has been used:
-#     existed = User.query.filter_by(email=email).all()
-#     if len(existed) > 0:
-#         return False
-
-#     # create a new user
-#     user = User(username=name, email=email, password=password)
-#     # add it to the current database session
-#     db.session.add(user)
-#     # actually save the user object
-#     db.session.commit()
-
-#     return True
-
-
 # def login(email, password):
-#     '''
+#     """
 #     Check login information
 #       Parameters:
 #         email (string):    user email
 #         password (string): user password
 #       Returns:
 #         The user object if login succeeded otherwise None
-#     '''
+#     """
 #     valids = User.query.filter_by(email=email, password=password).all()
 #     if len(valids) != 1:
 #         return None
@@ -302,3 +279,74 @@ def queryUser(email, attribute, value):
         return True
 
     return False
+
+
+def createProduct(title, description, price, last_modified_date, owner_email):
+    """
+    Create a Product
+      Parameters:
+        title (string):                 product title
+        description (string):           product description
+        price (float):                  product price
+        last_modified_date (DateTime):  product object last modified date
+        owner_email:                    product owner's email
+      Returns:
+        True if product creation succeeded, otherwise False
+    """
+    # If the title without spaces is not alphanumeric-only,
+    # or begins or ends in a space
+    # or is longer than 80 chars, return False
+    if (not title.replace(" ", "").isalnum() or
+            title[0] == " " or
+            title[-1] == " " or
+            len(title) > 80):
+        return False
+
+    # If description is less than 20 or greater than 20
+    # or length of description is less than or equal to length of title,
+    # return False
+    if ((len(description) < 20 or len(description) > 2000) or
+            len(description) <= len(title)):
+        return False
+
+    # Check acceptable price range [10, 10000]
+    if (price < 10.0 or price > 10000.0):
+        return False
+
+    # Check acceptable last_modified_date range
+    if (last_modified_date <= dt.datetime(2021, 1, 2) or
+            last_modified_date >= dt.datetime(2025, 1, 2)):
+        return False
+
+    # Check if owner email is null
+    if (owner_email == "" or owner_email is None):
+        return False
+
+    # Check if owner of the corresponding product exists
+    owner = User.query.filter_by(email=owner_email).all()
+    if (len(owner) == 0):
+        return False
+
+    # Check if user has already used this title
+    userProducts = Product.query.filter_by(ownerEmail=owner_email,
+                                           productName=title).all()
+    if (len(userProducts) == 1):
+        return False
+
+    # Create a new product
+    product = Product(id=str(uuid4()),
+                      productName=title,
+                      description=description,
+                      price=price,
+                      lastModifiedDate=last_modified_date,
+                      userId=owner[0].id,
+                      ownerEmail=owner_email
+                      )
+
+    # Add it to the current database session
+    db.session.add(product)
+
+    # Save the product object
+    db.session.commit()
+
+    return True
