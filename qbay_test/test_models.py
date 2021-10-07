@@ -1,7 +1,7 @@
 from qbay.models import register
 from qbay.models import queryUser
-from qbay.models import * # NOQA
 from qbay.models import createProduct
+from qbay.models import * # NOQA
 import datetime as dt
 
 
@@ -105,7 +105,7 @@ def test_r4_1_create_product():
     Testing R4-1: Title of the product has to be alphanumeric-only,
       and space allowed only if it is not as prefix and suffix.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
 
     # Space as prefix
@@ -123,8 +123,8 @@ def test_r4_1_create_product():
                          owner_email='test0@test.com') is False
 
     # Check Alphanum only
-    assert createProduct(title='p0',
-                         description='This is @ test description',
+    assert createProduct(title='p@',
+                         description='This is a test description',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test0@test.com') is False
@@ -184,7 +184,7 @@ def test_r4_3_create_product():
     # Description is made of arbitrary chars, length [20, 2000] (Passing case)
     assert createProduct(title='p2',
                          description='abcdefghijklmnopqrstuvwxyz0123456789' +
-                         ' !@#$%^&*()./?<>[]{}|\\',
+                         ' !@#$%^&*()./?<>[]|\{\}\\',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test0@test.com') is True
