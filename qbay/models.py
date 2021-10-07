@@ -220,21 +220,23 @@ def createProduct(title, description, price, last_modified_date, owner_email):
         return False
 
     # Check if owner of the corresponding product exists
-    owner = Product.query.filter_by(ownerEmail=owner_email).all()
+    owner = User.query.filter_by(email=owner_email).all()
     if (len(owner) == 0):
         return False
 
     # Check if user has already used this title
     userProducts = Product.query.filter_by(ownerEmail=owner_email,
-                                           productName=title)
+                                           productName=title).all()
     if (len(userProducts) == 1):
         return False
 
     # Create a new product
-    product = Product(productName=title,
+    product = Product(id=str(uuid4()),
+                      productName=title,
                       description=description,
                       price=price,
                       lastModifiedDate=last_modified_date,
+                      userId=owner[0].id,
                       ownerEmail=owner_email
                       )
 
