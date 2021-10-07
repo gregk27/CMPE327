@@ -109,14 +109,14 @@ def test_r4_1_create_product():
     register('Test0', 'test0@test.com', 'Password1!')
 
     # Space as prefix
-    assert createProduct(title='p0',
-                         description=' This is a test description',
+    assert createProduct(title=' p0',
+                         description='This is a test description',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test0@test.com') is False
 
     # Space as suffix
-    assert createProduct(title='p0',
+    assert createProduct(title='p0 ',
                          description='This is a test description ',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
@@ -321,6 +321,7 @@ def test_r4_8_create_product():
     """
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
+    register('Test1', 'test1@test.com', 'Password1!')
 
     # Already created p1
     assert createProduct(title='p1',
@@ -334,4 +335,4 @@ def test_r4_8_create_product():
                          description='This is a test description',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email='test1@test.com') is False
+                         owner_email='test1@test.com') is True
