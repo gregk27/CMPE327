@@ -230,11 +230,6 @@ def validateUser(username):
             or username[-1] == " "):
         return False
 
-    # To handle double whitespace
-    for i in range(len(username)):
-        if username[i] == " " and username[i+1] == " ":
-            return False
-
     return True
 
 
