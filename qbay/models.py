@@ -172,6 +172,12 @@ def login(email, password, ip):
       Returns:
         A session for the user on the current machine, None if login fails
     '''
+    # Validate inputs before proceeding
+    if len(email) == 0 \
+       or not validate_email(email) \
+       or not validatePswd(password):
+        return None
+
     matches = User.query.filter_by(email=email).all()
     user = None
     # Check results for a password match
