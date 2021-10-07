@@ -153,7 +153,7 @@ def test_r4_2_create_product():
 
     # Title == 80 chars (Passing case)
     assert createProduct(title='a'*80,
-                         description='This is a test description',
+                         description='Test'*21,
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test0@test.com') is True

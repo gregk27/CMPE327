@@ -50,7 +50,7 @@ class User(db.Model):
 class Product(db.Model):
     """Product model."""
     id = db.Column(db.String(36), primary_key=True)
-    productName = db.Column(db.String(80), nullable=False, unique=True)
+    productName = db.Column(db.String(80), nullable=False)
     userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
     ownerEmail = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
