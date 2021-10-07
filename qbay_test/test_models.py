@@ -184,7 +184,7 @@ def test_r4_3_create_product():
     # Description is made of arbitrary chars, length [20, 2000] (Passing case)
     assert createProduct(title='p2',
                          description='abcdefghijklmnopqrstuvwxyz0123456789' +
-                         ' !@#$%^&*()./?<>[]|\{\}\\',
+                         ' !@#$%^&*()./?<>[]|{}\\',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test0@test.com') is True
