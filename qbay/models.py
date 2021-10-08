@@ -265,7 +265,7 @@ def queryUser(email, attribute, value):
 
 
 def validateProductParameters(title, description, price, last_modified_date,
-                              owner_email):
+                              owner_email, ignoreEmail=False):
     """
     Create a Product
       Parameters:
@@ -274,6 +274,8 @@ def validateProductParameters(title, description, price, last_modified_date,
         price (float):                  product price
         last_modified_date (DateTime):  product object last modified date
         owner_email:                    product owner's email
+        ignoreEmail:                    flag to bypass email check,
+                                            for updateProduct
       Returns:
         True if product parameters are vaild, otherwise False
     """
@@ -308,13 +310,13 @@ def validateProductParameters(title, description, price, last_modified_date,
 
     # Check if owner of the corresponding product exists
     owner = User.query.filter_by(email=owner_email).all()
-    if (len(owner) == 0):
+    if (len(owner) == 0 and not ignoreEmail):
         return False
 
     # Check if user has already used this title
     userProducts = Product.query.filter_by(ownerEmail=owner_email,
                                            productName=title).all()
-    if (len(userProducts) == 1):
+    if (len(userProducts) >= 1):
         return False
 
     return True
@@ -359,9 +361,19 @@ def createProduct(title, description, price, last_modified_date, owner_email):
 
 
 def updateProduct(productId, **kwargs):
-    print(productId)
     product = Product.query.filter_by(id=productId).first()
     if product is None:
+        return False
+
+    # Check that parameters are valid, use defaults which are when not provided
+    if not validateProductParameters(
+        title=kwargs.get('title', product.productName),
+        description=kwargs.get('description', product.description),
+        price=kwargs.get('price', product.price),
+        last_modified_date=kwargs.get('lastModifiedDate', dt.datetime.now()),
+        owner_email="invalid",  # Shouldn't match in database as product exists
+        ignoreEmail=True  # Email cannot be changed so don't validate it
+    ):
         return False
 
     # Update price if it's higher

@@ -377,8 +377,7 @@ def test_r5_updateProduct(target, newVals, shouldChange):
     Testing all R5-x requirements using parameterization
     '''
     email = f"test{target}@example.com"
-    assert register(f"Test User {target.replace('.', ' ')}",
-                    email, "Password1!")
+    register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
 
     orgVals = {
         "title": f"Test Product {target.replace('.', ' ')}",
@@ -432,18 +431,14 @@ elit. Vivamus nec neque tincidunt."}, False],
     ["R4.6A",  {"lastModifiedDate": dt.datetime(2021, 1, 1)}, False],
     # Date too big
     ["R4.6B",  {"lastModifiedDate": dt.datetime(2025, 1, 3)}, False],
-    # Empty email
-    ["R4.7A",  {"ownerEmail": ''}, False],
-    # Owner not in database
-    ["R4.7B",  {"ownerEmail": 'invalid@invalid.com'}, False],
+    # R4-7 not tested as email cannot be changed
 ])
 def test_r5_4_updateProduct(target, changedVals, expected):
     '''
     Testing all R5-4 subrequirements using parameterization
     '''
     email = f"test{target}@example.com"
-    assert register(f"Test User {target.replace('.', ' ')}",
-                    email, "Password1!")
+    register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
 
     orgVals = {
         "title": f"Test Product {target.replace('.', ' ')}",
@@ -459,7 +454,7 @@ def test_r5_4_updateProduct(target, changedVals, expected):
 
     # Generate new values to use by making desired changes
     newVals = orgVals.copy()
-    for key, val in changedVals:
+    for key, val in changedVals.items():
         newVals[key] = val
 
     assert updateProduct(prod.id, **newVals) is expected
