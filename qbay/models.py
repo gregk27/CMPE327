@@ -1,5 +1,3 @@
-from datetime import datetime
-# from operator import and_ not used in program
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -169,11 +167,11 @@ def login(email, password, ip):
     if user is None:
         return None
 
-    time = datetime.now()
+    time = dt.datetime.now()
     s = Session(user=user, userId=user.id, ipAddress=ip,
                 sessionId=str(uuid4()),
                 # Session expires after a year
-                expiry=datetime(time.year+1, time.month, time.day))
+                expiry=dt.datetime(time.year+1, time.month, time.day))
     return s
 
 
@@ -304,7 +302,8 @@ def queryUser(email, attribute, value):
     return False
 
 
-def createProduct(title, description, price, last_modified_date, owner_email):
+def validateProductParameters(title, description, price, last_modified_date,
+                              owner_email, ignoreEmail=False):
     """
     Create a Product
       Parameters:
@@ -313,8 +312,10 @@ def createProduct(title, description, price, last_modified_date, owner_email):
         price (float):                  product price
         last_modified_date (DateTime):  product object last modified date
         owner_email:                    product owner's email
+        ignoreEmail:                    flag to bypass email check,
+                                            for updateProduct
       Returns:
-        True if product creation succeeded, otherwise False
+        True if product parameters are vaild, otherwise False
     """
     # If the title without spaces is not alphanumeric-only,
     # or begins or ends in a space
@@ -347,14 +348,36 @@ def createProduct(title, description, price, last_modified_date, owner_email):
 
     # Check if owner of the corresponding product exists
     owner = User.query.filter_by(email=owner_email).all()
-    if (len(owner) == 0):
+    if (len(owner) == 0 and not ignoreEmail):
         return False
 
     # Check if user has already used this title
     userProducts = Product.query.filter_by(ownerEmail=owner_email,
                                            productName=title).all()
-    if (len(userProducts) == 1):
+    if (len(userProducts) >= 1):
         return False
+
+    return True
+
+
+def createProduct(title, description, price, last_modified_date, owner_email):
+    """
+    Create a Product
+      Parameters:
+        title (string):                 product title
+        description (string):           product description
+        price (float):                  product price
+        last_modified_date (DateTime):  product object last modified date
+        owner_email:                    product owner's email
+      Returns:
+        True if product creation succeeded, otherwise False
+    """
+    if(not validateProductParameters(title, description, price,
+                                     last_modified_date, owner_email)):
+        return False
+
+    # Get the owner to obtain their id
+    owner = User.query.filter_by(email=owner_email).first()
 
     # Create a new product
     product = Product(id=str(uuid4()),
@@ -362,7 +385,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
                       description=description,
                       price=price,
                       lastModifiedDate=last_modified_date,
-                      userId=owner[0].id,
+                      userId=owner.id,
                       ownerEmail=owner_email
                       )
 
@@ -372,4 +395,70 @@ def createProduct(title, description, price, last_modified_date, owner_email):
     # Save the product object
     db.session.commit()
 
+    return True
+
+
+def updateProduct(productId, **kwargs):
+    '''
+    Update an existing product
+      Parameters:
+        productId (string): ID of the product being updated
+        any named parameters corresponding to properties of Product model
+      returns:
+        True on update success, False on failure
+    '''
+    product = Product.query.filter_by(id=productId).first()
+    if product is None:
+        return False
+
+    # Check that parameters are valid, use defaults which are when not provided
+    if not validateProductParameters(
+        title=kwargs.get('title', product.productName),
+        description=kwargs.get('description', product.description),
+        price=kwargs.get('price', product.price),
+        last_modified_date=kwargs.get('lastModifiedDate', dt.datetime.now()),
+        owner_email="invalid",  # Shouldn't match in database as product exists
+        ignoreEmail=True  # Email cannot be changed so don't validate it
+    ):
+        return False
+
+    # Update price if it's higher
+    if 'price' in kwargs:
+        if(kwargs['price'] > product.price):
+            product.price = kwargs['price']
+        kwargs.pop('price')
+
+    # Update name if it's alphanumeric and under 80 chars
+    if 'name' in kwargs:
+        # TODO: Take name validation from creation function
+        product.name = kwargs['name']
+        kwargs.pop('name')
+
+    # Update description if it's within size limits
+    if 'description' in kwargs:
+        desc = kwargs['description']
+        if(len(desc) >= 20 and len(desc) <= 2000
+           and len(desc) > len(product.productName)):
+            product.description = desc
+        kwargs.pop('description')
+
+    # Check price is in range
+    if 'price' in kwargs:
+        price = kwargs['price']
+        if(price >= 10 and price <= 10000):
+            product.price = price
+        kwargs.pop('price')
+
+    # Assign remaining properties directly
+    for key, val in kwargs.items():
+        # Some properties cannot be chagned
+        if key == 'userId' or key == 'ownerEmail' \
+          or key == 'lastModifiedDate' or key == "id":
+            continue
+        # If there's no special condition, just update directly
+        elif key in kwargs:
+            setattr(product, key, val)
+
+    product.lastModifiedDate = dt.datetime.now()
+    db.session.commit()
     return True
