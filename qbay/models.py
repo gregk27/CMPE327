@@ -9,6 +9,7 @@ import datetime as dt
 import hashlib
 import json
 
+
 db = SQLAlchemy(app)
 
 '''
@@ -135,6 +136,43 @@ class Review(db.Model):
 
 # create all tables
 db.create_all()
+
+
+def login(email, password, ip):
+    '''
+    Check login information
+      Parameters:
+        email (string):    user email
+        password (string): user password
+      Returns:
+        A session for the user on the current machine, None if login fails
+    '''
+    # Validate inputs before proceeding
+    if len(email) == 0 \
+       or not validate_email(email) \
+       or not validatePswd(password):
+        return None
+
+    matches = User.query.filter_by(email=email).all()
+    user = None
+    # Check results for a password match
+    for m in matches:
+        # Extract salt from string
+        salt = m.password.split(":")[0]
+        # Hash input with salt and compare to target
+        if(m.password == salt + ":"
+           + hashlib.sha512((password + salt).encode('utf-8')).hexdigest()):
+            user = m
+            break
+    if user is None:
+        return None
+
+    time = dt.datetime.now()
+    s = Session(user=user, userId=user.id, ipAddress=ip,
+                sessionId=str(uuid4()),
+                # Session expires after a year
+                expiry=dt.datetime(time.year+1, time.month, time.day))
+    return s
 
 
 def validatePswd(password):
