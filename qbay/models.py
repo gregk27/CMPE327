@@ -264,6 +264,62 @@ def queryUser(email, attribute, value):
     return False
 
 
+def validateProductParameters(title, description, price, last_modified_date,
+                              owner_email):
+    """
+    Create a Product
+      Parameters:
+        title (string):                 product title
+        description (string):           product description
+        price (float):                  product price
+        last_modified_date (DateTime):  product object last modified date
+        owner_email:                    product owner's email
+      Returns:
+        True if product parameters are vaild, otherwise False
+    """
+    # If the title without spaces is not alphanumeric-only,
+    # or begins or ends in a space
+    # or is longer than 80 chars, return False
+    if (not title.replace(" ", "").isalnum() or
+            title[0] == " " or
+            title[-1] == " " or
+            len(title) > 80):
+        return False
+
+    # If description is less than 20 or greater than 20
+    # or length of description is less than or equal to length of title,
+    # return False
+    if ((len(description) < 20 or len(description) > 2000) or
+            len(description) <= len(title)):
+        return False
+
+    # Check acceptable price range [10, 10000]
+    if (price < 10.0 or price > 10000.0):
+        return False
+
+    # Check acceptable last_modified_date range
+    if (last_modified_date <= dt.datetime(2021, 1, 2) or
+            last_modified_date >= dt.datetime(2025, 1, 2)):
+        return False
+
+    # Check if owner email is null
+    if (owner_email == "" or owner_email is None):
+        return False
+
+    # Check if owner of the corresponding product exists
+    owner = User.query.filter_by(email=owner_email).all()
+    if (len(owner) == 0):
+        return False
+
+    # Check if user has already used this title
+    userProducts = Product.query.filter_by(ownerEmail=owner_email,
+                                           productName=title).all()
+    if (len(userProducts) == 1):
+        return False
+
+    return True
+
+
 def createProduct(title, description, price, last_modified_date, owner_email):
     """
     Create a Product
@@ -276,53 +332,12 @@ def createProduct(title, description, price, last_modified_date, owner_email):
       Returns:
         True if product creation succeeded, otherwise False
     """
-    # If the title without spaces is not alphanumeric-only,
-    # or begins or ends in a space
-    # or is longer than 80 chars, return False
-    print(1)
-    print(title)
-    if (not title.replace(" ", "").isalnum() or
-            title[0] == " " or
-            title[-1] == " " or
-            len(title) > 80):
+    if(not validateProductParameters(title, description, price,
+                                     last_modified_date, owner_email)):
         return False
 
-    # If description is less than 20 or greater than 20
-    # or length of description is less than or equal to length of title,
-    # return False
-    print(2)
-    if ((len(description) < 20 or len(description) > 2000) or
-            len(description) <= len(title)):
-        return False
-
-    # Check acceptable price range [10, 10000]
-    print(3)
-    if (price < 10.0 or price > 10000.0):
-        return False
-
-    # Check acceptable last_modified_date range
-    print(4)
-    if (last_modified_date <= dt.datetime(2021, 1, 2) or
-            last_modified_date >= dt.datetime(2025, 1, 2)):
-        return False
-
-    # Check if owner email is null
-    print(5)
-    if (owner_email == "" or owner_email is None):
-        return False
-
-    # Check if owner of the corresponding product exists
-    print(6)
-    owner = User.query.filter_by(email=owner_email).all()
-    if (len(owner) == 0):
-        return False
-
-    # Check if user has already used this title
-    userProducts = Product.query.filter_by(ownerEmail=owner_email,
-                                           productName=title).all()
-    print(7)
-    if (len(userProducts) == 1):
-        return False
+    # Get the owner to obtain their id
+    owner = User.query.filter_by(email=owner_email).first()
 
     # Create a new product
     product = Product(id=str(uuid4()),
@@ -330,7 +345,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
                       description=description,
                       price=price,
                       lastModifiedDate=last_modified_date,
-                      userId=owner[0].id,
+                      userId=owner.id,
                       ownerEmail=owner_email
                       )
 
