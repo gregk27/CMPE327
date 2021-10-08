@@ -1,8 +1,7 @@
-from qbay.models import register
-from qbay.models import queryUser
-from qbay.models import createProduct
-from qbay.models import * # NOQA
+from qbay.models import Product, updateProduct, register, \
+    queryUser, createProduct
 import datetime as dt
+import pytest
 
 
 def test_r1_1_register():
@@ -336,3 +335,126 @@ def test_r4_8_create_product():
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test1@test.com') is True
+
+
+@pytest.mark.parametrize("target, newVals, shouldChange", [
+    [
+        "R5.1",  # One can update all attributes of the product,
+                 # except owner_email and last_modified_date.
+        {
+            "id": "1234",
+            "productName": "New Name R5 1",
+            "userId": "1234",
+            "ownerEmail": "invalid@test.ca",
+            "price": 1000,
+            "description": "The quick brown fox jumps over the lazy dog",
+        },
+        {
+            "productName": True,
+            "price": True,
+            "description": True,
+        }
+    ],
+    [
+        "R5.2",  # Price can be only increased but cannot be decreased
+        {
+            "id": "1234",
+            "productName": "New Name R5 2",
+            "userId": "1234",
+            "ownerEmail": "invalid@test.ca",
+            "price": 100,
+            "description": "The quick brown fox jumps over the lazy dog",
+        },
+        {
+            "productName": True,
+            "price": False,
+            "description": True,
+        }
+    ],
+])
+def test_r5_updateProduct(target, newVals, shouldChange):
+    '''
+    Testing all R5-x requirements using parameterization
+    '''
+    email = f"test{target}@example.com"
+    register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
+
+    orgVals = {
+        "title": f"Test Product {target.replace('.', ' ')}",
+        "owner_email": email,
+        "price": 500,
+        "description": "Lorem Ipsum Dolar Set Amet",
+        "last_modified_date": dt.datetime.now(),
+    }
+
+    assert createProduct(**orgVals)
+    prod = Product.query.filter_by(productName=orgVals["title"],
+                                   ownerEmail=orgVals["owner_email"]).first()
+    orgVals['id'] = prod.id
+    assert updateProduct(prod.id, **newVals) is True
+
+    modProd = Product.query.filter_by(id=orgVals["id"]).first()
+
+    # Check that values are correct
+    assert modProd is not None
+    assert modProd.id == orgVals["id"]
+    assert (modProd.productName == newVals['productName']) \
+        is shouldChange['productName']
+    assert modProd.ownerEmail == orgVals["owner_email"]
+    assert (modProd.price == newVals['price']) is shouldChange['price']
+    assert (modProd.description == newVals['description']) \
+        is shouldChange['description']
+    # Verify R5-3
+    assert modProd.lastModifiedDate != orgVals["last_modified_date"]
+
+
+@pytest.mark.parametrize("target, changedVals, expected", [
+    # Unchanged base test
+    ["R4.0", {}, True],
+    # Title must be alphanumeric
+    ["R4.1A", {"title": "inv&|id"}, False],
+    # Title shorter than 80 characters
+    ["R4.2",  {"title": "Lorem ipsum dolor sit amet, consectetur adipiscing \
+elit. Vivamus nec neque tincidunt."}, False],
+    # Description minimum 20 characters
+    ["R4.3",  {"description": "Short Desc"}, False],
+    # Description maximum 2000 characters
+    ["R4.3B",  {"description": "Long Desc"+"."*2000}, False],
+    # Description maximum 2000 characters
+    ["R4.4",  {"title": "Longer than description title",
+               "description": "Shorter that title desc"}, False],
+    # Price above 10
+    ["R4.5A",  {"price": 5}, False],
+    # Price below 10000
+    ["R4.5B",  {"price": 10001}, False],
+    # Date too small
+    ["R4.6A",  {"lastModifiedDate": dt.datetime(2021, 1, 1)}, False],
+    # Date too big
+    ["R4.6B",  {"lastModifiedDate": dt.datetime(2025, 1, 3)}, False],
+    # R4-7 not tested as email cannot be changed
+])
+def test_r5_4_updateProduct(target, changedVals, expected):
+    '''
+    Testing all R5-4 subrequirements using parameterization
+    '''
+    email = f"test{target}@example.com"
+    register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
+
+    orgVals = {
+        "title": f"Test Product {target.replace('.', ' ')}",
+        "owner_email": email,
+        "price": 500,
+        "description": "Lorem Ipsum Dolar Set Amet",
+        "last_modified_date": dt.datetime.now(),
+    }
+
+    assert createProduct(**orgVals)
+    prod = Product.query.filter_by(productName=orgVals["title"],
+                                   ownerEmail=orgVals["owner_email"]).first()
+
+    # Generate new values to use by making desired changes
+    newVals = orgVals.copy()
+    for key, val in changedVals.items():
+        newVals[key] = val
+
+    assert updateProduct(prod.id, **newVals) is expected
