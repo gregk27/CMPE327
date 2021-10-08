@@ -361,6 +361,14 @@ def createProduct(title, description, price, last_modified_date, owner_email):
 
 
 def updateProduct(productId, **kwargs):
+    '''
+    Update an existing product
+      Parameters:
+        productId (string): ID of the product being updated
+        any named parameters corresponding to properties of Product model
+      returns:
+        True on update success, False on failure
+    '''
     product = Product.query.filter_by(id=productId).first()
     if product is None:
         return False
