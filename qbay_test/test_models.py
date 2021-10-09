@@ -1,5 +1,5 @@
 from qbay.models import db, User, Product, updateProduct, register, \
-    queryUser, createProduct, login
+    queryUser, createProduct, login, updateUser
 import datetime as dt
 import hashlib
 import pytest
@@ -186,6 +186,110 @@ def test_r2_2_login(email, password, result):
     assert (session is not None) is result
 
 
+@pytest.mark.parametrize("target, newVals, shouldChange", [
+    [
+        "R3.1",  # One can only update username, shippingAddress,
+                 # and postalCode.
+        {
+            "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "123 Kingston Road",
+            "postalCode": "K7L 2G2"
+        },
+        {
+            "username": True,
+            "shippingAddress": True,
+            "postalCode": True,
+        }
+    ],
+    [
+        "R3.2A",  # shippingAddress has to be non-empty and contain no special characters
+         
+        {   "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "123 K!ngston Road",
+            "postalCode": "K7L 2G2"
+        },
+        {
+            "username": True,
+            "shippingAddress": True,
+            "postalCode": True,
+        }
+    ],
+    [
+        "R3.2B",  # shippingAddress has to be non-empty and contain no special characters
+         
+        {   "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "  ",
+            "postalCode": "K7L 2G2"
+        },
+        {
+            "username": True,
+            "shippingAddress": False,
+            "postalCode": True,
+        }
+    ],
+    [
+        "R3.3",  # postalCode has to be valid Canadian postal code
+         
+        {   "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "123 Kingston Road",
+            "postalCode": "KK1 2w2"
+        },
+        {
+            "username": True,
+            "shippingAddress": True,
+            "postalCode": False,
+        }
+    ],
+])
+
+def test_r3_updateUser(target, newVals, shouldChange):
+    '''
+    Testing all R3-x requirements using parameterization
+    '''
+    email = f"test{target}@example.com"
+    register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
+
+    orgVals = {
+        "name": "Test User",
+        "email": email,
+        "password": "Ppassword1!",
+    }
+
+    assert register(**orgVals)
+    user = User.query.filter_by(username=orgVals["name"],
+                                   userEmail=orgVals["email"]).first()
+    orgVals['id'] = user.id
+    assert updateUser(user.id, **newVals) is True
+
+    modUser = User.query.filter_by(id=orgVals["id"]).first()
+
+    # Check that values are correct
+    assert modUser is not None
+    assert modUser.id == orgVals["id"]
+    assert (modUser.username == newVals['username']) \
+        is shouldChange['username']
+    assert modUser.userEmail == orgVals["email"]
+    assert (modUser.shippingAddress == newVals['user.shippingAddress']) is shouldChange['shippingAddress']
+    assert (modUser.postalCode == newVals['user.postalCode']) \
+        is shouldChange['postalCode']
+
+
 def test_r4_1_create_product():
     """
     Testing R4-1: Title of the product has to be alphanumeric-only,
@@ -315,7 +419,7 @@ def test_r4_5_create_product():
     # Price < 10.0
     assert createProduct(title='p0',
                          description='This is a test description',
-                         price=9.99,
+                         price=9.99, 
                          last_modified_date=dt.datetime(2021, 10, 8),
                          owner_email='test0@test.com') is False
 

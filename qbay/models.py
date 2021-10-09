@@ -1,3 +1,4 @@
+from operator import truediv
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
@@ -8,6 +9,7 @@ from uuid import uuid4
 import datetime as dt
 import hashlib
 import json
+import re
 
 
 db = SQLAlchemy(app)
@@ -462,3 +464,130 @@ def updateProduct(productId, **kwargs):
     product.lastModifiedDate = dt.datetime.now()
     db.session.commit()
     return True
+
+
+def validateShippingAddress(shippingAddress, strictCapitalization=False):
+    """
+    Validation of shipping address
+        Parameters:
+            shippingAddress (string): user shipping address
+        Returns:
+            True if input shipping address is non-empty and alphanumeric 
+            only, otherwise Flase
+    """
+    string_check = re.compile['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
+                              '(', ')', '_', '-', '+', '=', '{', '[', '}', ']',
+                              '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
+                              '?', '/']
+
+    #  Check if shipping address is empty
+    if not shippingAddress and shippingAddress.strip(): 
+        return False
+
+    # Check if shipping address contains special characters
+    if not (string_check.search(shippingAddress)==None):
+        return False
+
+    # Check if shipping address is alphanumeric
+    if not shippingAddress.isalnum():
+        return False
+
+    return True
+
+
+def validatePostalCode(postalCode, strictCapitalization=False, fixSpace=True):
+    """
+    Validation of postal code
+        Parammters:
+            postalCode (string): user postal code
+        Returns:
+            True if the input postal code is a valid Canadian postal
+            code, otherwise False
+    """
+    pc = postalCode.strip()
+    
+    #insert missing space if needed
+    if fixSpace and len(pc) == 6:
+        pc = pc[0:3] + " " +pc[3:]
+
+    nums = "0123456789"
+    alph = "ABCDEFGHIJKLMNOPQRS"
+    mustBeNums = [1,4,6]
+    mustBeAlph = [0,2,5]
+
+    illegalCharacters = [x for x in pc
+                         if x not in (nums + alph.lower() + alph + " ")]
+    
+    if strictCapitalization:
+        illegalCharacters = [x for x in pc
+                             if x not in (alph + nums + " ")]
+
+    if illegalCharacters:
+        return False
+
+    upperPc = [x.upper() for x in pc]
+
+    if len(upperPc != 7):
+        return False
+    
+    for idx in range(0, len(upperPc)):
+        ch = upperPc[idx]
+        if ch in nums and idx not in mustBeNums:
+            return False
+        elif ch in alph and idx not in mustBeAlph:
+            return False
+        elif ch == " " and idx != 3:
+            return False
+
+    if upperPc[0] in "WZ":
+        return False
+    
+    return True
+
+
+def updateUser(userID, **kwargs):
+    """
+    Update an existing user
+        Parameter:
+            userId (string): ID of the user being updated
+            any named paramters corresponding to properties of User model
+        Returns:
+            True if update is a success, otherwise False
+    """
+    userUpdate = User.query.filter_by(id=userID).first()
+    if userUpdate is None:
+        return False
+
+    username = kwargs.get('username', userUpdate.username)
+    
+    # Check if username has been used before
+    usernameUnique = User.query.filter_by(id=id, userName=username).all()
+    
+    if 'username' in kwargs:
+        # Check if username is valid
+        if validateUser(username) and usernameUnique is 1:
+            # Update username if valid
+            userUpdate.username = kwargs['username']
+            kwargs.pop('username')
+
+    shippingAddress = kwargs.get('shipping_address', userUpdate.shippingAddress)
+
+    if 'shippingAdress' in kwargs:
+        # Check if ShippingAddress is valid
+        if validateShippingAddress: 
+            # Update ShippingAddress
+            userUpdate.shippingAddress = kwargs['shippingAddress']
+            kwargs.pop(shippingAddress)
+
+    postalCode = kwargs.get('postalCode', userUpdate.postalCode)
+
+    if 'postalCode' in kwargs:
+        #Check if postalCode is a valid Canadian postal code
+        if validatePostalCode(postalCode) == True:
+            # Update postalCode
+            postalCode = kwargs['PostalCode']
+            kwargs.pop('postalCode')
+
+    db.session.commit()
+    return True
+
