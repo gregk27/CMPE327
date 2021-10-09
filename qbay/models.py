@@ -474,17 +474,17 @@ def validateShippingAddress(shippingAddress, strictCapitalization=False):
         True on validation success, False on failure
     """
     #  Check if shipping address is empty
-    if not len(shippingAddress) > 0:
+    if len(shippingAddress) == 0:
         return False
 
     # Check if shipping address is alphanumeric
-    if not shippingAddress.isalnum():
+    if not shippingAddress.replace(" ", "").isalnum():
         return False
 
     return True
 
 
-def validatePostalCode(postalCode, strictCapitalization=False, fixSpace=True):
+def validatePostalCode(postalCode):
     """
     Validation of postalCode
       Parameters:
@@ -492,13 +492,10 @@ def validatePostalCode(postalCode, strictCapitalization=False, fixSpace=True):
       returns:
         True on validation success, False on failure
     """
-    # Remove spaces from the entered postalCode
-    pc = postalCode.replace(' ', '')
-
     # If the format does not match a standard Canadian postal code
-    if not re.match(r"[ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy][0-9]+ \
-                    [ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy][0-9]+ \
-                    [ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy][0-9]+", pc):
+    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+ \
+                    [ABCEGHJKLMNPRSTVXY][0-9]+ \
+                    [ABCEGHJKLMNPRSTVXY][0-9]+", postalCode):
         return False
 
     return True
@@ -532,8 +529,9 @@ def updateUser(userID, **kwargs):
                                  userUpdate.shippingAddress)
 
     if 'shippingAdress' in kwargs:
-        # Check if ShippingAddress is valid and update
+        # Check if ShippingAddress is valid
         if validateShippingAddress:
+            # Update Shipping Address
             userUpdate.shippingAddress = kwargs['shippingAddress']
             kwargs.pop(shippingAddress)
 

@@ -197,7 +197,7 @@ def test_r2_2_login(email, password, result):
             "password": "Ppassword1!",
             "balance": 1000,
             "shippingAddress": "123 Kingston Road",
-            "postalCode": "K7L 2G2"
+            "postalCode": "K7L2G2"
         },
         {
             "username": True,
@@ -215,7 +215,7 @@ def test_r2_2_login(email, password, result):
             "password": "Ppassword1!",
             "balance": 1000,
             "shippingAddress": "123 K!ngston Road",
-            "postalCode": "K7L 2G2"
+            "postalCode": "K7L2G2"
         },
         {
             "username": True,
@@ -233,7 +233,7 @@ def test_r2_2_login(email, password, result):
             "password": "Ppassword1!",
             "balance": 1000,
             "shippingAddress": "  ",
-            "postalCode": "K7L 2G2"
+            "postalCode": "K7L2G2"
         },
         {
             "username": True,
@@ -250,7 +250,7 @@ def test_r2_2_login(email, password, result):
             "password": "Ppassword1!",
             "balance": 1000,
             "shippingAddress": "123 Kingston Road",
-            "postalCode": "KK1 2w2"
+            "postalCode": "KK12w2"
         },
         {
             "username": True,
@@ -267,14 +267,17 @@ def test_r3_updateUser(target, newVals, shouldChange):
     register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
 
     orgVals = {
+        "id": "1234",
         "name": "Test User",
         "email": email,
-        "password": "Ppassword1!",
+        "password": "Password1!",
+        "balance": 1000,
+        "shippingAddress": "123 Kingston Road",
+        "postalCode": "K7L2G2"
     }
 
-    assert register(**orgVals)
     user = User.query.filter_by(username=orgVals["name"],
-                                userEmail=orgVals["email"]).first()
+                                email=orgVals["email"]).first()
     orgVals['id'] = user.id
     assert updateUser(user.id, **newVals) is True
 
@@ -285,7 +288,7 @@ def test_r3_updateUser(target, newVals, shouldChange):
     assert modUser.id == orgVals["id"]
     assert (modUser.username == newVals['username']) \
         is shouldChange['username']
-    assert modUser.userEmail == orgVals["email"]
+    assert modUser.email == orgVals["email"]
     assert (modUser.shippingAddress == newVals['user.shippingAddress']) \
         is shouldChange['shippingAddress']
     assert (modUser.postalCode == newVals['user.postalCode']) \
