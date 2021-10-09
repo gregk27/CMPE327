@@ -468,24 +468,14 @@ def updateProduct(productId, **kwargs):
 
 def validateShippingAddress(shippingAddress, strictCapitalization=False):
     """
-    Validation of shipping address
-        Parameters:
-            shippingAddress (string): user shipping address
-        Returns:
-            True if input shipping address is non-empty and alphanumeric 
-            only, otherwise Flase
+    Validation of shippingAddress
+      Parameters:
+        shippingAddress (string): user shipping address
+      returns:
+        True on validation success, False on failure
     """
-    string_check = re.compile['~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
-                              '(', ')', '_', '-', '+', '=', '{', '[', '}', ']',
-                              '|', '\\', ':', ';', '"', '\'', '<', ',', '>', '.',
-                              '?', '/']
-
     #  Check if shipping address is empty
-    if not shippingAddress and shippingAddress.strip(): 
-        return False
-
-    # Check if shipping address contains special characters
-    if not (string_check.search(shippingAddress)==None):
+    if not len(shippingAddress) > 0:
         return False
 
     # Check if shipping address is alphanumeric
@@ -497,51 +487,21 @@ def validateShippingAddress(shippingAddress, strictCapitalization=False):
 
 def validatePostalCode(postalCode, strictCapitalization=False, fixSpace=True):
     """
-    Validation of postal code
-        Parammters:
-            postalCode (string): user postal code
-        Returns:
-            True if the input postal code is a valid Canadian postal
-            code, otherwise False
+    Validation of postalCode
+      Parameters:
+        postalCode (string): user postal code
+      returns:
+        True on validation success, False on failure
     """
-    pc = postalCode.strip()
-    
-    #insert missing space if needed
-    if fixSpace and len(pc) == 6:
-        pc = pc[0:3] + " " +pc[3:]
+    # Remove spaces from the entered postalCode
+    pc = postalCode.replace(' ', '')
 
-    nums = "0123456789"
-    alph = "ABCDEFGHIJKLMNOPQRS"
-    mustBeNums = [1,4,6]
-    mustBeAlph = [0,2,5]
-
-    illegalCharacters = [x for x in pc
-                         if x not in (nums + alph.lower() + alph + " ")]
-    
-    if strictCapitalization:
-        illegalCharacters = [x for x in pc
-                             if x not in (alph + nums + " ")]
-
-    if illegalCharacters:
+    # If the format does not match a standard Canadian postal code
+    if not re.match(r"[ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy][0-9]+ \
+                    [ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy][0-9]+ \
+                    [ABCEGHJKLMNPRSTVXYabceghjklmnprstvxy][0-9]+", pc):
         return False
 
-    upperPc = [x.upper() for x in pc]
-
-    if len(upperPc != 7):
-        return False
-    
-    for idx in range(0, len(upperPc)):
-        ch = upperPc[idx]
-        if ch in nums and idx not in mustBeNums:
-            return False
-        elif ch in alph and idx not in mustBeAlph:
-            return False
-        elif ch == " " and idx != 3:
-            return False
-
-    if upperPc[0] in "WZ":
-        return False
-    
     return True
 
 
@@ -559,35 +519,33 @@ def updateUser(userID, **kwargs):
         return False
 
     username = kwargs.get('username', userUpdate.username)
-    
     # Check if username has been used before
     usernameUnique = User.query.filter_by(id=id, userName=username).all()
-    
+
     if 'username' in kwargs:
         # Check if username is valid
-        if validateUser(username) and usernameUnique is 1:
+        if validateUser(username) and usernameUnique < 1:
             # Update username if valid
             userUpdate.username = kwargs['username']
             kwargs.pop('username')
 
-    shippingAddress = kwargs.get('shipping_address', userUpdate.shippingAddress)
+    shippingAddress = kwargs.get('shipping_address',
+                                 userUpdate.shippingAddress)
 
     if 'shippingAdress' in kwargs:
-        # Check if ShippingAddress is valid
-        if validateShippingAddress: 
-            # Update ShippingAddress
+        # Check if ShippingAddress is valid and update
+        if validateShippingAddress:
             userUpdate.shippingAddress = kwargs['shippingAddress']
             kwargs.pop(shippingAddress)
 
     postalCode = kwargs.get('postalCode', userUpdate.postalCode)
 
     if 'postalCode' in kwargs:
-        #Check if postalCode is a valid Canadian postal code
-        if validatePostalCode(postalCode) == True:
+        # Check if postalCode is a valid Canadian postal code
+        if validatePostalCode(postalCode):
             # Update postalCode
             postalCode = kwargs['PostalCode']
             kwargs.pop('postalCode')
 
     db.session.commit()
     return True
-
