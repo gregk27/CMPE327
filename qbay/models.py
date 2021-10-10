@@ -516,14 +516,14 @@ def updateUser(userID, **kwargs):
 
     username = kwargs.get('username', userUpdate.username)
     # Check if username has been used before
-    usernameUnique = User.query.filter_by(id=id, username=username).all()
+    usernameUnique = User.query.filter_by(username=username).all()
 
     if 'username' in kwargs:
         # Check if username is valid
-        if validateUser(username) and usernameUnique < 1:
+        if validateUser(username) and len(usernameUnique) < 1:
             # Update username if valid
             userUpdate.username = kwargs['username']
-            kwargs.pop('username')
+        kwargs.pop('username')
 
     shippingAddress = kwargs.get('shipping_address',
                                  userUpdate.shippingAddress)
