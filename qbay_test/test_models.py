@@ -219,7 +219,7 @@ def test_r2_2_login(email, password, result):
         },
         {
             "username": True,
-            "shippingAddress": True,
+            "shippingAddress": False,
             "postalCode": True,
         }
     ],
