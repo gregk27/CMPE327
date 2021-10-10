@@ -533,7 +533,7 @@ def updateUser(userID, **kwargs):
         if validateShippingAddress:
             # Update Shipping Address
             userUpdate.shippingAddress = kwargs['shippingAddress']
-            kwargs.pop(shippingAddress)
+        kwargs.pop(shippingAddress)
 
     postalCode = kwargs.get('postalCode', userUpdate.postalCode)
 
@@ -542,7 +542,7 @@ def updateUser(userID, **kwargs):
         if validatePostalCode(postalCode):
             # Update postalCode
             postalCode = kwargs['PostalCode']
-            kwargs.pop('postalCode')
+        kwargs.pop('postalCode')
 
     db.session.commit()
     return True
