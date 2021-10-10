@@ -8,6 +8,7 @@ from uuid import uuid4
 import datetime as dt
 import hashlib
 import json
+import re
 
 
 db = SQLAlchemy(app)
@@ -460,5 +461,88 @@ def updateProduct(productId, **kwargs):
             setattr(product, key, val)
 
     product.lastModifiedDate = dt.datetime.now()
+    db.session.commit()
+    return True
+
+
+def validateShippingAddress(shippingAddress, strictCapitalization=False):
+    """
+    Validation of shippingAddress
+      Parameters:
+        shippingAddress (string): user shipping address
+      returns:
+        True on validation success, False on failure
+    """
+    #  Check if shipping address is empty
+    if len(shippingAddress) == 0:
+        return False
+
+    # Check if shipping address is alphanumeric
+    if not shippingAddress.replace(" ", "").isalnum():
+        return False
+
+    return True
+
+
+def validatePostalCode(postalCode):
+    """
+    Validation of postalCode
+      Parameters:
+        postalCode (string): user postal code
+      returns:
+        True on validation success, False on failure
+    """
+    # If the format does not match a standard Canadian postal code
+    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+ \
+                    [ABCEGHJKLMNPRSTVXY][0-9]+ \
+                    [ABCEGHJKLMNPRSTVXY][0-9]+", postalCode):
+        return False
+
+    return True
+
+
+def updateUser(userID, **kwargs):
+    """
+    Update an existing user
+        Parameter:
+            userId (string): ID of the user being updated
+            any named paramters corresponding to properties of User model
+        Returns:
+            True if update is a success, otherwise False
+    """
+    userUpdate = User.query.filter_by(id=userID).first()
+    if userUpdate is None:
+        return False
+
+    username = kwargs.get('username', userUpdate.username)
+    # Check if username has been used before
+    usernameUnique = User.query.filter_by(username=username).all()
+
+    if 'username' in kwargs:
+        # Check if username is valid
+        if validateUser(username) and len(usernameUnique) < 1:
+            # Update username if valid
+            userUpdate.username = kwargs['username']
+        kwargs.pop('username')
+
+    shippingAddress = kwargs.get('shipping_address',
+                                 userUpdate.shippingAddress)
+
+    if 'shippingAdress' in kwargs:
+        # Check if ShippingAddress is valid
+        if validateShippingAddress:
+            # Update Shipping Address
+            userUpdate.shippingAddress = kwargs['shippingAddress']
+        kwargs.pop(shippingAddress)
+
+    postalCode = kwargs.get('postalCode', userUpdate.postalCode)
+
+    if 'postalCode' in kwargs:
+        # Check if postalCode is a valid Canadian postal code
+        if validatePostalCode(postalCode):
+            # Update postalCode
+            postalCode = kwargs['PostalCode']
+        kwargs.pop('postalCode')
+
     db.session.commit()
     return True

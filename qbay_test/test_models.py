@@ -1,5 +1,5 @@
 from qbay.models import db, User, Product, updateProduct, register, \
-    queryUser, createProduct, login
+    queryUser, createProduct, login, updateUser
 import datetime as dt
 import hashlib
 import pytest
@@ -184,6 +184,122 @@ def test_r2_2_login(email, password, result):
     db.session.commit()
 
     assert (session is not None) is result
+
+
+@pytest.mark.parametrize("target, newVals, shouldChange", [
+    [
+        "R3.1",  # One can only update username, shippingAddress,
+                 # and postalCode.
+        {
+            "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "123 Kingston Road",
+            "postalCode": "K7L2G2"
+        },
+        {
+            "username": True,
+            "shippingAddress": True,
+            "postalCode": True,
+        }
+    ],
+    [
+        "R3.2A",  # shippingAddress has to be non-empty
+                  # and contain no special characters
+        {
+            "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "123 K!ngston Road",
+            "postalCode": "K7L2G2"
+        },
+        {
+            "username": True,
+            "shippingAddress": False,
+            "postalCode": True,
+        }
+    ],
+    [
+        "R3.2B",  # shippingAddress has to be non-empty
+                  # and contain no special characters
+        {
+            "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "  ",
+            "postalCode": "K7L2G2"
+        },
+        {
+            "username": True,
+            "shippingAddress": False,
+            "postalCode": True,
+        }
+    ],
+    [
+        "R3.3",  # postalCode has to be valid Canadian postal code
+        {
+            "id": "1234",
+            "username": "New username",
+            "email": "invalid@test.ca",
+            "password": "Ppassword1!",
+            "balance": 1000,
+            "shippingAddress": "123 Kingston Road",
+            "postalCode": "KK12w2"
+        },
+        {
+            "username": True,
+            "shippingAddress": True,
+            "postalCode": False,
+        }
+    ],
+])
+def test_r3_updateUser(target, newVals, shouldChange):
+    '''
+    Testing all R3-x requirements using parameterization
+    '''
+    email = f"test{target}@example.com"
+    register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
+
+    orgVals = {
+        "id": "1234",
+        "name": "Test User",
+        "email": email,
+        "password": "Password1!",
+        "balance": 1000,
+        "shippingAddress": "123 Kingston Road",
+        "postalCode": "K7L2G2"
+    }
+
+    user = User.query.filter_by(email=orgVals["email"]).first()
+
+    user.balance = orgVals['balance']
+    user.shippingAddress = orgVals['shippingAddress']
+    user.postalCode = orgVals['postalCode']
+
+    orgVals['id'] = user.id
+    assert updateUser(user.id, **newVals) is True
+
+    modUser = User.query.filter_by(id=orgVals["id"]).first()
+
+    # Check that values are correct
+    assert modUser is not None
+    assert modUser.id == orgVals["id"]
+    assert (modUser.username == newVals['username']) \
+        is shouldChange['username']
+    assert modUser.email == orgVals["email"]
+    assert (modUser.shippingAddress == newVals['shippingAddress']) \
+        is shouldChange['shippingAddress']
+    assert (modUser.postalCode == newVals['postalCode']) \
+        is shouldChange['postalCode']
+
+    db.session.delete(user)
+    db.session.commit()
 
 
 def test_r4_1_create_product():
