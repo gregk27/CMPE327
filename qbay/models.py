@@ -516,7 +516,7 @@ def updateUser(userID, **kwargs):
 
     username = kwargs.get('username', userUpdate.username)
     # Check if username has been used before
-    usernameUnique = User.query.filter_by(id=id, userName=username).all()
+    usernameUnique = User.query.filter_by(id=id, username=username).all()
 
     if 'username' in kwargs:
         # Check if username is valid

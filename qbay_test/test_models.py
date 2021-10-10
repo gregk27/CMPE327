@@ -276,8 +276,8 @@ def test_r3_updateUser(target, newVals, shouldChange):
         "postalCode": "K7L2G2"
     }
 
-    user = User.query.filter_by(username=orgVals["name"],
-                                email=orgVals["email"]).first()
+    user = User.query.filter_by(email=orgVals["email"]).first()
+    
     orgVals['id'] = user.id
     assert updateUser(user.id, **newVals) is True
 
@@ -286,7 +286,7 @@ def test_r3_updateUser(target, newVals, shouldChange):
     # Check that values are correct
     assert modUser is not None
     assert modUser.id == orgVals["id"]
-    assert (modUser.username == newVals['username']) \
+    assert (modUser.username == newVals['name']) \
         is shouldChange['username']
     assert modUser.email == orgVals["email"]
     assert (modUser.shippingAddress == newVals['user.shippingAddress']) \
@@ -294,6 +294,10 @@ def test_r3_updateUser(target, newVals, shouldChange):
     assert (modUser.postalCode == newVals['user.postalCode']) \
         is shouldChange['postalCode']
 
+    db.session.delete()
+    db.session.commit()
+
+    assert updateUser(user.id, **newVals)
 
 def test_r4_1_create_product():
     """
