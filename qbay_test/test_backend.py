@@ -1,4 +1,5 @@
-from qbay.models import db, User, Product, updateProduct, register, \
+from qbay.models import db, User, Product
+from qbay.backend import updateProduct, register, \
     queryUser, createProduct, login, updateUser
 import datetime as dt
 import hashlib
