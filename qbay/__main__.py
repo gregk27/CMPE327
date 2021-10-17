@@ -1,6 +1,7 @@
 # Supress Flake8 warnings on the imports, as they are required but unused
 from qbay import app
 from qbay.models import * # NOQA
+from qbay.backend import * # NOQA
 from qbay.controllers import * # NOQA
 
 """
