@@ -71,7 +71,6 @@ def test_r1_register(username, email, password, expected):
     ['dambam07@gmail.com', 'balance', '100'],
 ])
 def test_r1_8_10_register(email, attribute, value):
-    register()
     assert queryUser(email, attribute, value) is True
 
 
