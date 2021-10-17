@@ -8,61 +8,35 @@ from uuid import uuid4
 
 
 @pytest.mark.parametrize("username, email, password, expected", [
+    # R1-1: Both the email and password cannot be empty
     # Expected False due to empty email
     ['will', '', 'password1235#', False],
     # Expected False due to empty password
     ['nate', 'nate123@gmail.com', '', False],
-])
-def test_r1_1_register(username, email, password, expected):
-    '''
-    Testing R1-1: Both the email and password cannot be empty.
-    '''
-    assert register(username, email, password) is expected
 
-
-@pytest.mark.parametrize("username, email, password, expected", [
+    # R1-2 and R1-7: A user is uniquely identified by their email
+    #     address. If the email has been used, the operation failed.
     # Register user to use email
     ['damien smith', 'dambam07@gmail.com', 'asdjDD123asd/&$', True],
     # Expected False due to duplicate email
     ['jonathon', 'dambam07@gmail.com', 'askdhD123%$#', False],
-])
-def test_r1_2_r1_7_register(username, email, password, expected):
-    '''
-    Testing R1-2 and R1-7: A user is uniquely identified by their email
-    address. If the email has been used, the operation failed.
-    '''
-    assert register(username, email, password) is expected
 
-
-@pytest.mark.parametrize("username, email, password, expected", [
+    # R1-3: The email has to follow addr-spec defined in RFC 5322
     # Expected true baseline test
     ['jon123', 'jon#$^asd@gmail.com', 'asdDi8uh18798asd$', True],
     # Expected False due to email not following addr-spec defined in RFC 5322
     ['damien smith', 'test@..@test.com', 'password123$', False],
-])
-def test_r1_3_register(username, email, password, expected):
-    '''
-    Testing R1-3: The email has to follow addr-spec defined in RFC 5322
-    '''
-    assert register(username, email, password) is expected
 
-
-@pytest.mark.parametrize("username, email, password, expected", [
+    # R1-4: Password has to meet the required complexity: minimum
+    #     length 6, at least one upper case, at least one lower case,
+    #     and at least one special character.
     # Expected true baseline test
     ['jacob', 'jacobkie@gmail.com', 'ValidPassword123$$', True],
     # Expected False due to lack of password complexity
     ['daniel fran', 'danfran@gmail.com', 'password', False],
-])
-def test_r1_4_register(username, email, password, expected):
-    '''
-    Testing R1-4: Password has to meet the required complexity: minimum
-    length 6, at least one upper case, at least one lower case, and at least
-    one special character.
-    '''
-    assert register(username, email, password) is expected
 
-
-@pytest.mark.parametrize("username, email, password, expected", [
+    # R1-5: User name has to be non-empty, alphanumeric-only, and space
+    #     allowed only if it is not as the prefix or suffix.
     # Expected False due non-alphanumeric username
     ['name$$', 'hellotesting@gmail.com', 'ValidPassword123&', False],
     # Expected False due to empty username
@@ -71,26 +45,18 @@ def test_r1_4_register(username, email, password, expected):
     [' jake', 'jake@gmail.com', 'ppassword123&^$', False],
     # Expected False due to whitespace in suffix of username
     ['kaitlyn ', 'katlubsd123@hotmail.com', 'Password123&', False],
-])
-def test_r1_5_register(username, email, password, expected):
-    '''
-    Testing R1-5: User name has to be non-empty, alphanumeric-only, and space
-    allowed only if it is not as the prefix or suffix.
-    '''
-    assert register(username, email, password) is expected
 
-
-@pytest.mark.parametrize('username, email, password, expected', [
+    # R1-6: User name has to be longer than 2 characters and less
+    #     than 20 characters.
     # Expected False due to username length < 3
     ['u', 'test0129387@test.com', 'asdao8u98u198h$', False],
     # Expected False due to username length > 20
     ['shdmienshtush smithasdoqwieusdh', 'validemailadd@gmail.com',
      'validpswd1%', False]
 ])
-def test_r1_6_register(username, email, password, expected):
+def test_r1_register(username, email, password, expected):
     '''
-    Testing R1-6: User name has to be longer than 2 characters and less
-    than 20 characters.
+    Testing R1-X using various parameterized inputs.
     '''
     assert register(username, email, password) is expected
 
