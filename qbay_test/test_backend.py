@@ -61,26 +61,18 @@ def test_r1_register(username, email, password, expected):
     assert register(username, email, password) is expected
 
 
-def test_r1_8_register():
-    '''
-    Testing R1-8: Shipping address is empty at the time of registration.
-    '''
-    assert queryUser('dambam07@gmail.com', 'shippingAddress', '') is True
-
-
-def test_r1_9_register():
-    '''
-    Testing R1-9: Postal code is empty at the time of registration.
-    '''
-    assert queryUser('dambam07@gmail.com', 'postalCode', '') is True
-
-
-def test_r1_10_register():
-    '''
-    Testing R1-10: Balance should be initialized as 100 at the
-    time of registration.
-    '''
-    assert queryUser('dambam07@gmail.com', 'balance', '100') is True
+@pytest.mark.parametrize("email, attribute, value", [
+    # Testing R1-8: Shipping address is empty at the time of registration.
+    ['dambam07@gmail.com', 'shippingAddress', ''],
+    # Testing R1-9: Postal code is empty at the time of registration.
+    ['dambam07@gmail.com', 'postalCode', ''],
+    # Testing R1-10: Balance should be initialized as 100 at the
+    #   time of registration.
+    ['dambam07@gmail.com', 'balance', '100'],
+])
+def test_r1_8_10_register(email, attribute, value):
+    register()
+    assert queryUser(email, attribute, value) is True
 
 
 @pytest.mark.parametrize('email, password, ip, resultA, resultB', [
