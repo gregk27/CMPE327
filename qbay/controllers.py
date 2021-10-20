@@ -126,23 +126,29 @@ def logout():
 @app.route('/update/<prodName>', methods=['GET'])
 @authenticate
 def update_get(user, prodName):
+    # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
+    # If product can't be found, display error
     if(product is None):
         return render_template("error.html", message="Product " + {prodName} +
                                " not found in your products")
+    # If product can be found, display update page
     return render_template("product/update.html", message="", product=product)
 
 
 @app.route('/update/<prodName>', methods=['POST'])
 @authenticate
 def update_post(user, prodName):
+    # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
-    print("Prod:", product)
+    # If product can't be found, display error
     if(product is None):
         return render_template("error.html", message="Product " + {prodName} +
                                " not found in your products")
+
+    # Get inputs from request body
     name = request.form.get('name')
     price = request.form.get('price')
     description = request.form.get('desc')
@@ -160,10 +166,12 @@ def update_post(user, prodName):
     try:
         if(updateProduct(product.id, productName=name, price=price,
                          description=description)):
+            #  Redirect since product name may have changed
             return redirect(f"/update/{product.productName}")
         message = "Unkown error occured"
     except Exception as err:
         message = err
 
+    # Display page with error message on failure
     return render_template("product/update.html", message=message,
                            product=product)
