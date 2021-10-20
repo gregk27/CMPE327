@@ -133,5 +133,4 @@ def update(user, prodId):
         return(f"Product {prodId} not found")
     if(product.userId != user.id):
         return(f"Unable to edit product {prodId}")
-
-    return("Test")
+    return render_template("product/update.html", message="", product=product)
