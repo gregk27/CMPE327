@@ -177,7 +177,8 @@ def queryUser(email, attribute, value):
 
 
 def validateProductParameters(title, description, price, last_modified_date,
-                              owner_email, ignoreEmail=False):
+                              owner_email, ignoreEmail=False,
+                              exceptions=False):
     """
     Create a Product
       Parameters:
@@ -188,6 +189,8 @@ def validateProductParameters(title, description, price, last_modified_date,
         owner_email:                    product owner's email
         ignoreEmail:                    flag to bypass email check,
                                             for updateProduct
+        exceptions:                    flag for if exceptions should be raised
+
       Returns:
         True if product parameters are vaild, otherwise False
     """
@@ -198,37 +201,52 @@ def validateProductParameters(title, description, price, last_modified_date,
             title[0] == " " or
             title[-1] == " " or
             len(title) > 80):
+        if(exceptions):
+            raise ValueError(f"Invalid name {productName}")
         return False
 
     # If description is less than 20 or greater than 20
     # or length of description is less than or equal to length of title,
     # return False
     if ((len(description) < 20 or len(description) > 2000) or
-            len(description) <= len(title)):
+            len(description) <= len(productName)):
+        if(exceptions):
+            raise ValueError("Invalid description length")
         return False
 
     # Check acceptable price range [10, 10000]
     if (price < 10.0 or price > 10000.0):
+        if(exceptions):
+            raise ValueError(f"Invalid price {price}")
         return False
 
     # Check acceptable last_modified_date range
     if (last_modified_date <= dt.datetime(2021, 1, 2) or
             last_modified_date >= dt.datetime(2025, 1, 2)):
+        if(exceptions):
+            raise ValueError("Invalid last modified date "
+                             + str(last_modified_date))
         return False
 
     # Check if owner email is null
     if (owner_email == "" or owner_email is None):
+        if(exceptions):
+            raise ValueError(f"Invalid owner email {owner_email}")
         return False
 
     # Check if owner of the corresponding product exists
     owner = User.query.filter_by(email=owner_email).all()
     if (len(owner) == 0 and not ignoreEmail):
+        if(exceptions):
+            raise ValueError(f"Owner does not exist {owner_email}")
         return False
 
     # Check if user has already used this title
     userProducts = Product.query.filter_by(ownerEmail=owner_email,
-                                           productName=title).all()
+                                           productName=productName).all()
     if (len(userProducts) >= 1):
+        if(exceptions):
+            raise ValueError(f"User already has product {productName}")
         return False
 
     return True
@@ -287,12 +305,13 @@ def updateProduct(productId, **kwargs):
 
     # Check that parameters are valid, use defaults which are when not provided
     if not validateProductParameters(
-        title=kwargs.get('title', product.productName),
+        title=kwargs.get('productName', product.productName),
         description=kwargs.get('description', product.description),
         price=kwargs.get('price', product.price),
         last_modified_date=kwargs.get('lastModifiedDate', dt.datetime.now()),
         owner_email="invalid",  # Shouldn't match in database as product exists
-        ignoreEmail=True  # Email cannot be changed so don't validate it
+        ignoreEmail=True,  # Email cannot be changed so don't validate it
+        exceptions=True  # Throw exceptions for frontend error message
     ):
         return False
 
@@ -303,10 +322,10 @@ def updateProduct(productId, **kwargs):
         kwargs.pop('price')
 
     # Update name if it's alphanumeric and under 80 chars
-    if 'name' in kwargs:
+    if 'productName' in kwargs:
         # TODO: Take name validation from creation function
-        product.name = kwargs['name']
-        kwargs.pop('name')
+        product.productName = kwargs['productName']
+        kwargs.pop('productName')
 
     # Update description if it's within size limits
     if 'description' in kwargs:
