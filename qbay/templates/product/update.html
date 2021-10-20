@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Update Product{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h4 id='message'>{{message}}</h4>
+<form method="post">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input class="form-control" name="name" id="name" value="{{product.productName}}" required>
+    <label for="price">Price</label>
+    <input class="form-control" type="number" name="price" id="price" value="{{product.price}}" required>
+    <label for="desc">Description</label>
+    <textarea class="form-control" name="desc" id="desc" required>{{product.description}}</textarea>
+    <input class="btn btn-primary" type="submit" value="Update">
+  </div>
+</form>
+{% endblock %}

@@ -1,9 +1,10 @@
 from flask import render_template, request, session, redirect
-from qbay.backend import login, User, register, validateEmail, validateUser, validatePswd
-import uuid
-
-
+from qbay.backend import (login, register, validateEmail,
+                          validateUser, validatePswd, updateProduct)
+from qbay.models import User, Product
 from qbay import app
+
+app.secret_key = 'KEY'
 
 
 def authenticate(inner_function):
@@ -19,7 +20,7 @@ def authenticate(inner_function):
         pass
     """
 
-    def wrapped_inner():
+    def wrapped_inner(*args, **kwargs):
         # check did we store the key in the session
         if 'logged_in' in session:
             email = session['logged_in']
@@ -28,13 +29,13 @@ def authenticate(inner_function):
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
-                    return inner_function(user)
+                    return inner_function(user, *args, **kwargs)
             except Exception:
                 pass
         else:
             # else, redirect to the login page
             return redirect('/login')
-
+    wrapped_inner.__name__ = inner_function.__name__
     # return the wrapped version of the inner_function:
     return wrapped_inner
 
@@ -51,7 +52,7 @@ def login_form():
     ip = str(request.remote_addr)
     user = login(email, password, ip)
     if user:
-        session['logged_in'] = user.email
+        session['logged_in'] = email
         """
         Session is an object that contains sharing information
         between a user's browser and the end server.
@@ -107,7 +108,8 @@ def register_post():
         success = register(name, email, password)
         if not success:
             if validateEmail(email) is False:
-                error_message = "Registration Failed. Invalid email or already in use."
+                error_message = ("Registration Failed. Invalid email or"
+                                 " already in use.")
             if validateUser(name) is False:
                 error_message = "Registration Failed. Invalid username."
             if validatePswd(password) is False:
@@ -125,3 +127,57 @@ def logout():
     if 'logged_in' in session:
         session.pop('logged_in', None)
     return redirect('/')
+
+
+@app.route('/update/<prodName>', methods=['GET'])
+@authenticate
+def update_get(user, prodName):
+    # Get product by name and user
+    product = Product.query.filter_by(productName=prodName, userId=user.id)\
+                .one_or_none()
+    # If product can't be found, display error
+    if(product is None):
+        return render_template("error.html", message="Product " + {prodName} +
+                               " not found in your products")
+    # If product can be found, display update page
+    return render_template("product/update.html", message="", product=product)
+
+
+@app.route('/update/<prodName>', methods=['POST'])
+@authenticate
+def update_post(user, prodName):
+    # Get product by name and user
+    product = Product.query.filter_by(productName=prodName, userId=user.id)\
+                .one_or_none()
+    # If product can't be found, display error
+    if(product is None):
+        return render_template("error.html", message="Product " + {prodName} +
+                               " not found in your products")
+
+    # Get inputs from request body
+    name = request.form.get('name')
+    price = request.form.get('price')
+    description = request.form.get('desc')
+
+    # Convert price to float, if not possible then error
+    try:
+        price = float(price)
+    except ValueError:
+        return render_template("product/update.html",
+                               message="Price should be a number",
+                               product=product)
+    message = ""
+    # updateProduct will return true on success, and throw ValueError with
+    #   message if inputs are invalid
+    try:
+        if(updateProduct(product.id, productName=name, price=price,
+                         description=description)):
+            #  Redirect since product name may have changed
+            return redirect(f"/update/{product.productName}")
+        message = "Unkown error occured"
+    except Exception as err:
+        message = err
+
+    # Display page with error message on failure
+    return render_template("product/update.html", message=message,
+                           product=product)
