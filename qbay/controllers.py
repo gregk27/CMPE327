@@ -1,9 +1,11 @@
 from flask import render_template, request, session, redirect
-from qbay.models import User
+from qbay.models import User, Product
 from qbay.backend import login, register
 
 
 from qbay import app
+
+app.secret_key = 'KEY'
 
 
 def authenticate(inner_function):
@@ -119,3 +121,17 @@ def logout():
     if 'logged_in' in session:
         session.pop('logged_in', None)
     return redirect('/')
+
+
+@app.route('/update/<prodId>', methods=['GET'])
+@authenticate
+def update(user, prodId):
+    print("Update")
+    product = Product.query.filter_by(id=prodId).one_or_none()
+    print("Prod:", product)
+    if(product is None):
+        return(f"Product {prodId} not found")
+    if(product.userId != user.id):
+        return(f"Unable to edit product {prodId}")
+
+    return("Test")
