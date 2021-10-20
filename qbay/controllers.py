@@ -125,8 +125,7 @@ def logout():
 
 @app.route('/update/<prodId>', methods=['GET'])
 @authenticate
-def update(user, prodId):
-    print("Update")
+def update_get(user, prodId):
     product = Product.query.filter_by(id=prodId).one_or_none()
     print("Prod:", product)
     if(product is None):
@@ -134,3 +133,38 @@ def update(user, prodId):
     if(product.userId != user.id):
         return(f"Unable to edit product {prodId}")
     return render_template("product/update.html", message="", product=product)
+
+
+@app.route('/update/<prodId>', methods=['POST'])
+@authenticate
+def update_post(user, prodId):
+    product = Product.query.filter_by(id=prodId).one_or_none()
+    print("Prod:", product)
+    if(product is None):
+        return(f"Product {prodId} not found")
+    if(product.userId != user.id):
+        return(f"Unable to edit product {prodId}")
+
+    name = request.form.get('name')
+    price = request.form.get('price')
+    description = request.form.get('desc')
+
+    # Convert price to float, if not possible then error
+    try:
+        price = float(price)
+    except ValueError:
+        return render_template("product/update.html",
+                               message="Price should be a number",
+                               product=product)
+
+    success = updateProduct(prodId, productName=name, price=price,
+                            description=description)
+
+    message = ""
+    if(success):
+        message = "Product updated"
+    else:
+        message = "Invalid parameters"
+
+    return render_template("product/update.html", message=message,
+                           product=product)
