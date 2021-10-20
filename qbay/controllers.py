@@ -19,8 +19,7 @@ def authenticate(inner_function):
         pass
     """
 
-    def wrapped_inner():
-
+    def wrapped_inner(*args, **kwargs):
         # check did we store the key in the session
         if 'logged_in' in session:
             email = session['logged_in']
@@ -29,13 +28,14 @@ def authenticate(inner_function):
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
-                    return inner_function(user)
+                    return inner_function(user, *args, **kwargs)
             except Exception:
                 pass
         else:
             # else, redirect to the login page
             return redirect('/login')
 
+    wrapped_inner.__name__ = inner_function.__name__
     # return the wrapped version of the inner_function:
     return wrapped_inner
 
