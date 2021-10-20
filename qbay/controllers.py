@@ -1,5 +1,6 @@
 from flask import render_template, request, session, redirect
-from qbay.models import login, User, register
+from qbay.models import User
+from qbay.backend import login, register
 
 
 from qbay import app
