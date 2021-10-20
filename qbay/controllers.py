@@ -123,27 +123,25 @@ def logout():
     return redirect('/')
 
 
-@app.route('/update/<prodId>', methods=['GET'])
+@app.route('/update/<prodName>', methods=['GET'])
 @authenticate
-def update_get(user, prodId):
-    product = Product.query.filter_by(id=prodId).one_or_none()
+def update_get(user, prodName):
+    product = Product.query.filter_by(productName=prodName, userId=user.id)\
+                .one_or_none()
     print("Prod:", product)
     if(product is None):
-        return(f"Product {prodId} not found")
-    if(product.userId != user.id):
-        return(f"Unable to edit product {prodId}")
+        return(f"Product {prodName} not found in your products")
     return render_template("product/update.html", message="", product=product)
 
 
-@app.route('/update/<prodId>', methods=['POST'])
+@app.route('/update/<prodName>', methods=['POST'])
 @authenticate
-def update_post(user, prodId):
-    product = Product.query.filter_by(id=prodId).one_or_none()
+def update_post(user, prodName):
+    product = Product.query.filter_by(productName=prodName, userId=user.id)\
+                .one_or_none()
     print("Prod:", product)
     if(product is None):
-        return(f"Product {prodId} not found")
-    if(product.userId != user.id):
-        return(f"Unable to edit product {prodId}")
+        return(f"Product {prodName} not found in your products")
 
     name = request.form.get('name')
     price = request.form.get('price')
@@ -160,13 +158,11 @@ def update_post(user, prodId):
     # updateProduct will return true on success, and throw ValueError with
     #   message if inputs are invalid
     try:
-        success = updateProduct(prodId, productName=name, price=price,
-                                description=description)
-        if(success):
-            message = "Product updated"
-        else:
-            message = "Invalid parameters"
-    except ValueError as err:
+        if(updateProduct(product.id, productName=name, price=price,
+                         description=description)):
+            return redirect(f"/update/{product.productName}")
+        message = "Unkown error occured"
+    except Exception as err:
         message = err
 
     return render_template("product/update.html", message=message,
