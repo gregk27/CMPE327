@@ -1,6 +1,6 @@
 from flask import render_template, request, session, redirect
 from qbay.models import User, Product
-from qbay.backend import login, register, updateProduct
+from qbay.backend import login, register, createProduct, updateProduct
 
 
 from qbay import app
@@ -81,8 +81,8 @@ def home(user):
 
     # some fake product data
     products = [
-        {'name': 'prodcut 1', 'price': 10},
-        {'name': 'prodcut 2', 'price': 20}
+        {'name': 'product 1', 'description': 'product desc 1', 'price': 10},
+        {'name': 'product 2', 'description': 'product desc 2', 'price': 20}
     ]
     return render_template('index.html', user=user, products=products)
 
@@ -123,9 +123,42 @@ def logout():
     return redirect('/')
 
 
+@app.route('/product/create', methods=['GET'])
+def createProduct_get():
+    # Display create product page
+    return render_template('product/create.html', message='')
+
+
+@app.route('/product/create', methods=['POST'])
+@authenticate
+def createProduct_post(user):
+
+    # Get inputs from request body
+    name = request.form.get('name')
+    description = request.form.get('desc')
+    price = request.form.get('price')
+
+    error_message = None
+
+    # Use backend api to create the product
+    success = createProduct(productName=name, description=description,
+                            price=price, ownerEmail=user.email)
+
+    if not success:
+        error_message = "Product creation failed."
+
+    # if there is any error messages when creating new product
+    # at the backend, go back to the product/create page.
+    if error_message:
+        return render_template('product/create.html', message=error_message)
+    # Else, go back to home page
+    else:
+        return redirect('/')
+
+
 @app.route('/update/<prodName>', methods=['GET'])
 @authenticate
-def update_get(user, prodName):
+def updateProduct_get(user, prodName):
     # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
@@ -139,7 +172,7 @@ def update_get(user, prodName):
 
 @app.route('/update/<prodName>', methods=['POST'])
 @authenticate
-def update_post(user, prodName):
+def updateProduct_post(user, prodName):
     # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
@@ -150,8 +183,8 @@ def update_post(user, prodName):
 
     # Get inputs from request body
     name = request.form.get('name')
-    price = request.form.get('price')
     description = request.form.get('desc')
+    price = request.form.get('price')
 
     # Convert price to float, if not possible then error
     try:
@@ -168,7 +201,7 @@ def update_post(user, prodName):
                          description=description)):
             #  Redirect since product name may have changed
             return redirect(f"/update/{product.productName}")
-        message = "Unkown error occured"
+        message = "Unknown error occured"
     except Exception as err:
         message = err
 

@@ -13,9 +13,10 @@
 <div id="products">
     {% for product in products %}
     <div>
-        <h4>name: {{ product.name }} price: {{ product.price }} <a href=''>update</a></h4>
+        <h4>name: {{ product.name }} price: {{ product.price }} <a href='/product/update'>update</a></h4>
     </div>
     {% endfor %}
+	<a href='/product/create'>Sell a Product</a>
 </div>
 
 <a href='/logout'>logout</a>
