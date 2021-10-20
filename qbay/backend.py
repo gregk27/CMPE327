@@ -152,7 +152,7 @@ def register(name, email, password):
         # actually save the user object
         db.session.commit()
         return True
-
+        
     return False
 
 

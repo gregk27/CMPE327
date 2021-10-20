@@ -1,5 +1,6 @@
 from flask import render_template, request, session, redirect
-from qbay.models import login, User, register
+from qbay.backend import login, User, register, validateEmail, validateUser, validatePswd
+import uuid
 
 
 from qbay import app
@@ -19,7 +20,6 @@ def authenticate(inner_function):
     """
 
     def wrapped_inner():
-
         # check did we store the key in the session
         if 'logged_in' in session:
             email = session['logged_in']
@@ -44,11 +44,12 @@ def login_get():
     return render_template('login.html', message='Please login')
 
 
-@app.route('/login', methods=['POST'])
-def login_post():
+@app.route('/login', methods=['POST', 'GET'])
+def login_form():
     email = request.form.get('email')
     password = request.form.get('password')
-    user = login(email, password)
+    ip = str(request.remote_addr)
+    user = login(email, password, ip)
     if user:
         session['logged_in'] = user.email
         """
@@ -64,6 +65,7 @@ def login_post():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
+        print("Invalid email or password.")
         return render_template('login.html', message='login failed')
 
 
@@ -104,13 +106,18 @@ def register_post():
         # use backend api to register the user
         success = register(name, email, password)
         if not success:
-            error_message = "Registration failed."
+            if validateEmail(email) is False:
+                error_message = "Registration Failed. Invalid email or already in use."
+            if validateUser(name) is False:
+                error_message = "Registration Failed. Invalid username."
+            if validatePswd(password) is False:
+                error_message = "Registration Failed. Invalid password."
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
         return render_template('register.html', message=error_message)
     else:
-        return redirect('/login')
+        return redirect('/login', code=302)
 
 
 @app.route('/logout')
