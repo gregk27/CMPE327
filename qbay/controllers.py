@@ -22,6 +22,8 @@ def authenticate(inner_function):
 
     def wrapped_inner(*args, **kwargs):
         # check did we store the key in the session
+        if not session:
+            session['logged_in'] = None
         if 'logged_in' in session:
             email = session['logged_in']
             try:
