@@ -128,9 +128,9 @@ def logout():
 def update_get(user, prodName):
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
-    print("Prod:", product)
     if(product is None):
-        return(f"Product {prodName} not found in your products")
+        return render_template("error.html", message="Product " + {prodName} +
+                               " not found in your products")
     return render_template("product/update.html", message="", product=product)
 
 
@@ -141,8 +141,8 @@ def update_post(user, prodName):
                 .one_or_none()
     print("Prod:", product)
     if(product is None):
-        return(f"Product {prodName} not found in your products")
-
+        return render_template("error.html", message="Product " + {prodName} +
+                               " not found in your products")
     name = request.form.get('name')
     price = request.form.get('price')
     description = request.form.get('desc')
