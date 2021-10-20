@@ -176,13 +176,13 @@ def queryUser(email, attribute, value):
     return False
 
 
-def validateProductParameters(title, description, price, last_modified_date,
-                              owner_email, ignoreEmail=False,
-                              exceptions=False):
+def validateProductParameters(productName, description, price,
+                              last_modified_date, owner_email,
+                              ignoreEmail=False, exceptions=False):
     """
     Create a Product
       Parameters:
-        title (string):                 product title
+        productName (string):           product name
         description (string):           product description
         price (float):                  product price
         last_modified_date (DateTime):  product object last modified date
@@ -197,10 +197,10 @@ def validateProductParameters(title, description, price, last_modified_date,
     # If the title without spaces is not alphanumeric-only,
     # or begins or ends in a space
     # or is longer than 80 chars, return False
-    if (not title.replace(" ", "").isalnum() or
-            title[0] == " " or
-            title[-1] == " " or
-            len(title) > 80):
+    if (not productName.replace(" ", "").isalnum() or
+            productName[0] == " " or
+            productName[-1] == " " or
+            len(productName) > 80):
         if(exceptions):
             raise ValueError(f"Invalid name {productName}")
         return False
@@ -252,11 +252,12 @@ def validateProductParameters(title, description, price, last_modified_date,
     return True
 
 
-def createProduct(title, description, price, last_modified_date, owner_email):
+def createProduct(productName, description, price, last_modified_date,
+                  owner_email):
     """
     Create a Product
       Parameters:
-        title (string):                 product title
+        productName (string):           product name
         description (string):           product description
         price (float):                  product price
         last_modified_date (DateTime):  product object last modified date
@@ -264,7 +265,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
       Returns:
         True if product creation succeeded, otherwise False
     """
-    if(not validateProductParameters(title, description, price,
+    if(not validateProductParameters(productName, description, price,
                                      last_modified_date, owner_email)):
         return False
 
@@ -273,7 +274,7 @@ def createProduct(title, description, price, last_modified_date, owner_email):
 
     # Create a new product
     product = Product(id=str(uuid4()),
-                      productName=title,
+                      productName=productName,
                       description=description,
                       price=price,
                       lastModifiedDate=last_modified_date,
@@ -305,7 +306,7 @@ def updateProduct(productId, **kwargs):
 
     # Check that parameters are valid, use defaults which are when not provided
     if not validateProductParameters(
-        title=kwargs.get('productName', product.productName),
+        productName=kwargs.get('productName', product.productName),
         description=kwargs.get('description', product.description),
         price=kwargs.get('price', product.price),
         last_modified_date=kwargs.get('lastModifiedDate', dt.datetime.now()),

@@ -336,7 +336,7 @@ def test_r4_3_create_product(description, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(title='p0',
+    assert createProduct(productName='p0',
                          description=description,
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
@@ -381,7 +381,7 @@ def test_r4_5_create_product(price, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(title='p2',
+    assert createProduct(productName='p2',
                          description='This is a test description',
                          price=price,
                          last_modified_date=dt.datetime(2021, 10, 8),
@@ -404,7 +404,7 @@ def test_r4_6_create_product(date, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(title='p3',
+    assert createProduct(productName='p3',
                          description='This is a test description',
                          price=10.0,
                          last_modified_date=date,
@@ -429,7 +429,7 @@ def test_r4_7_create_product(email, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(title='p4',
+    assert createProduct(productName='p4',
                          description='This is a test description',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
@@ -451,13 +451,13 @@ def test_r4_8_create_product(email, expected):
     register('Test1', 'test1@test.com', 'Password1!')
 
     # Register a test product, if exists will just reurn false
-    createProduct(title='p5',
+    createProduct(productName='p5',
                   description='This is a test description',
                   price=10.0,
                   last_modified_date=dt.datetime(2021, 10, 8),
                   owner_email='test0@test.com') is expected
 
-    assert createProduct(title='p5',
+    assert createProduct(productName='p5',
                          description='This is a test description',
                          price=10.0,
                          last_modified_date=dt.datetime(2021, 10, 8),
@@ -507,7 +507,7 @@ def test_r5_updateProduct(target, newVals, shouldChange):
     register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
 
     orgVals = {
-        "title": f"Test Product {target.replace('.', ' ')}",
+        "productName": f"Test Product {target.replace('.', ' ')}",
         "owner_email": email,
         "price": 500,
         "description": "Lorem Ipsum Dolar Set Amet",
@@ -515,7 +515,7 @@ def test_r5_updateProduct(target, newVals, shouldChange):
     }
 
     assert createProduct(**orgVals)
-    prod = Product.query.filter_by(productName=orgVals["title"],
+    prod = Product.query.filter_by(productName=orgVals["productName"],
                                    ownerEmail=orgVals["owner_email"]).first()
     orgVals['id'] = prod.id
     assert updateProduct(prod.id, **newVals) is True
@@ -539,16 +539,16 @@ def test_r5_updateProduct(target, newVals, shouldChange):
     # Unchanged base test
     ["R4.0", {}, True],
     # Title must be alphanumeric
-    ["R4.1A", {"title": "inv&|id"}, False],
+    ["R4.1A", {"productName": "inv&|id"}, False],
     # Title shorter than 80 characters
-    ["R4.2",  {"title": "Lorem ipsum dolor sit amet, consectetur adipiscing \
+    ["R4.2",  {"productName": "Lorem ipsum dolor sit amet, consectetur adipiscing \
 elit. Vivamus nec neque tincidunt."}, False],
     # Description minimum 20 characters
     ["R4.3",  {"description": "Short Desc"}, False],
     # Description maximum 2000 characters
     ["R4.3B",  {"description": "Long Desc"+"."*2000}, False],
     # Description maximum 2000 characters
-    ["R4.4",  {"title": "Longer than description title",
+    ["R4.4",  {"productName": "Longer than description title",
                "description": "Shorter that title desc"}, False],
     # Price above 10
     ["R4.5A",  {"price": 5}, False],
@@ -568,7 +568,7 @@ def test_r5_4_updateProduct(target, changedVals, expected):
     register(f"Test User {target.replace('.', ' ')}", email, "Password1!")
 
     orgVals = {
-        "title": f"Test Product {target.replace('.', ' ')}",
+        "productName": f"Test Product {target.replace('.', ' ')}",
         "owner_email": email,
         "price": 500,
         "description": "Lorem Ipsum Dolar Set Amet",
@@ -576,7 +576,7 @@ def test_r5_4_updateProduct(target, changedVals, expected):
     }
 
     assert createProduct(**orgVals)
-    prod = Product.query.filter_by(productName=orgVals["title"],
+    prod = Product.query.filter_by(productName=orgVals["productName"],
                                    ownerEmail=orgVals["owner_email"]).first()
 
     # Generate new values to use by making desired changes
@@ -584,4 +584,8 @@ def test_r5_4_updateProduct(target, changedVals, expected):
     for key, val in changedVals.items():
         newVals[key] = val
 
-    assert updateProduct(prod.id, **newVals) is expected
+    # Update product, if error raised and failure expected then test is passed
+    try:
+        assert updateProduct(prod.id, **newVals) is expected
+    except ValueError:
+        assert not expected

@@ -1,6 +1,6 @@
 from flask import render_template, request, session, redirect
 from qbay.models import User, Product
-from qbay.backend import login, register
+from qbay.backend import login, register, updateProduct
 
 
 from qbay import app
@@ -156,15 +156,18 @@ def update_post(user, prodId):
         return render_template("product/update.html",
                                message="Price should be a number",
                                product=product)
-
-    success = updateProduct(prodId, productName=name, price=price,
-                            description=description)
-
     message = ""
-    if(success):
-        message = "Product updated"
-    else:
-        message = "Invalid parameters"
+    # updateProduct will return true on success, and throw ValueError with
+    #   message if inputs are invalid
+    try:
+        success = updateProduct(prodId, productName=name, price=price,
+                                description=description)
+        if(success):
+            message = "Product updated"
+        else:
+            message = "Invalid parameters"
+    except ValueError as err:
+        message = err
 
     return render_template("product/update.html", message=message,
                            product=product)
