@@ -1,7 +1,7 @@
 from flask import render_template, request, session, redirect
 from qbay.backend import (login, register, validateEmail,
                           validateUser, validatePswd, updateProduct)
-from qbay.models import User, Product
+from qbay.models import Product, Session
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -22,12 +22,12 @@ def authenticate(inner_function):
 
     def wrapped_inner(*args, **kwargs):
         # check did we store the key in the session
-        if not session:
-            session['logged_in'] = None
         if 'logged_in' in session:
-            email = session['logged_in']
+            sessionId = session['logged_in']
+            ip = session['logged in']
             try:
-                user = User.query.filter_by(email=email).one_or_none()
+                user = Session.query.filter_by(sessionId=sessionId,
+                                               ipAddress=ip)
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
@@ -54,7 +54,8 @@ def login_form():
     ip = str(request.remote_addr)
     user = login(email, password, ip)
     if user:
-        session['logged_in'] = email
+        session['logged_in'] = user.sessionId
+        session['logged in'] = user.ipAddress
         """
         Session is an object that contains sharing information
         between a user's browser and the end server.
