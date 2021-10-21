@@ -153,12 +153,12 @@ def createProduct_post(user):
     description = request.form.get('desc')
     price = request.form.get('price')
 
-    # Convert price to float, if not possible then error 
-    try: 
-        price = float(price) 
+    # Convert price to float, if not possible then error
+    try:
+        price = float(price)
     except ValueError:
         return render_template("product/create.html",
-                                message="Price should be a number")
+                               message="Price should be a number")
 
     # Error message
     error_message = None
