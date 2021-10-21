@@ -1,7 +1,7 @@
 from flask import render_template, request, session, redirect
 from qbay.backend import (login, register, validateEmail,
                           validateUser, validatePswd, updateProduct)
-from qbay.models import Product, Session
+from qbay.models import User, Product, Session
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -24,16 +24,25 @@ def authenticate(inner_function):
         # check did we store the key in the session
         if 'logged_in' in session:
             sessionId = session['logged_in']
-            ip = session['logged in']
+            print(sessionId)
+            ip = str(request.remote_addr)
+            print("ip:", ip)
             try:
-                user = Session.query.filter_by(sessionId=sessionId,
-                                               ipAddress=ip)
-                if user:
+                sessionObj = Session.query.filter_by(sessionId=sessionId,
+                                               ipAddress=ip).one_or_more()
+                print("user id is: ", sessionObj)
+                #user = User.query.filter_by(userId=sessionObj.userId)
+                if sessionObj:
                     # if the user exists, call the inner_function
                     # with user as parameter
-                    return inner_function(user, *args, **kwargs)
+                    print("user exists")
+                    return inner_function(sessionObj, *args, **kwargs)
+                else:
+                    return redirect('/login')
             except Exception:
-                pass
+                print("execption caught!!!")
+                #pass
+                return redirect('/login')
         else:
             # else, redirect to the login page
             return redirect('/login')
@@ -52,10 +61,11 @@ def login_form():
     email = request.form.get('email')
     password = request.form.get('password')
     ip = str(request.remote_addr)
-    user = login(email, password, ip)
-    if user:
-        session['logged_in'] = user.sessionId
-        session['logged in'] = user.ipAddress
+    userSession = login(email, password, ip)
+    if userSession:
+        print(userSession.sessionId)
+        print('ip', ip)
+        session['logged_in'] = userSession.sessionId
         """
         Session is an object that contains sharing information
         between a user's browser and the end server.
