@@ -268,7 +268,8 @@ def createProduct(productName, description, price, owner_email,
         True if product creation succeeded, otherwise False
     """
     if(not validateProductParameters(productName, description, price,
-                                     last_modified_date, owner_email)):
+                                     last_modified_date, owner_email,
+                                     False, True)):
         return False
 
     # Get the owner to obtain their id

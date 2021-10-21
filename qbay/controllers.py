@@ -138,6 +138,7 @@ def logout():
 
 
 @app.route('/product/create', methods=['GET'])
+@authenticate
 def createProduct_get():
     # Display create product page
     return render_template('product/create.html', message='')
@@ -152,25 +153,32 @@ def createProduct_post(user):
     description = request.form.get('desc')
     price = request.form.get('price')
 
+    # Convert price to float, if not possible then error 
+    try: 
+        price = float(price) 
+    except ValueError:
+        return render_template("product/create.html",
+                                message="Price should be a number")
+
+    # Error message
     error_message = None
 
-    # Use backend api to create the product
-    success = createProduct(productName=name, description=description,
-                            price=price, ownerEmail=user.email)
+    # createProduct will return true on success, and throw ValueError with
+    # message if inputs are invalid
+    try:
+        if(createProduct(productName=name, price=price,
+                         description=description)):
+            # Redirect since product name may have changed
+            return redirect("/product/create")
+        error_message = "Unknown error occurred"
+    except Exception as err:
+        error_message = err
 
-    if not success:
-        error_message = "Product creation failed."
-
-    # if there is any error messages when creating new product
-    # at the backend, go back to the product/create page.
-    if error_message:
-        return render_template('product/create.html', message=error_message)
-    # Else, go back to home page
-    else:
-        return redirect('/')
+    # Display page with error message on failure
+    return render_template("product/create.html", message=error_message)
 
 
-@app.route('product/update/<prodName>', methods=['GET'])
+@app.route('/product/update/<prodName>', methods=['GET'])
 @authenticate
 def updateProduct_get(user, prodName):
     # Get product by name and user
@@ -184,7 +192,7 @@ def updateProduct_get(user, prodName):
     return render_template("product/update.html", message="", product=product)
 
 
-@app.route('product/update/<prodName>', methods=['POST'])
+@app.route('/product/update/<prodName>', methods=['POST'])
 @authenticate
 def updateProduct_post(user, prodName):
     # Get product by name and user
@@ -207,18 +215,20 @@ def updateProduct_post(user, prodName):
         return render_template("product/update.html",
                                message="Price should be a number",
                                product=product)
-    message = ""
+
+    error_message = None
+
     # updateProduct will return true on success, and throw ValueError with
-    #   message if inputs are invalid
+    # message if inputs are invalid
     try:
         if(updateProduct(product.id, productName=name, price=price,
                          description=description)):
             #  Redirect since product name may have changed
             return redirect(f"/update/{product.productName}")
-        message = "Unknown error occured"
+        error_message = "Unknown error occurred"
     except Exception as err:
-        message = err
+        error_message = err
 
     # Display page with error message on failure
-    return render_template("product/update.html", message=message,
+    return render_template("product/update.html", message=error_message,
                            product=product)
