@@ -25,7 +25,7 @@ from uuid import uuid4
     # Expected true baseline test
     ['jon123', 'jon#$^asd@gmail.com', 'asdDi8uh18798asd$', True],
     # Expected False due to email not following addr-spec defined in RFC 5322
-    ['damien smith', 'test@..@test.com', 'password123$', False],
+    ['damien', 'test@..@test.com', 'password123$', False],
 
     # R1-4: Password has to meet the required complexity: minimum
     #     length 6, at least one upper case, at least one lower case,
@@ -152,6 +152,8 @@ def test_r2_2_login(email, password, result):
     # Attempt to log in and validate result
     session = login(email, password, '123.456.789.123')
 
+    if(session is not None):
+        db.session.delete(session)
     # Delete user when done
     db.session.delete(user)
     db.session.commit()
