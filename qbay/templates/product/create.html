@@ -9,12 +9,12 @@
 <form method="post">
   <div class="form-group">
     <label for="name">Name</label>
-    <input class="form-control" name="name" id="name" value="{{product.productName}}" required>
+    <input class="form-control" name="name" id="name" value="" required>
 	<label for="desc">Description</label>
-    <textarea class="form-control" name="desc" id="desc" required>{{product.description}}</textarea>
+    <textarea class="form-control" name="desc" id="desc" value="" required></textarea>
     <label for="price">Price</label>
-    <input class="form-control" type="number" name="price" id="price" value="{{product.price}}" required>
-    <input class="btn btn-primary" type="submit" value="Update">
+    <input class="form-control" type="number" name="price" id="price" value="" required>
+    <input class="btn btn-primary" type="submit" value="Create">
   </div>
 </form>
 {% endblock %}

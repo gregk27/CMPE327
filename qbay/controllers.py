@@ -156,7 +156,7 @@ def createProduct_post(user):
         return redirect('/')
 
 
-@app.route('/update/<prodName>', methods=['GET'])
+@app.route('product/update/<prodName>', methods=['GET'])
 @authenticate
 def updateProduct_get(user, prodName):
     # Get product by name and user
@@ -170,7 +170,7 @@ def updateProduct_get(user, prodName):
     return render_template("product/update.html", message="", product=product)
 
 
-@app.route('/update/<prodName>', methods=['POST'])
+@app.route('product/update/<prodName>', methods=['POST'])
 @authenticate
 def updateProduct_post(user, prodName):
     # Get product by name and user
