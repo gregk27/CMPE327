@@ -46,6 +46,8 @@ def login(email, password, ip):
                 sessionId=str(uuid4()),
                 # Session expires after a year
                 expiry=dt.datetime(time.year+1, time.month, time.day))
+    db.session.add(s)
+    db.session.commit()
     return s
 
 

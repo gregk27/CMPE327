@@ -24,24 +24,20 @@ def authenticate(inner_function):
         # check did we store the key in the session
         if 'logged_in' in session:
             sessionId = session['logged_in']
-            print(sessionId)
             ip = str(request.remote_addr)
-            print("ip:", ip)
             try:
+                # Get the sessionId
                 sessionObj = Session.query.filter_by(sessionId=sessionId,
-                                               ipAddress=ip).one_or_more()
-                print("user id is: ", sessionObj)
-                #user = User.query.filter_by(userId=sessionObj.userId)
-                if sessionObj:
+                                                     ipAddress=ip
+                                                     ).one_or_none()
+                # Get the user id associated with the session
+                user = User.query.filter_by(id=sessionObj.userId).one_or_none()
+                if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
-                    print("user exists")
-                    return inner_function(sessionObj, *args, **kwargs)
-                else:
-                    return redirect('/login')
-            except Exception:
-                print("execption caught!!!")
-                #pass
+                    return inner_function(user, *args, **kwargs)
+            except Exception as e:
+                print(e)
                 return redirect('/login')
         else:
             # else, redirect to the login page
@@ -63,8 +59,6 @@ def login_form():
     ip = str(request.remote_addr)
     userSession = login(email, password, ip)
     if userSession:
-        print(userSession.sessionId)
-        print('ip', ip)
         session['logged_in'] = userSession.sessionId
         """
         Session is an object that contains sharing information
@@ -79,8 +73,8 @@ def login_form():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        print("Invalid email or password.")
-        return render_template('login.html', message='login failed')
+        return render_template('login.html', message="Incorrect"
+                                                     "email or password")
 
 
 @app.route('/')
