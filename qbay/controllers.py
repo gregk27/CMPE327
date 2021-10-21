@@ -1,8 +1,8 @@
 from flask import render_template, request, session, redirect
-from qbay.models import User, Product
-from qbay.backend import login, register, createProduct, updateProduct
-
-
+from qbay.models import User, Product, Session
+from qbay.backend import (login, register, validateEmail,
+                          validateUser, validatePswd,
+                          createProduct, updateProduct)
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -24,19 +24,25 @@ def authenticate(inner_function):
     def wrapped_inner(*args, **kwargs):
         # check did we store the key in the session
         if 'logged_in' in session:
-            email = session['logged_in']
+            sessionId = session['logged_in']
+            ip = str(request.remote_addr)
             try:
-                user = User.query.filter_by(email=email).one_or_none()
+                # Get the sessionId
+                sessionObj = Session.query.filter_by(sessionId=sessionId,
+                                                     ipAddress=ip
+                                                     ).one_or_none()
+                # Get the user id associated with the session
+                user = User.query.filter_by(id=sessionObj.userId).one_or_none()
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
                     return inner_function(user, *args, **kwargs)
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
+                return redirect('/login')
         else:
             # else, redirect to the login page
             return redirect('/login')
-
     wrapped_inner.__name__ = inner_function.__name__
     # return the wrapped version of the inner_function:
     return wrapped_inner
@@ -47,13 +53,14 @@ def login_get():
     return render_template('login.html', message='Please login')
 
 
-@app.route('/login', methods=['POST'])
-def login_post():
+@app.route('/login', methods=['POST', 'GET'])
+def login_form():
     email = request.form.get('email')
     password = request.form.get('password')
-    user = login(email, password)
-    if user:
-        session['logged_in'] = user.email
+    ip = str(request.remote_addr)
+    userSession = login(email, password, ip)
+    if userSession:
+        session['logged_in'] = userSession.sessionId
         """
         Session is an object that contains sharing information
         between a user's browser and the end server.
@@ -67,7 +74,8 @@ def login_post():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('login.html', message='login failed')
+        return render_template('login.html', message="Incorrect "
+                                                     "email or password")
 
 
 @app.route('/')
@@ -107,13 +115,19 @@ def register_post():
         # use backend api to register the user
         success = register(name, email, password)
         if not success:
-            error_message = "Registration failed."
+            if validateEmail(email) is False:
+                error_message = ("Registration Failed. Invalid email or"
+                                 " already in use.")
+            if validateUser(name) is False:
+                error_message = "Registration Failed. Invalid username."
+            if validatePswd(password) is False:
+                error_message = "Registration Failed. Invalid password."
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
         return render_template('register.html', message=error_message)
     else:
-        return redirect('/login')
+        return redirect('/login', code=302)
 
 
 @app.route('/logout')
