@@ -88,11 +88,7 @@ def home(user):
     # front-end portals
 
     # some fake product data
-    products = [
-        {'name': 'product 1', 'description': 'product desc 1', 'price': 10},
-        {'name': 'product 2', 'description': 'product desc 2', 'price': 20}
-    ]
-    return render_template('index.html', user=user, products=products)
+    return render_template('index.html', user=user)
 
 
 @app.route('/register', methods=['GET'])
@@ -224,7 +220,7 @@ def updateProduct_post(user, prodName):
         if(updateProduct(product.id, productName=name, price=price,
                          description=description)):
             #  Redirect since product name may have changed
-            return redirect(f"/update/{product.productName}")
+            return redirect(f"/product/update/{product.productName}")
         error_message = "Unknown error occurred"
     except Exception as err:
         error_message = err
