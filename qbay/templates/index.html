@@ -13,11 +13,21 @@
 </div>
 <br/>
 <div id="products">
+    <h3>Your Products</h3>
     {% for product in user.products %}
     <div>
         <h4>
             {{ product.productName }} 
             <a href='/product/update/{{product.productName}}' style="float:right">update</a>
+            <span style="float:right; margin-right:5em">${{ product.price }}</span>
+        </h4>
+    </div> 
+    {% endfor %}
+    <h3>Available products</h3>
+    {% for product in otherProducts %}
+    <div>
+        <h4>
+            {{ product.productName }} 
             <span style="float:right; margin-right:5em">${{ product.price }}</span>
         </h4>
     </div> 

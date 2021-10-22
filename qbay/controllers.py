@@ -87,8 +87,10 @@ def home(user):
     # the login checking code all the time for other
     # front-end portals
 
-    # some fake product data
-    return render_template('index.html', user=user)
+    # Get products from other users
+    otherProducts = Product.query.filter(Product.userId != user.id).all()
+    return render_template('index.html', user=user,
+                           otherProducts=otherProducts)
 
 
 @app.route('/register', methods=['GET'])
@@ -182,7 +184,7 @@ def updateProduct_get(user, prodName):
                 .one_or_none()
     # If product can't be found, display error
     if(product is None):
-        return render_template("error.html", message="Product " + {prodName} +
+        return render_template("message.html", message="Product " + prodName +
                                " not found in your products")
     # If product can be found, display update page
     return render_template("product/update.html", message="", product=product)
