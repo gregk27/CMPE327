@@ -89,6 +89,7 @@ def home(user):
 
     # Get products from other users
     otherProducts = Product.query.filter(Product.userId != user.id).all()
+    print(otherProducts[0].user.username)
     return render_template('index.html', user=user,
                            otherProducts=otherProducts)
 

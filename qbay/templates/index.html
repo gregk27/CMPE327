@@ -29,6 +29,7 @@
         <h4>
             {{ product.productName }} 
             <span style="float:right; margin-right:5em">${{ product.price }}</span>
+            <span style="float:right; margin-right:2em">Seller: {{ product.user.username }}</span>
         </h4>
     </div> 
     {% endfor %}
