@@ -46,8 +46,6 @@ def login(email, password, ip):
                 sessionId=str(uuid4()),
                 # Session expires after a year
                 expiry=dt.datetime(time.year+1, time.month, time.day))
-    db.session.add(s)
-    db.session.commit()
     return s
 
 
@@ -254,22 +252,21 @@ def validateProductParameters(productName, description, price,
     return True
 
 
-def createProduct(productName, description, price, owner_email,
-                  last_modified_date=dt.datetime.now()):
+def createProduct(productName, description, price, last_modified_date,
+                  owner_email):
     """
     Create a Product
       Parameters:
         productName (string):           product name
         description (string):           product description
         price (float):                  product price
-        ownerEmail:                     product owner's email
-        lastModifiedDate (DateTime):    product object last modified date
+        last_modified_date (DateTime):  product object last modified date
+        owner_email:                    product owner's email
       Returns:
         True if product creation succeeded, otherwise False
     """
     if(not validateProductParameters(productName, description, price,
-                                     last_modified_date, owner_email,
-                                     False, True)):
+                                     last_modified_date, owner_email)):
         return False
 
     # Get the owner to obtain their id
@@ -390,8 +387,8 @@ def validatePostalCode(postalCode):
     """
     # If the format does not match a standard Canadian postal code
     if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+ \
-                    [ABCEGHJKLMNPRSTVXY][0-9]+ \
-                    [ABCEGHJKLMNPRSTVXY][0-9]+", postalCode):
+                    [ABCEGHJKLMNPRSTVWXYZ[0-9]+ \
+                    [ABCEGHJKLMNPRSTVWXYZ][0-9]+", postalCode):
         return False
 
     return True
@@ -421,15 +418,15 @@ def updateUser(userID, **kwargs):
             userUpdate.username = kwargs['username']
         kwargs.pop('username')
 
-    shippingAddress = kwargs.get('shipping_address',
+    shippingAddress = kwargs.get('shippingAddress',
                                  userUpdate.shippingAddress)
 
-    if 'shippingAdress' in kwargs:
+    if 'shippingAddress' in kwargs:
         # Check if ShippingAddress is valid
-        if validateShippingAddress:
+        if validateShippingAddress(shippingAddress):
             # Update Shipping Address
             userUpdate.shippingAddress = kwargs['shippingAddress']
-        kwargs.pop(shippingAddress)
+        kwargs.pop('shippingAddress')
 
     postalCode = kwargs.get('postalCode', userUpdate.postalCode)
 
@@ -437,7 +434,7 @@ def updateUser(userID, **kwargs):
         # Check if postalCode is a valid Canadian postal code
         if validatePostalCode(postalCode):
             # Update postalCode
-            postalCode = kwargs['PostalCode']
+            postalCode = kwargs['postalCode']
         kwargs.pop('postalCode')
 
     db.session.commit()
