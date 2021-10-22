@@ -1,8 +1,8 @@
 from flask import render_template, request, session, redirect
-from qbay.models import User, Product
-from qbay.backend import login, register, updateProduct, updateUser
-
-
+from qbay.models import User, Product, Session
+from qbay.backend import (login, register, validateEmail,
+                          validateUser, validatePswd,
+                          createProduct, updateProduct, updateUser)
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -24,19 +24,25 @@ def authenticate(inner_function):
     def wrapped_inner(*args, **kwargs):
         # check did we store the key in the session
         if 'logged_in' in session:
-            email = session['logged_in']
+            sessionId = session['logged_in']
+            ip = str(request.remote_addr)
             try:
-                user = User.query.filter_by(email=email).one_or_none()
+                # Get the sessionId
+                sessionObj = Session.query.filter_by(sessionId=sessionId,
+                                                     ipAddress=ip
+                                                     ).one_or_none()
+                # Get the user id associated with the session
+                user = User.query.filter_by(id=sessionObj.userId).one_or_none()
                 if user:
                     # if the user exists, call the inner_function
                     # with user as parameter
                     return inner_function(user, *args, **kwargs)
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
+                return redirect('/login')
         else:
             # else, redirect to the login page
             return redirect('/login')
-
     wrapped_inner.__name__ = inner_function.__name__
     # return the wrapped version of the inner_function:
     return wrapped_inner
@@ -47,13 +53,14 @@ def login_get():
     return render_template('login.html', message='Please login')
 
 
-@app.route('/login', methods=['POST'])
-def login_post():
+@app.route('/login', methods=['POST', 'GET'])
+def login_form():
     email = request.form.get('email')
     password = request.form.get('password')
-    user = login(email, password)
-    if user:
-        session['logged_in'] = user.email
+    ip = str(request.remote_addr)
+    userSession = login(email, password, ip)
+    if userSession:
+        session['logged_in'] = userSession.sessionId
         """
         Session is an object that contains sharing information
         between a user's browser and the end server.
@@ -67,7 +74,8 @@ def login_post():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('login.html', message='login failed')
+        return render_template('login.html', message="Incorrect "
+                                                     "email or password")
 
 
 @app.route('/')
@@ -81,8 +89,8 @@ def home(user):
 
     # some fake product data
     products = [
-        {'name': 'prodcut 1', 'price': 10},
-        {'name': 'prodcut 2', 'price': 20}
+        {'name': 'product 1', 'description': 'product desc 1', 'price': 10},
+        {'name': 'product 2', 'description': 'product desc 2', 'price': 20}
     ]
     return render_template('index.html', user=user, products=products)
 
@@ -107,13 +115,19 @@ def register_post():
         # use backend api to register the user
         success = register(name, email, password)
         if not success:
-            error_message = "Registration failed."
+            if validateEmail(email) is False:
+                error_message = ("Registration Failed. Invalid email or"
+                                 " already in use.")
+            if validateUser(name) is False:
+                error_message = "Registration Failed. Invalid username."
+            if validatePswd(password) is False:
+                error_message = "Registration Failed. Invalid password."
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
         return render_template('register.html', message=error_message)
     else:
-        return redirect('/login')
+        return redirect('/login', code=302)
 
 
 @app.route('/logout')
@@ -123,9 +137,50 @@ def logout():
     return redirect('/')
 
 
-@app.route('/update/<prodName>', methods=['GET'])
+@app.route('/product/create', methods=['GET'])
 @authenticate
-def update_get(user, prodName):
+def createProduct_get(user):
+    # Display create product page
+    return render_template('product/create.html', message='')
+
+
+@app.route('/product/create', methods=['POST'])
+@authenticate
+def createProduct_post(user):
+
+    # Get inputs from request body
+    name = request.form.get('name')
+    description = request.form.get('desc')
+    price = request.form.get('price')
+
+    # Convert price to float, if not possible then error
+    try:
+        price = float(price)
+    except ValueError:
+        return render_template("product/create.html",
+                               message="Price should be a number")
+
+    # Error message
+    error_message = None
+
+    # createProduct will return true on success, and throw ValueError with
+    # message if inputs are invalid
+    try:
+        if(createProduct(productName=name, price=price,
+                         description=description, owner_email=user.email)):
+            # Redirect to homepage
+            return redirect("/")
+        error_message = "Unknown error occurred"
+    except Exception as err:
+        error_message = err
+
+    # Display page with error message on failure
+    return render_template("product/create.html", message=error_message)
+
+
+@app.route('/product/update/<prodName>', methods=['GET'])
+@authenticate
+def updateProduct_get(user, prodName):
     # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
@@ -137,9 +192,9 @@ def update_get(user, prodName):
     return render_template("product/update.html", message="", product=product)
 
 
-@app.route('/update/<prodName>', methods=['POST'])
+@app.route('/product/update/<prodName>', methods=['POST'])
 @authenticate
-def update_post(user, prodName):
+def updateProduct_post(user, prodName):
     # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
@@ -150,8 +205,8 @@ def update_post(user, prodName):
 
     # Get inputs from request body
     name = request.form.get('name')
-    price = request.form.get('price')
     description = request.form.get('desc')
+    price = request.form.get('price')
 
     # Convert price to float, if not possible then error
     try:
@@ -160,20 +215,22 @@ def update_post(user, prodName):
         return render_template("product/update.html",
                                message="Price should be a number",
                                product=product)
-    message = ""
+
+    error_message = None
+
     # updateProduct will return true on success, and throw ValueError with
-    #   message if inputs are invalid
+    # message if inputs are invalid
     try:
         if(updateProduct(product.id, productName=name, price=price,
                          description=description)):
             #  Redirect since product name may have changed
             return redirect(f"/update/{product.productName}")
-        message = "Unkown error occured"
+        error_message = "Unknown error occurred"
     except Exception as err:
-        message = err
+        error_message = err
 
     # Display page with error message on failure
-    return render_template("product/update.html", message=message,
+    return render_template("product/update.html", message=error_message,
                            product=product)
 
 
