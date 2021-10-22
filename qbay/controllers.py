@@ -1,6 +1,6 @@
 from flask import render_template, request, session, redirect
 from qbay.models import User, Product
-from qbay.backend import login, register, updateProduct
+from qbay.backend import login, register, updateProduct, updateUser
 
 
 from qbay import app
@@ -175,3 +175,46 @@ def update_post(user, prodName):
     # Display page with error message on failure
     return render_template("product/update.html", message=message,
                            product=product)
+
+
+@app.route('/update/<username>', methods=['GET'])
+@authenticate
+def update_get_user(user, username):
+    # Get user by userID
+    user = User.query.filter_by(userID=user.id).one_or_none()
+
+    # If user cannot be found, display error
+    if(user is None):
+        return render_template("error.html", message="User " + {username} +
+                               " not found in database")
+    # If user can be found, display update page
+    return render_template("user/update.html", message="", user=user)
+
+
+@app.route('/update/<username>', methods=['POST'])
+@authenticate
+def update_post_user(user, username):
+    # Get user by userID
+    user = User.query.filter_by(userID=user.id).one_or_none()
+    # If user cannot be found, display error
+    if(user is None):
+        return render_template("error.html", message="User " + {username} +
+                               " not found in database")
+
+    # Get inputs from request body
+    username = request.form.get('username')
+    shippingAddress = request.form.get('shippingAddress')
+    postalCode = request.form.get('postalCode')
+
+    # updateUser will return true on success
+    try:
+        if(updateUser(user.id, username=username,
+                      shippingAddress=shippingAddress,
+                      qpostalCode=postalCode)):
+            return redirect(f"/update/{user.username}")
+        message = "Unknown error occured"
+    except Exception as err:
+        message = err
+
+    # Display page with error message on failure
+    return render_template("user/update.html", message=message, user=user)
