@@ -236,13 +236,14 @@ def updateProduct_post(user, prodName):
 
 @app.route('/user/modify', methods=['GET'])
 @authenticate
-def update_get_user(user, username):
+def update_get_user(user):
     # Get user by userID
     user = User.query.filter_by(id=user.id).one_or_none()
 
     # If user cannot be found, display error
     if(user is None):
-        return render_template("error.html", message="User " + {username} +
+        return render_template("error.html", message="User " +
+                               {user.username} +
                                " not found in database")
     # If user can be found, display update page
     return render_template("user/update.html", message="", user=user)
@@ -250,12 +251,13 @@ def update_get_user(user, username):
 
 @app.route('/user/modify', methods=['POST'])
 @authenticate
-def update_post_user(user, username):
+def update_post_user(user):
     # Get user by userID
     user = User.query.filter_by(id=user.id).one_or_none()
     # If user cannot be found, display error
     if(user is None):
-        return render_template("error.html", message="User " + {username} +
+        return render_template("error.html", message="User " +
+                               {user.username} +
                                " not found in database")
 
     # Get inputs from request body
