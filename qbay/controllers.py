@@ -1,7 +1,8 @@
 from flask import render_template, request, session, redirect
-from qbay.backend import (login, register, validateEmail,
-                          validateUser, validatePswd, updateProduct)
 from qbay.models import User, Product, Session
+from qbay.backend import (login, register, validateEmail,
+                          validateUser, validatePswd,
+                          createProduct, updateProduct)
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -88,8 +89,8 @@ def home(user):
 
     # some fake product data
     products = [
-        {'name': 'prodcut 1', 'price': 10},
-        {'name': 'prodcut 2', 'price': 20}
+        {'name': 'product 1', 'description': 'product desc 1', 'price': 10},
+        {'name': 'product 2', 'description': 'product desc 2', 'price': 20}
     ]
     return render_template('index.html', user=user, products=products)
 
@@ -136,9 +137,50 @@ def logout():
     return redirect('/')
 
 
-@app.route('/update/<prodName>', methods=['GET'])
+@app.route('/product/create', methods=['GET'])
 @authenticate
-def update_get(user, prodName):
+def createProduct_get(user):
+    # Display create product page
+    return render_template('product/create.html', message='')
+
+
+@app.route('/product/create', methods=['POST'])
+@authenticate
+def createProduct_post(user):
+
+    # Get inputs from request body
+    name = request.form.get('name')
+    description = request.form.get('desc')
+    price = request.form.get('price')
+
+    # Convert price to float, if not possible then error
+    try:
+        price = float(price)
+    except ValueError:
+        return render_template("product/create.html",
+                               message="Price should be a number")
+
+    # Error message
+    error_message = None
+
+    # createProduct will return true on success, and throw ValueError with
+    # message if inputs are invalid
+    try:
+        if(createProduct(productName=name, price=price,
+                         description=description, owner_email=user.email)):
+            # Redirect to homepage
+            return redirect("/")
+        error_message = "Unknown error occurred"
+    except Exception as err:
+        error_message = err
+
+    # Display page with error message on failure
+    return render_template("product/create.html", message=error_message)
+
+
+@app.route('/product/update/<prodName>', methods=['GET'])
+@authenticate
+def updateProduct_get(user, prodName):
     # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
@@ -150,9 +192,9 @@ def update_get(user, prodName):
     return render_template("product/update.html", message="", product=product)
 
 
-@app.route('/update/<prodName>', methods=['POST'])
+@app.route('/product/update/<prodName>', methods=['POST'])
 @authenticate
-def update_post(user, prodName):
+def updateProduct_post(user, prodName):
     # Get product by name and user
     product = Product.query.filter_by(productName=prodName, userId=user.id)\
                 .one_or_none()
@@ -163,8 +205,8 @@ def update_post(user, prodName):
 
     # Get inputs from request body
     name = request.form.get('name')
-    price = request.form.get('price')
     description = request.form.get('desc')
+    price = request.form.get('price')
 
     # Convert price to float, if not possible then error
     try:
@@ -173,18 +215,20 @@ def update_post(user, prodName):
         return render_template("product/update.html",
                                message="Price should be a number",
                                product=product)
-    message = ""
+
+    error_message = None
+
     # updateProduct will return true on success, and throw ValueError with
-    #   message if inputs are invalid
+    # message if inputs are invalid
     try:
         if(updateProduct(product.id, productName=name, price=price,
                          description=description)):
             #  Redirect since product name may have changed
             return redirect(f"/update/{product.productName}")
-        message = "Unkown error occured"
+        error_message = "Unknown error occurred"
     except Exception as err:
-        message = err
+        error_message = err
 
     # Display page with error message on failure
-    return render_template("product/update.html", message=message,
+    return render_template("product/update.html", message=error_message,
                            product=product)

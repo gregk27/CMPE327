@@ -294,12 +294,14 @@ def test_r4_1_create_product(title, expected):
     """
     # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
-
-    assert createProduct(title,
-                         description='This is a test description',
-                         price=10.0,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email='test0@test.com') is expected
+    try:
+        assert createProduct(title,
+                             description='This is a test description',
+                             price=10.0,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email='test0@test.com') is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('title, description, expected', [
@@ -315,11 +317,14 @@ def test_r4_2_create_product(title, description, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(title,
-                         description,
-                         price=10.0,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email='test0@test.com') is expected
+    try:
+        assert createProduct(title,
+                             description,
+                             price=10.0,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email='test0@test.com') is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('description, expected', [
@@ -337,12 +342,14 @@ def test_r4_3_create_product(description, expected):
     """
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
-
-    assert createProduct(productName='p0',
-                         description=description,
-                         price=10.0,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email='test0@test.com') is expected
+    try:
+        assert createProduct(productName='p0',
+                             description=description,
+                             price=10.0,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email='test0@test.com') is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('title, description, expected', [
@@ -360,12 +367,15 @@ def test_r4_4_create_product(title, description, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    # Description length shorter than title
-    assert createProduct(title,
-                         description=description,
-                         price=10.0,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email='test0@test.com') is expected
+    try:
+        # Description length shorter than title
+        assert createProduct(title,
+                             description=description,
+                             price=10.0,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email='test0@test.com') is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('price, expected', [
@@ -383,11 +393,14 @@ def test_r4_5_create_product(price, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(productName='p2',
-                         description='This is a test description',
-                         price=price,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email='test0@test.com') is expected
+    try:
+        assert createProduct(productName='p2',
+                             description='This is a test description',
+                             price=price,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email='test0@test.com') is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('date, expected', [
@@ -406,11 +419,14 @@ def test_r4_6_create_product(date, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(productName='p3',
-                         description='This is a test description',
-                         price=10.0,
-                         last_modified_date=date,
-                         owner_email='test0@test.com') is expected
+    try:
+        assert createProduct(productName='p3',
+                             description='This is a test description',
+                             price=10.0,
+                             last_modified_date=date,
+                             owner_email='test0@test.com') is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('email, expected', [
@@ -431,11 +447,14 @@ def test_r4_7_create_product(email, expected):
     # Register a test user, if exists will just reurn false
     register('Test0', 'test0@test.com', 'Password1!')
 
-    assert createProduct(productName='p4',
-                         description='This is a test description',
-                         price=10.0,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email=email) is expected
+    try:
+        assert createProduct(productName='p4',
+                             description='This is a test description',
+                             price=10.0,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email=email) is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize('email, expected', [
@@ -452,18 +471,24 @@ def test_r4_8_create_product(email, expected):
     register('Test0', 'test0@test.com', 'Password1!')
     register('Test1', 'test1@test.com', 'Password1!')
 
-    # Register a test product, if exists will just reurn false
-    createProduct(productName='p5',
-                  description='This is a test description',
-                  price=10.0,
-                  last_modified_date=dt.datetime(2021, 10, 8),
-                  owner_email='test0@test.com') is expected
+    # Register a test product, if exists pass error
+    try:
+        createProduct(productName='p5',
+                      description='This is a test description',
+                      price=10.0,
+                      last_modified_date=dt.datetime(2021, 10, 8),
+                      owner_email='test0@test.com') is expected
+    except ValueError:
+        pass
 
-    assert createProduct(productName='p5',
-                         description='This is a test description',
-                         price=10.0,
-                         last_modified_date=dt.datetime(2021, 10, 8),
-                         owner_email=email) is expected
+    try:
+        assert createProduct(productName='p5',
+                             description='This is a test description',
+                             price=10.0,
+                             last_modified_date=dt.datetime(2021, 10, 8),
+                             owner_email=email) is expected
+    except ValueError:
+        assert not expected
 
 
 @pytest.mark.parametrize("target, newVals, shouldChange", [
