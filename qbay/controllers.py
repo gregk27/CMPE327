@@ -139,7 +139,7 @@ def logout():
 
 @app.route('/product/create', methods=['GET'])
 @authenticate
-def createProduct_get():
+def createProduct_get(user):
     # Display create product page
     return render_template('product/create.html', message='')
 
@@ -167,9 +167,9 @@ def createProduct_post(user):
     # message if inputs are invalid
     try:
         if(createProduct(productName=name, price=price,
-                         description=description)):
-            # Redirect since product name may have changed
-            return redirect("/product/create")
+                         description=description, owner_email=user.email)):
+            # Redirect to homepage
+            return redirect("/")
         error_message = "Unknown error occurred"
     except Exception as err:
         error_message = err
