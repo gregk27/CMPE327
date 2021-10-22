@@ -234,11 +234,11 @@ def updateProduct_post(user, prodName):
                            product=product)
 
 
-@app.route('/update/<username>', methods=['GET'])
+@app.route('/user/modify', methods=['GET'])
 @authenticate
 def update_get_user(user, username):
     # Get user by userID
-    user = User.query.filter_by(userID=user.id).one_or_none()
+    user = User.query.filter_by(id=user.id).one_or_none()
 
     # If user cannot be found, display error
     if(user is None):
@@ -248,11 +248,11 @@ def update_get_user(user, username):
     return render_template("user/update.html", message="", user=user)
 
 
-@app.route('/update/<username>', methods=['POST'])
+@app.route('/user/modify', methods=['POST'])
 @authenticate
 def update_post_user(user, username):
     # Get user by userID
-    user = User.query.filter_by(userID=user.id).one_or_none()
+    user = User.query.filter_by(id=user.id).one_or_none()
     # If user cannot be found, display error
     if(user is None):
         return render_template("error.html", message="User " + {username} +
@@ -267,7 +267,7 @@ def update_post_user(user, username):
     try:
         if(updateUser(user.id, username=username,
                       shippingAddress=shippingAddress,
-                      qpostalCode=postalCode)):
+                      postalCode=postalCode)):
             return redirect(f"/update/{user.username}")
         message = "Unknown error occured"
     except Exception as err:
