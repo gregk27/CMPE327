@@ -140,7 +140,7 @@ def logout():
 @authenticate
 def createProduct_get(user):
     # Display create product page
-    return render_template('product/create.html', message='')
+    return render_template('product/create.html', user=user, message='')
 
 
 @app.route('/product/create', methods=['POST'])
@@ -156,7 +156,7 @@ def createProduct_post(user):
     try:
         price = float(price)
     except ValueError:
-        return render_template("product/create.html",
+        return render_template("product/create.html", user=user,
                                message="Price should be a number")
 
     # Error message
@@ -174,7 +174,8 @@ def createProduct_post(user):
         error_message = err
 
     # Display page with error message on failure
-    return render_template("product/create.html", message=error_message)
+    return render_template("product/create.html", user=user,
+                           message=error_message)
 
 
 @app.route('/product/update/<prodName>', methods=['GET'])
@@ -185,10 +186,11 @@ def updateProduct_get(user, prodName):
                 .one_or_none()
     # If product can't be found, display error
     if(product is None):
-        return render_template("message.html", message="Product " + prodName +
-                               " not found in your products")
+        return render_template("message.html", user=user, message="Product " +
+                               prodName + " not found in your products")
     # If product can be found, display update page
-    return render_template("product/update.html", message="", product=product)
+    return render_template("product/update.html", user=user, message="",
+                           product=product)
 
 
 @app.route('/product/update/<prodName>', methods=['POST'])
@@ -199,8 +201,8 @@ def updateProduct_post(user, prodName):
                 .one_or_none()
     # If product can't be found, display error
     if(product is None):
-        return render_template("error.html", message="Product " + {prodName} +
-                               " not found in your products")
+        return render_template("error.html", user=user, message="Product " +
+                               prodName + " not found in your products")
 
     # Get inputs from request body
     name = request.form.get('name')
@@ -211,7 +213,7 @@ def updateProduct_post(user, prodName):
     try:
         price = float(price)
     except ValueError:
-        return render_template("product/update.html",
+        return render_template("product/update.html", user=user,
                                message="Price should be a number",
                                product=product)
 
@@ -229,8 +231,8 @@ def updateProduct_post(user, prodName):
         error_message = err
 
     # Display page with error message on failure
-    return render_template("product/update.html", message=error_message,
-                           product=product)
+    return render_template("product/update.html", user=user,
+                           message=error_message, product=product)
 
 
 @app.route('/user/modify', methods=['GET'])
