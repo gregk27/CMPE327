@@ -1,4 +1,6 @@
 # CMPE327 - 
+![Tests](https://github.com/gregk27/CMPE327/actions/workflows/pytest.yml/badge.svg)
+![Linting](https://github.com/gregk27/CMPE327/actions/workflows/style_check.yml/badge.svg)
 
 ## Code Format
 
