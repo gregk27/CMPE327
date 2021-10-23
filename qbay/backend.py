@@ -254,8 +254,8 @@ def validateProductParameters(productName, description, price,
     return True
 
 
-def createProduct(productName, description, price, last_modified_date,
-                  owner_email):
+def createProduct(productName, description, price, owner_email,
+                  last_modified_date=dt.datetime.now()):
     """
     Create a Product
       Parameters:
