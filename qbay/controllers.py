@@ -254,7 +254,7 @@ def update_post_user(user):
         if(updateUser(user.id, username=username,
                       shippingAddress=shippingAddress,
                       postalCode=postalCode)):
-            return redirect(f"/user/update.html/{user.username}")
+            return redirect("/user/update")
         message = "Unknown error occured"
     except Exception as err:
         message = err
