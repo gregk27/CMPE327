@@ -1,4 +1,4 @@
-from qbay.models import db, User, Product
+from qbay.models import db, User, Product, Session
 from qbay.backend import updateProduct, register, \
     queryUser, createProduct, login, updateUser
 import datetime as dt
@@ -153,7 +153,8 @@ def test_r2_2_login(email, password, result):
     session = login(email, password, '123.456.789.123')
 
     if(session is not None):
-        db.session.delete(session)
+        db.session.delete(Session.query.filter_by(sessionId=session.sessionId)
+                          .one_or_none())
     # Delete user when done
     db.session.delete(user)
     db.session.commit()
@@ -258,7 +259,12 @@ def test_r3_updateUser(target, newVals, shouldChange):
     user.postalCode = orgVals['postalCode']
 
     orgVals['id'] = user.id
-    assert updateUser(user.id, **newVals) is True
+    try:
+        assert updateUser(user.id, **newVals) is True
+    except ValueError:
+        assert not (shouldChange['username']
+                    and shouldChange['shippingAddress']
+                    and shouldChange['postalCode'])
 
     modUser = User.query.filter_by(id=orgVals["id"]).first()
 

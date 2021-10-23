@@ -2,7 +2,7 @@ from flask import render_template, request, session, redirect
 from qbay.models import User, Product, Session
 from qbay.backend import (login, register, validateEmail,
                           validateUser, validatePswd,
-                          createProduct, updateProduct)
+                          createProduct, updateProduct, updateUser)
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -232,3 +232,32 @@ def updateProduct_post(user, prodName):
     # Display page with error message on failure
     return render_template("product/update.html", message=error_message,
                            product=product)
+
+
+@app.route('/user/modify', methods=['GET'])
+@authenticate
+def update_get_user(user):
+    # If user can be found, display update page
+    return render_template("user/update.html", message="", user=user)
+
+
+@app.route('/user/modify', methods=['POST'])
+@authenticate
+def update_post_user(user):
+    # Get inputs from request body
+    username = request.form.get('username')
+    shippingAddress = request.form.get('shippingAddress')
+    postalCode = request.form.get('postalCode')
+
+    # updateUser will return true on success
+    try:
+        if(updateUser(user.id, username=username,
+                      shippingAddress=shippingAddress,
+                      postalCode=postalCode)):
+            return redirect("/user/modify")
+        message = "Unknown error occured"
+    except Exception as err:
+        message = err
+
+    # Display page with error message on failure
+    return render_template("user/update.html", message=message, user=user)

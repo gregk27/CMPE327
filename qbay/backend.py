@@ -254,16 +254,16 @@ def validateProductParameters(productName, description, price,
     return True
 
 
-def createProduct(productName, description, price, owner_email,
-                  last_modified_date=dt.datetime.now()):
+def createProduct(productName, description, price, last_modified_date,
+                  owner_email):
     """
     Create a Product
       Parameters:
         productName (string):           product name
         description (string):           product description
         price (float):                  product price
-        ownerEmail:                     product owner's email
-        lastModifiedDate (DateTime):    product object last modified date
+        last_modified_date (DateTime):  product object last modified date
+        owner_email:                    product owner's email
       Returns:
         True if product creation succeeded, otherwise False
     """
@@ -389,9 +389,8 @@ def validatePostalCode(postalCode):
         True on validation success, False on failure
     """
     # If the format does not match a standard Canadian postal code
-    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+ \
-                    [ABCEGHJKLMNPRSTVXY][0-9]+ \
-                    [ABCEGHJKLMNPRSTVXY][0-9]+", postalCode):
+    # Regex doesn't like being broken, so line exceeds 80 character limit
+    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+[ABCEGHJKLMNPRSTVWXYZ[0-9]+[ABCEGHJKLMNPRSTVWXYZ][0-9]+", postalCode): # NOQA
         return False
 
     return True
@@ -412,24 +411,30 @@ def updateUser(userID, **kwargs):
 
     username = kwargs.get('username', userUpdate.username)
     # Check if username has been used before
-    usernameUnique = User.query.filter_by(username=username).all()
+    usernameUnique = User.query.filter(User.username == username)\
+                               .filter(User.id != userID).all()
+    print(usernameUnique)
 
     if 'username' in kwargs:
         # Check if username is valid
         if validateUser(username) and len(usernameUnique) < 1:
             # Update username if valid
             userUpdate.username = kwargs['username']
+        else:
+            raise ValueError("Invalid Username")
         kwargs.pop('username')
 
-    shippingAddress = kwargs.get('shipping_address',
+    shippingAddress = kwargs.get('shippingAddress',
                                  userUpdate.shippingAddress)
 
-    if 'shippingAdress' in kwargs:
+    if 'shippingAddress' in kwargs:
         # Check if ShippingAddress is valid
-        if validateShippingAddress:
+        if validateShippingAddress(shippingAddress):
             # Update Shipping Address
             userUpdate.shippingAddress = kwargs['shippingAddress']
-        kwargs.pop(shippingAddress)
+        else:
+            raise ValueError("Invalid shipping address")
+        kwargs.pop('shippingAddress')
 
     postalCode = kwargs.get('postalCode', userUpdate.postalCode)
 
@@ -437,7 +442,9 @@ def updateUser(userID, **kwargs):
         # Check if postalCode is a valid Canadian postal code
         if validatePostalCode(postalCode):
             # Update postalCode
-            postalCode = kwargs['PostalCode']
+            userUpdate.postalCode = kwargs['postalCode']
+        else:
+            raise ValueError("Invalid postal code")
         kwargs.pop('postalCode')
 
     db.session.commit()
