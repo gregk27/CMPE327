@@ -7,17 +7,34 @@
 {% block content %}
 <h2 id="welcome-header">Welcome {{ user.name }} !</h2>
 
-
-<h2>Here are all available products</h2>
-
-<div id="products">
-    {% for product in products %}
-    <div>
-        <h4>name: {{ product.name }} price: {{ product.price }} <a href='/product/update/<product.name>'>update</a></h4>
-    </div>
-    {% endfor %}
-	<a href='/product/create'>Sell a Product</a>
+<div style="height:4em">
+    <h2 style="width:fit-content; float:left">Here are all available products</h2>
+    <a class="btn btn-primary" style="display:inline-block; float:right" href='/product/create'>Sell a Product</a>
 </div>
+<br/>
+<div id="products">
+    <h3>Available products</h3>
+    {% for product in otherProducts %}
+    <div>
+        <h4>
+            {{ product.productName }} 
+            <span style="float:right; margin-right:5em">${{ product.price }}</span>
+            <span style="float:right; margin-right:2em">Seller: {{ product.user.username }}</span>
+        </h4>
+    </div> 
+    {% endfor %}
+    <h3>Your Products</h3>
+    {% for product in user.products %}
+    <div>
+        <h4>
+            {{ product.productName }} 
+            <a href='/product/update/{{product.productName}}' style="float:right">update</a>
+            <span style="float:right; margin-right:5em">${{ product.price }}</span>
+        </h4>
+    </div> 
+    {% endfor %}
+</div>
+<br/><br/>
+<a href="/user/modify">Update Profile</a>
 
-<a href='/logout'>logout</a>
 {% endblock %}

@@ -246,6 +246,7 @@ def validateProductParameters(productName, description, price,
     # Check if user has already used this title
     userProducts = Product.query.filter_by(ownerEmail=owner_email,
                                            productName=productName).all()
+    print(userProducts)
     if (len(userProducts) >= 1):
         if(exceptions):
             raise ValueError(f"User already has product {productName}")
@@ -254,8 +255,8 @@ def validateProductParameters(productName, description, price,
     return True
 
 
-def createProduct(productName, description, price, last_modified_date,
-                  owner_email):
+def createProduct(productName, description, price, owner_email,
+                  last_modified_date=dt.datetime.now()):
     """
     Create a Product
       Parameters:
@@ -307,13 +308,20 @@ def updateProduct(productId, **kwargs):
     if product is None:
         return False
 
+    # If the product name is unchanged, then make sure the owner email is
+    # not in database so duplicate check passes
+    owner_email = product.user.email
+    if('productName' in kwargs
+       and kwargs['productName'] == product.productName):
+        owner_email = "invalid"
+
     # Check that parameters are valid, use defaults which are when not provided
     if not validateProductParameters(
         productName=kwargs.get('productName', product.productName),
         description=kwargs.get('description', product.description),
         price=kwargs.get('price', product.price),
         last_modified_date=kwargs.get('lastModifiedDate', dt.datetime.now()),
-        owner_email="invalid",  # Shouldn't match in database as product exists
+        owner_email=owner_email,  # Need email for duplicate checking
         ignoreEmail=True,  # Email cannot be changed so don't validate it
         exceptions=True  # Throw exceptions for frontend error message
     ):

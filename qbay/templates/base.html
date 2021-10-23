@@ -117,7 +117,11 @@
  
  
              </div>
- 
+             {% if user is defined %}
+                <a class="btn" href='/user/logout'>Logout</a>
+             {% else %}
+                <a class="btn" href='/user/login'>Login</a>
+             {% endif %}
          </div>
      </nav>
  

@@ -39,21 +39,21 @@ def authenticate(inner_function):
                     return inner_function(user, *args, **kwargs)
             except Exception as e:
                 print(e)
-                return redirect('/login')
+                return redirect('/user/login')
         else:
             # else, redirect to the login page
-            return redirect('/login')
+            return redirect('/user/login')
     wrapped_inner.__name__ = inner_function.__name__
     # return the wrapped version of the inner_function:
     return wrapped_inner
 
 
-@app.route('/login', methods=['GET'])
+@app.route('/user/login', methods=['GET'])
 def login_get():
-    return render_template('login.html', message='Please login')
+    return render_template('user/login.html', message='Please login')
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/user/login', methods=['POST', 'GET'])
 def login_form():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -74,8 +74,8 @@ def login_form():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('login.html', message="Incorrect "
-                                                     "email or password")
+        return render_template('user/login.html', message="Incorrect " +
+                               "email or password")
 
 
 @app.route('/')
@@ -87,21 +87,20 @@ def home(user):
     # the login checking code all the time for other
     # front-end portals
 
-    # some fake product data
-    products = [
-        {'name': 'product 1', 'description': 'product desc 1', 'price': 10},
-        {'name': 'product 2', 'description': 'product desc 2', 'price': 20}
-    ]
-    return render_template('index.html', user=user, products=products)
+    # Get products from other users
+    otherProducts = Product.query.filter(Product.userId != user.id).all()
+    print(otherProducts[0].user.username)
+    return render_template('index.html', user=user,
+                           otherProducts=otherProducts)
 
 
-@app.route('/register', methods=['GET'])
+@app.route('/user/register', methods=['GET'])
 def register_get():
     # templates are stored in the templates folder
-    return render_template('register.html', message='')
+    return render_template('user/register.html', message='')
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/user/register', methods=['POST'])
 def register_post():
     email = request.form.get('email')
     name = request.form.get('name')
@@ -125,12 +124,12 @@ def register_post():
     # if there is any error messages when registering new user
     # at the backend, go back to the register page.
     if error_message:
-        return render_template('register.html', message=error_message)
+        return render_template('user/register.html', message=error_message)
     else:
-        return redirect('/login', code=302)
+        return redirect('/user/login', code=302)
 
 
-@app.route('/logout')
+@app.route('/user/logout')
 def logout():
     if 'logged_in' in session:
         session.pop('logged_in', None)
@@ -141,7 +140,7 @@ def logout():
 @authenticate
 def createProduct_get(user):
     # Display create product page
-    return render_template('product/create.html', message='')
+    return render_template('product/create.html', user=user, message='')
 
 
 @app.route('/product/create', methods=['POST'])
@@ -157,7 +156,7 @@ def createProduct_post(user):
     try:
         price = float(price)
     except ValueError:
-        return render_template("product/create.html",
+        return render_template("product/create.html", user=user,
                                message="Price should be a number")
 
     # Error message
@@ -175,7 +174,8 @@ def createProduct_post(user):
         error_message = err
 
     # Display page with error message on failure
-    return render_template("product/create.html", message=error_message)
+    return render_template("product/create.html", user=user,
+                           message=error_message)
 
 
 @app.route('/product/update/<prodName>', methods=['GET'])
@@ -186,10 +186,11 @@ def updateProduct_get(user, prodName):
                 .one_or_none()
     # If product can't be found, display error
     if(product is None):
-        return render_template("error.html", message="Product " + {prodName} +
-                               " not found in your products")
+        return render_template("message.html", user=user, message="Product " +
+                               prodName + " not found in your products")
     # If product can be found, display update page
-    return render_template("product/update.html", message="", product=product)
+    return render_template("product/update.html", user=user, message="",
+                           product=product)
 
 
 @app.route('/product/update/<prodName>', methods=['POST'])
@@ -200,8 +201,8 @@ def updateProduct_post(user, prodName):
                 .one_or_none()
     # If product can't be found, display error
     if(product is None):
-        return render_template("error.html", message="Product " + {prodName} +
-                               " not found in your products")
+        return render_template("error.html", user=user, message="Product " +
+                               prodName + " not found in your products")
 
     # Get inputs from request body
     name = request.form.get('name')
@@ -212,7 +213,7 @@ def updateProduct_post(user, prodName):
     try:
         price = float(price)
     except ValueError:
-        return render_template("product/update.html",
+        return render_template("product/update.html", user=user,
                                message="Price should be a number",
                                product=product)
 
@@ -224,14 +225,14 @@ def updateProduct_post(user, prodName):
         if(updateProduct(product.id, productName=name, price=price,
                          description=description)):
             #  Redirect since product name may have changed
-            return redirect(f"/update/{product.productName}")
+            return redirect(f"/product/update/{product.productName}")
         error_message = "Unknown error occurred"
     except Exception as err:
         error_message = err
 
     # Display page with error message on failure
-    return render_template("product/update.html", message=error_message,
-                           product=product)
+    return render_template("product/update.html", user=user,
+                           message=error_message, product=product)
 
 
 @app.route('/user/modify', methods=['GET'])
