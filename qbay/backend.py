@@ -389,7 +389,8 @@ def validatePostalCode(postalCode):
         True on validation success, False on failure
     """
     # If the format does not match a standard Canadian postal code
-    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+[ABCEGHJKLMNPRSTVWXYZ[0-9]+[ABCEGHJKLMNPRSTVWXYZ][0-9]+", postalCode):
+    # Regex doesn't like being broken, so line exceeds 80 character limit
+    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+[ABCEGHJKLMNPRSTVWXYZ[0-9]+[ABCEGHJKLMNPRSTVWXYZ][0-9]+", postalCode): # NOQA
         return False
 
     return True
