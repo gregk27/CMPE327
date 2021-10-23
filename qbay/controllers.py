@@ -74,8 +74,8 @@ def login_form():
         # code 303 is to force a 'GET' request
         return redirect('/', code=303)
     else:
-        return render_template('user/login.html', message="Incorrect "
-                                                     "email or password")
+        return render_template('user/login.html', message="Incorrect " +
+                               "email or password")
 
 
 @app.route('/')
