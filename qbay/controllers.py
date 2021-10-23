@@ -238,7 +238,7 @@ def updateProduct_post(user, prodName):
 @authenticate
 def update_get_user(user):
     # If user can be found, display update page
-    return render_template("user/update/", message="", user=user)
+    return render_template("user/update.html", message="", user=user)
 
 
 @app.route('/user/modify', methods=['POST'])
@@ -254,10 +254,10 @@ def update_post_user(user):
         if(updateUser(user.id, username=username,
                       shippingAddress=shippingAddress,
                       postalCode=postalCode)):
-            return redirect(f"/user/update/{user.username}")
+            return redirect(f"/user/update.html/{user.username}")
         message = "Unknown error occured"
     except Exception as err:
         message = err
 
     # Display page with error message on failure
-    return render_template("user/update/", message=message, user=user)
+    return render_template("user/update.html", message=message, user=user)
