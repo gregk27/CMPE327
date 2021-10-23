@@ -46,8 +46,6 @@ def login(email, password, ip):
                 sessionId=str(uuid4()),
                 # Session expires after a year
                 expiry=dt.datetime(time.year+1, time.month, time.day))
-    db.session.add(s)
-    db.session.commit()
     return s
 
 
@@ -268,7 +266,8 @@ def createProduct(productName, description, price, last_modified_date,
         True if product creation succeeded, otherwise False
     """
     if(not validateProductParameters(productName, description, price,
-                                     last_modified_date, owner_email)):
+                                     last_modified_date, owner_email,
+                                     False, True)):
         return False
 
     # Get the owner to obtain their id
