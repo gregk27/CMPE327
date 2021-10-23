@@ -309,7 +309,7 @@ def updateProduct(productId, **kwargs):
         return False
 
     # If the product name is unchanged, then make sure the owner email is
-    #   not in database so duplicate check passes
+    # not in database so duplicate check passes
     owner_email = product.user.email
     if('productName' in kwargs
        and kwargs['productName'] == product.productName):
