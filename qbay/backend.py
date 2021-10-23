@@ -46,6 +46,8 @@ def login(email, password, ip):
                 sessionId=str(uuid4()),
                 # Session expires after a year
                 expiry=dt.datetime(time.year+1, time.month, time.day))
+    db.session.add(s)
+    db.session.commit()
     return s
 
 
@@ -387,9 +389,7 @@ def validatePostalCode(postalCode):
         True on validation success, False on failure
     """
     # If the format does not match a standard Canadian postal code
-    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+ \
-                    [ABCEGHJKLMNPRSTVWXYZ[0-9]+ \
-                    [ABCEGHJKLMNPRSTVWXYZ][0-9]+", postalCode):
+    if not re.match(r"[ABCEGHJKLMNPRSTVXY][0-9]+[ABCEGHJKLMNPRSTVWXYZ[0-9]+[ABCEGHJKLMNPRSTVWXYZ][0-9]+", postalCode):
         return False
 
     return True
@@ -410,13 +410,17 @@ def updateUser(userID, **kwargs):
 
     username = kwargs.get('username', userUpdate.username)
     # Check if username has been used before
-    usernameUnique = User.query.filter_by(username=username).all()
+    usernameUnique = User.query.filter(User.username == username)\
+                               .filter(User.id != userID).all()
+    print(usernameUnique)
 
     if 'username' in kwargs:
         # Check if username is valid
         if validateUser(username) and len(usernameUnique) < 1:
             # Update username if valid
             userUpdate.username = kwargs['username']
+        else:
+            raise ValueError("Invalid Username")
         kwargs.pop('username')
 
     shippingAddress = kwargs.get('shippingAddress',
@@ -427,6 +431,8 @@ def updateUser(userID, **kwargs):
         if validateShippingAddress(shippingAddress):
             # Update Shipping Address
             userUpdate.shippingAddress = kwargs['shippingAddress']
+        else:
+            raise ValueError("Invalid shipping address")
         kwargs.pop('shippingAddress')
 
     postalCode = kwargs.get('postalCode', userUpdate.postalCode)
@@ -435,7 +441,9 @@ def updateUser(userID, **kwargs):
         # Check if postalCode is a valid Canadian postal code
         if validatePostalCode(postalCode):
             # Update postalCode
-            postalCode = kwargs['postalCode']
+            userUpdate.postalCode = kwargs['postalCode']
+        else:
+            raise ValueError("Invalid postal code")
         kwargs.pop('postalCode')
 
     db.session.commit()

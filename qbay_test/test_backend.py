@@ -259,7 +259,12 @@ def test_r3_updateUser(target, newVals, shouldChange):
     user.postalCode = orgVals['postalCode']
 
     orgVals['id'] = user.id
-    assert updateUser(user.id, **newVals) is True
+    try:
+        assert updateUser(user.id, **newVals) is True
+    except ValueError:
+        assert not (shouldChange['username']
+                    and shouldChange['shippingAddress']
+                    and shouldChange['postalCode'])
 
     modUser = User.query.filter_by(id=orgVals["id"]).first()
 
