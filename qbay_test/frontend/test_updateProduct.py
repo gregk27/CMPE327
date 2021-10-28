@@ -90,3 +90,47 @@ class FrontEndProductUpdatePageTest(BaseCase):
         # Assert that description was changed
         newVal = self.find_element("#price").get_attribute("value")
         assert float(newVal) == 2500
+
+    def test_r5_2(self, *_):
+        """
+        Test that price can only be increased
+        This is a test using input partitioning, paritioned as followed
+         - price is smaller than current
+         - price is equal to current
+         - price is greater than current
+        From setup code, current price is 1000
+        """
+        # Set session token
+        self.open(base_url + f'/_test/{self.uuid}')
+        # open modify page
+        self.open(base_url + '/product/update/Frontend ProdUp Test')
+
+        # Smaller price parition
+        self.type("#price", "900")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that price is unchanged
+        newVal = self.find_element("#price").get_attribute("value")
+        assert float(newVal) == 1000
+
+        # Equal price parition
+        self.type("#price", "1000")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that price is unchanged
+        newVal = self.find_element("#price").get_attribute("value")
+        assert float(newVal) == 1000
+
+        # Larger price parition
+        self.type("#price", "1100")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that price is updated
+        newVal = self.find_element("#price").get_attribute("value")
+        assert float(newVal) == 1100
