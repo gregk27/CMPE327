@@ -32,7 +32,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         db.session.execute("\
             INSERT INTO product (id, productName, userId, ownerEmail,\
                  price, description, lastModifiedDate)\
-            VALUES ('"+uuid+"', 'Frontend UpTest', '"+uuid+"',\
+            VALUES ('"+uuid+"', 'Frontend ProdUp Test', '"+uuid+"',\
                 'front.upProd@test.com', 1000, 'Product to test frontend',\
                 CURRENT_TIMESTAMP)")
         db.session.execute("\
@@ -48,3 +48,45 @@ class FrontEndProductUpdatePageTest(BaseCase):
         db.session.execute(f"DELETE FROM user WHERE id='{uuid}'")
         db.session.commit()
 
+    def test_r5_1(self, *_):
+        """
+        Test that all available parameters can be set
+        This is a test using functional paritioning, paritioned as follows
+         - user can update name
+         - user can update description
+         - user can update price
+        """
+        # Set session token
+        self.open(base_url + f'/_test/{self.uuid}')
+        # open modify page
+        self.open(base_url + '/product/update/Frontend ProdUp Test')
+
+        # Update name partition
+        self.type("#name", "New product name")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that name was changed (because of redirect this proves db)
+        newVal = self.find_element("#name").get_attribute("value")
+        assert newVal == "New product name"
+
+        # Update description partition
+        self.type("#desc", "This is an updated description")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that description was changed
+        newVal = self.find_element("#desc").get_attribute("value")
+        assert newVal == "This is an updated description"
+
+        # Update description partition
+        self.type("#price", "2500")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that description was changed
+        newVal = self.find_element("#price").get_attribute("value")
+        assert float(newVal) == 2500
