@@ -72,7 +72,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#name", "New product name")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that name was changed (because of redirect this proves db)
         newVal = self.find_element("#name").get_attribute("value")
@@ -82,7 +82,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#desc", "This is an updated description")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that description was changed
         newVal = self.find_element("#desc").get_attribute("value")
@@ -92,7 +92,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#price", "2500")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that description was changed
         newVal = self.find_element("#price").get_attribute("value")
@@ -116,7 +116,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#price", "900")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that price is unchanged
         newVal = self.find_element("#price").get_attribute("value")
@@ -126,7 +126,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#price", "1000")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that price is unchanged
         newVal = self.find_element("#price").get_attribute("value")
@@ -136,7 +136,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#price", "1100")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that price is updated
         newVal = self.find_element("#price").get_attribute("value")
@@ -172,7 +172,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#name", "---")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that error message is correct
         self.assert_text(msg, "#message")
@@ -189,7 +189,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#desc", "test")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that error message is correct
         self.assert_text(msg, "#message")
@@ -206,7 +206,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#price", "5")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that error message is correct
         self.assert_text(msg, "#message")
@@ -223,7 +223,7 @@ class FrontEndProductUpdatePageTest(BaseCase):
         self.type("#name", "Frontend ProdUp Test 2")
         # click enter button
         self.click('input[type="submit"]')
-        self.wait(2)
+        self.wait(0.5)
 
         # Assert that error message is correct
         self.assert_text(msg, "#message")
