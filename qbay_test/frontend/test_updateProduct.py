@@ -4,6 +4,7 @@ import pytest
 
 from qbay_test.conftest import base_url
 from qbay.models import db
+from qbay.backend import updateProduct
 
 """
 This file defines all integration tests for the frontend homepage.
@@ -33,6 +34,12 @@ class FrontEndProductUpdatePageTest(BaseCase):
             INSERT INTO product (id, productName, userId, ownerEmail,\
                  price, description, lastModifiedDate)\
             VALUES ('"+uuid+"', 'Frontend ProdUp Test', '"+uuid+"',\
+                'front.upProd@test.com', 1000, 'Product to test frontend',\
+                CURRENT_TIMESTAMP)")
+        db.session.execute("\
+            INSERT INTO product (id, productName, userId, ownerEmail,\
+                 price, description, lastModifiedDate)\
+            VALUES ('"+str(uuid4())+"', 'Frontend ProdUp Test 2', '"+uuid+"',\
                 'front.upProd@test.com', 1000, 'Product to test frontend',\
                 CURRENT_TIMESTAMP)")
         db.session.execute("\
@@ -134,3 +141,89 @@ class FrontEndProductUpdatePageTest(BaseCase):
         # Assert that price is updated
         newVal = self.find_element("#price").get_attribute("value")
         assert float(newVal) == 1100
+
+    def test_r5_4(self, *_):
+        """
+        Test that input errors are reported correctly
+        This is a test using output partitioning, paritioned as followed
+         - Invalid name error
+         - Invalid description error
+         - Invalid price error
+         - Invalid last modified date error (unreachable from frontend)
+         - Invalid owner email (unreachable from frontend)
+         - Product already exists
+        """
+        # Set session token
+        self.open(base_url + f'/_test/{self.uuid}')
+        # open modify page
+        self.open(base_url + '/product/update/Frontend ProdUp Test')
+
+        msg = ""
+
+        # Invalid name parition (cannot be only numbers)
+        # Get error message to check against
+        try:
+            updateProduct(self.uuid, name="---")
+        except ValueError as e:
+            msg = e
+        print(msg)
+
+        # Input invalid name
+        self.type("#name", "---")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that error message is correct
+        self.assert_text(msg, "#message")
+
+        # Invalid description parition (must be longer than 20)
+        # Get error message to check against
+        try:
+            updateProduct(self.uuid, description="test")
+        except ValueError as e:
+            msg = e
+        print(msg)
+
+        # Input invalid description
+        self.type("#desc", "test")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that error message is correct
+        self.assert_text(msg, "#message")
+
+        # Invalid price parition (must be more than 10)
+        # Get error message to check against
+        try:
+            updateProduct(self.uuid, price=5)
+        except ValueError as e:
+            msg = e
+        print(msg)
+
+        # Input invalid price
+        self.type("#price", "5")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that error message is correct
+        self.assert_text(msg, "#message")
+
+        # Duplicate name parition (use second created in setup)
+        # Get error message to check against
+        try:
+            updateProduct(self.uuid, nane="Frontend ProdUp Test 2")
+        except ValueError as e:
+            msg = e
+        print(msg)
+
+        # Input invalid name
+        self.type("#name", "Frontend ProdUp Test 2")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(2)
+
+        # Assert that error message is correct
+        self.assert_text(msg, "#message")
