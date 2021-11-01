@@ -294,10 +294,10 @@ class ProductCreationTest(BaseCase):
         # ignore errors from pre-existance
         try:
             createProduct(productName="Product",
-                          description="Product description",
-                          price="10",
+                          description="This is a test description",
+                          price=10,
                           last_modified_date=dt.datetime(2021, 10, 8),
-                          owner_email='user0@test.com')
+                          owner_email="user@test.com")
         except ValueError:
             pass
 
@@ -310,7 +310,7 @@ class ProductCreationTest(BaseCase):
         self.type("#price", "10")
         self.click('input[type="submit"]')
         # Wait for render to complete
-        self.wait(0.5)
+        self.wait(10)
         # Get updated message
         msg = self.find_element('#message').text
         # Check to see if "Invalid" is in message
