@@ -14,12 +14,21 @@ This file defines all integration tests for the frontend homepage.
 class FrontEndProductUpdatePageTest(BaseCase):
 
     @pytest.fixture(autouse=True)
-    def login(self, *_):
+    def setup(self, *_):
+        '''
+        Pytest Fixture to prepare the database for testing,
+        will run automatically before tests.
+        This function executes SQL queries to do the following:
+         - Delete conflicting entities in tables if present
+         - Create a new user
+         - Create 2 new products
+         - Create session credentials for the user
+         - Delete user, products, and credentials after test completion
+        '''
         print("SETUP")
         # Generate uuid, will be reused for user, product and session
         self.uuid = str(uuid4())
         uuid = self.uuid
-        print(uuid)
         s = db.session
         # Clean up database
         s.execute("DELETE FROM product WHERE productName='Frontend UpTest'")
