@@ -42,3 +42,11 @@ Add `qbay/templates/` (provided front end code; additional pages created) and `q
 The pages for the front end include: user login, user registration, user profile update, user home page, product creation, and product update.
 
 Testing for this stage includes passing the linting and front end runs without error.
+
+## [A4 - Frontend testing](https://github.com/CISC-CMPE-327/Information-2021/blob/main/A4-frontend-testing.md)
+Now that the prototype interface has been created, tests must be implemented for each of the pages
+
+Add seleniumBase as dependency in `requirements.txt`
+Create tests for frontend pages in `qbay_test/frontend`, these tests employ Selenium Webdriver to test interactions with frontend pages.
+
+Testing for this stage includes passing linting and pytests for backend and frontend.
