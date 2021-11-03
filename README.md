@@ -2,6 +2,9 @@
 ![Tests](https://github.com/gregk27/CMPE327/actions/workflows/pytest.yml/badge.svg)
 ![Linting](https://github.com/gregk27/CMPE327/actions/workflows/style_check.yml/badge.svg)
 
+## Meeting Notes
+Notes for the stand-up meetings for A4 and later can be found in `.standups/`
+
 ## Code Format
 
 All code in the repository should follow the [PEP8 standard](https://www.python.org/dev/peps/pep-0008/)
