@@ -35,11 +35,8 @@ class FrontEndProductUpdatePageTest(BaseCase):
                  price, description, lastModifiedDate)\
             VALUES ('"+uuid+"', 'Frontend ProdUp Test', '"+uuid+"',\
                 'front.upProd@test.com', 1000, 'Product to test frontend',\
-                CURRENT_TIMESTAMP)")
-        db.session.execute("\
-            INSERT INTO product (id, productName, userId, ownerEmail,\
-                 price, description, lastModifiedDate)\
-            VALUES ('"+str(uuid4())+"', 'Frontend ProdUp Test 2', '"+uuid+"',\
+                CURRENT_TIMESTAMP),\
+                   ('"+str(uuid4())+"', 'Frontend ProdUp Test 2', '"+uuid+"',\
                 'front.upProd@test.com', 1000, 'Product to test frontend',\
                 CURRENT_TIMESTAMP)")
         db.session.execute("\
