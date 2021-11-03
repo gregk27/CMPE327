@@ -86,14 +86,14 @@ class FrontEndProductUpdatePageTest(BaseCase):
         assert newVal == "This is an updated description"
 
         # Update description partition
-        self.type("#price", "2500")
+        self.type("#price", "2500.50")
         # click enter button
         self.click('input[type="submit"]')
         self.wait(0.5)
 
         # Assert that description was changed
         newVal = self.find_element("#price").get_attribute("value")
-        assert float(newVal) == 2500
+        assert float(newVal) == 2500.5
 
     def test_r5_2(self, *_):
         """

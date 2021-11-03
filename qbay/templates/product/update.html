@@ -13,7 +13,7 @@
 	<label for="desc">Description</label>
     <textarea class="form-control" name="desc" id="desc" required>{{product.description}}</textarea>
     <label for="price">Price</label>
-    <input class="form-control" type="number" name="price" id="price" value="{{product.price}}" required>
+    <input class="form-control" type="number" name="price" id="price" step="0.01" value="{{product.price}}" required>
     <input class="btn btn-primary" type="submit" value="Update">
   </div>
 </form>
