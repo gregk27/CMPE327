@@ -13,8 +13,8 @@
 	<label for="desc">Description</label>
     <textarea class="form-control" name="desc" id="desc" required></textarea>
     <label for="price">Price</label>
-    <input class="form-control" type="number" name="price" id="price" required>
-    <input class="btn btn-primary" type="submit" value="Create">
+    <input class="form-control" type="number" name="price" id="price" step="0.01" required>
+    <input class="btn btn-primary" type="submit" id="btn-submit" value="Create">
   </div>
 </form>
 {% endblock %}
