@@ -2,8 +2,38 @@
 ![Tests](https://github.com/gregk27/CMPE327/actions/workflows/pytest.yml/badge.svg)
 ![Linting](https://github.com/gregk27/CMPE327/actions/workflows/style_check.yml/badge.svg)
 
-## Meeting Notes
-Notes for the stand-up meetings for A4 and later can be found in `.standups/`
+## Filestructure
+```
+.
+├── .standups               -- Notes from standup meetings
+│   ├── a4-kanban.png       
+│   └── a4.md
+├── qbay                    -- Source Code
+│   ├── templates               -- Templates for frontend pages
+│   │   ├── product
+│   │   │   ├── create.html             -- Create Product page template
+│   │   │   └── update.html             -- Update Product page template
+│   │   ├── user
+│   │   │   ├── login.html              -- Login page template
+│   │   │   ├── register.html           -- Register page templaet
+│   │   │   └── update.html             -- Update User page template
+│   │   ├── base.html               -- Base template for all pages 
+│   │   ├── index.html              -- Homepage template
+│   │   └── message.html            -- Message page template
+│   ├── backend.py              -- Functions for backend operations
+│   ├── controllers.py          -- Controllers for frontend routing
+│   └── models.py               -- Definitions of data models
+├── qbay_test               -- Test Code
+│   ├── frontend                -- Tests for frontend page (using selenium)
+│   │   ├── test_login.py               -- Tests for Login page
+│   │   ├── test_productCreation.py     -- Tests for Create Product page
+│   │   └── test_updateProduct.py       -- Tests for Update Product page
+│   ├── conftest.py             -- Test configuration code
+│   └── test_backend.py         -- Tests for backend fuctions
+├── A0-contract.md          -- Team contract
+├── README.md
+└── requirements.txt        -- pip dependencies
+```
 
 ## Code Format
 
