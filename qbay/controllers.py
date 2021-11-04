@@ -48,6 +48,13 @@ def authenticate(inner_function):
     return wrapped_inner
 
 
+# Endpoint used to set session ID while testing
+@app.route("/_test/<sid>", methods=["GET"])
+def test_set_session(sid):
+    session['logged_in'] = sid
+    return ""
+
+
 @app.route('/user/login', methods=['GET'])
 def login_get():
     return render_template('user/login.html', message='Please login')
