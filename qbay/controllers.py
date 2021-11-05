@@ -245,7 +245,7 @@ def updateProduct_post(user, prodName):
 @authenticate
 def update_get_user(user):
     # If user can be found, display update page
-    return render_template("user/update.html", message="", user=user)
+    return render_template("user/modify.html", message="", user=user)
 
 
 @app.route('/user/modify', methods=['POST'])
@@ -267,4 +267,4 @@ def update_post_user(user):
         message = err
 
     # Display page with error message on failure
-    return render_template("user/update.html", message=message, user=user)
+    return render_template("user/modify.html", message=message, user=user)
