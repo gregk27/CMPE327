@@ -22,10 +22,10 @@ class FrontEndUserUpdatePageTest(BaseCase):
         # Set up the database, use SQL queries so no dependency on backend
         # or other pages
         db.session.execute("\
-            INSERT INTO user (id, username, email, password, balance\
+            INSERT INTO user (id, username, email, password, balance,\
                               shippingAddress, postalCode)\
             VALUES ('"+uuid+"', 'Frontend UpUser', 'front.upUser@test.com',\
-                    '', 500, '', '')")
+                    '', 500, '560 Kingston Dr', 'K7L2G2')")
         db.session.execute("\
             INSERT INTO session (sessionId, userId, ipAddress)\
             VALUES ('"+uuid+"', '"+uuid+"', '127.0.0.1')")
@@ -50,7 +50,7 @@ class FrontEndUserUpdatePageTest(BaseCase):
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
         # open modify pagep
-        self.open(base_url + '/user/update/Frontend UserUp Test')
+        self.open(base_url + '/user/modify')
         # Update username partition
         self.type("#username", "New Username")
         # click enter button
@@ -90,7 +90,7 @@ class FrontEndUserUpdatePageTest(BaseCase):
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
         # open modify page
-        self.open(base_url + '/user/update/Frontend UserUp Test')
+        self.open(base_url + '/user/modify')
 
         msg = ""
 
@@ -102,14 +102,24 @@ class FrontEndUserUpdatePageTest(BaseCase):
             msg = e
         print(msg)
 
-        # Input invalid name
-        self.type("#username", "560 $horeline_drive")
+        # Input invalid shipping address
+        self.type("#shippingAddress", "560 $horeline_drive")
         # click enter button
         self.click('input[type="submit"]')
         self.wait(0.5)
 
         # Assert that error message is correct
         self.assert_text(msg, "#message")
+
+        # Update postal code partition
+        self.type('#postalCode', "L5B0A9")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(0.5)
+
+        # Assert that postal code was changed
+        newVal = self.find_element("#postalCode").get_attribute("value")
+        assert newVal == "L5B0A9"
 
     def test_r3_3(self, *_):
         """
@@ -119,7 +129,7 @@ class FrontEndUserUpdatePageTest(BaseCase):
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
         # open modify page
-        self.open(base_url + '/user/update/Frontend UserUp Test')
+        self.open(base_url + '/user/modify')
 
         msg = ""
 
@@ -148,20 +158,20 @@ class FrontEndUserUpdatePageTest(BaseCase):
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
         # open modify page
-        self.open(base_url + '/user/update/Frontend UserUp Test')
+        self.open(base_url + '/user/modify')
 
         msg = ""
 
         # Invalid username partition
         # Get error message to check against
         try:
-            updateUser(self.uuid, username=" ")
+            updateUser(self.uuid, username="!2")
         except ValueError as e:
             msg = e
         print(msg)
 
         # Input invalid username
-        self.type("#username", " ")
+        self.type("#username", "!2")
         # click enter button
         self.click('input[type="submit"]')
         self.wait(0.5)
