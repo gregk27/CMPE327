@@ -26,6 +26,7 @@
 ├── qbay_test               -- Test Code
 │   ├── frontend                -- Tests for frontend page (using selenium)
 │   │   ├── test_login.py               -- Tests for Login page
+|   |   ├── test_register.py            -- Tests for register page
 │   │   ├── test_productCreation.py     -- Tests for Create Product page
 │   │   └── test_updateProduct.py       -- Tests for Update Product page
 │   ├── conftest.py             -- Test configuration code
