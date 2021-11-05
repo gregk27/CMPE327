@@ -320,7 +320,7 @@ def test_r4_2_create_product(title, description, expected):
     """
     Testing R4-2: The title of the product is no longer than 80 characters.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
 
     try:
@@ -346,7 +346,7 @@ def test_r4_3_create_product(description, expected):
     Testing R4-3: The description of the product can be arbitrary characters,
       with a minimum length of 20 characters and a maximum of 2000 characters.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
     try:
         assert createProduct(productName='p0',
@@ -370,7 +370,7 @@ def test_r4_4_create_product(title, description, expected):
     """
     Testing R4-4: Description has to be longer than the product's title.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
 
     try:
@@ -396,7 +396,7 @@ def test_r4_5_create_product(price, expected):
     """
     Testing R4-5: Price has to be of range [10,10000].
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
 
     try:
@@ -422,7 +422,7 @@ def test_r4_6_create_product(date, expected):
     Testing R4-6: last_modified_date must be after 2021-01-02
       and before 2025-01-02.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
 
     try:
@@ -450,7 +450,7 @@ def test_r4_7_create_product(email, expected):
     Testing R4-7: owner_email cannot be empty. The owner of the corresponding
       product must exist in the database.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
 
     try:
@@ -473,7 +473,7 @@ def test_r4_8_create_product(email, expected):
     """
     Testing R4-8: A user cannot create products that have the same title.
     """
-    # Register a test user, if exists will just reurn false
+    # Register a test user, if exists will just return false
     register('Test0', 'test0@test.com', 'Password1!')
     register('Test1', 'test1@test.com', 'Password1!')
 

@@ -2,6 +2,39 @@
 ![Tests](https://github.com/gregk27/CMPE327/actions/workflows/pytest.yml/badge.svg)
 ![Linting](https://github.com/gregk27/CMPE327/actions/workflows/style_check.yml/badge.svg)
 
+## Filestructure
+```
+.
+├── .standups               -- Notes from standup meetings
+│   ├── a4-kanban.png       
+│   └── a4.md
+├── qbay                    -- Source Code
+│   ├── templates               -- Templates for frontend pages
+│   │   ├── product
+│   │   │   ├── create.html             -- Create Product page template
+│   │   │   └── update.html             -- Update Product page template
+│   │   ├── user
+│   │   │   ├── login.html              -- Login page template
+│   │   │   ├── register.html           -- Register page templaet
+│   │   │   └── update.html             -- Update User page template
+│   │   ├── base.html               -- Base template for all pages 
+│   │   ├── index.html              -- Homepage template
+│   │   └── message.html            -- Message page template
+│   ├── backend.py              -- Functions for backend operations
+│   ├── controllers.py          -- Controllers for frontend routing
+│   └── models.py               -- Definitions of data models
+├── qbay_test               -- Test Code
+│   ├── frontend                -- Tests for frontend page (using selenium)
+│   │   ├── test_login.py               -- Tests for Login page
+│   │   ├── test_productCreation.py     -- Tests for Create Product page
+│   │   └── test_updateProduct.py       -- Tests for Update Product page
+│   ├── conftest.py             -- Test configuration code
+│   └── test_backend.py         -- Tests for backend fuctions
+├── A0-contract.md          -- Team contract
+├── README.md
+└── requirements.txt        -- pip dependencies
+```
+
 ## Code Format
 
 All code in the repository should follow the [PEP8 standard](https://www.python.org/dev/peps/pep-0008/)
@@ -42,3 +75,11 @@ Add `qbay/templates/` (provided front end code; additional pages created) and `q
 The pages for the front end include: user login, user registration, user profile update, user home page, product creation, and product update.
 
 Testing for this stage includes passing the linting and front end runs without error.
+
+## [A4 - Frontend testing](https://github.com/CISC-CMPE-327/Information-2021/blob/main/A4-frontend-testing.md)
+Now that the prototype interface has been created, tests must be implemented for each of the pages
+
+Add seleniumBase as dependency in `requirements.txt`
+Create tests for frontend pages in `qbay_test/frontend`, these tests employ Selenium Webdriver to test interactions with frontend pages.
+
+Testing for this stage includes passing linting and pytests for backend and frontend.
