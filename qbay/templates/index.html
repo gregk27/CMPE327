@@ -31,10 +31,15 @@
             <a href='/product/update/{{product.productName}}' style="float:right">update</a>
             <span style="float:right; margin-right:5em">${{ product.price }}</span>
         </h4>
-    </div> 
-    {% endfor %}
+    </div>
 </div>
+    {% endfor %}
 <br/><br/>
+<div>
+    <h3>Shipping Information</h3>
+    <p id="shipping">Shipping address: {{user.shippingAddress}}</p>
+    <p id="postal">Postal Code: {{user.postalCode}}</p>
+</div>
 <a href="/user/modify">Update Profile</a>
 
 {% endblock %}
