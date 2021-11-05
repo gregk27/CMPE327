@@ -85,8 +85,12 @@ class FrontEndUserUpdatePageTest(BaseCase):
         """
         Test that shipping address can only be an alphanumeric
         value
+<<<<<<< HEAD
         From setup code, shipping address is currently
         560 Kingston Dr
+=======
+        From setup code, shipping address is currently empty
+>>>>>>> 63c49ca6626b90231cdfe9f04f66f676e9de9d27
         """
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
@@ -125,7 +129,11 @@ class FrontEndUserUpdatePageTest(BaseCase):
     def test_r3_3(self, *_):
         """
         Test that postal code is a valid Canadian postal code
+<<<<<<< HEAD
         From setup code, postal code is currently K7L2G2
+=======
+        From setup code, postal code is currently empty
+>>>>>>> 63c49ca6626b90231cdfe9f04f66f676e9de9d27
         """
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
