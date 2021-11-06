@@ -83,57 +83,10 @@ class FrontEndUserUpdatePageTest(BaseCase):
 
     def test_r3_2(self, *_):
         """
-        Test that shipping address can only be an alphanumeric
-        value
-<<<<<<< HEAD
-        From setup code, shipping address is currently
-        560 Kingston Dr
-=======
-        From setup code, shipping address is currently empty
->>>>>>> 63c49ca6626b90231cdfe9f04f66f676e9de9d27
-        """
-        # Set session token
-        self.open(base_url + f'/_test/{self.uuid}')
-        # open modify page
-        self.open(base_url + '/user/modify')
-
-        msg = ""
-
-        # Invalid shippingAddress partition (can only be alphanumeric)
-        # Get error message to check against
-        try:
-            updateUser(self.uuid, shippingAddress="560 $horeline_drive")
-        except ValueError as e:
-            msg = e
-        print(msg)
-
-        # Input invalid shipping address
-        self.type("#shippingAddress", "560 $horeline_drive")
-        # click enter button
-        self.click('input[type="submit"]')
-        self.wait(0.5)
-
-        # Assert that error message is correct
-        self.assert_text(msg, "#message")
-
-        # Update postal code partition
-        self.type('#postalCode', "L5B0A9")
-        # click enter button
-        self.click('input[type="submit"]')
-        self.wait(0.5)
-
-        # Assert that postal code was changed
-        newVal = self.find_element("#postalCode").get_attribute("value")
-        assert newVal == "L5B0A9"
-
-    def test_r3_3(self, *_):
-        """
         Test that postal code is a valid Canadian postal code
-<<<<<<< HEAD
-        From setup code, postal code is currently K7L2G2
-=======
-        From setup code, postal code is currently empty
->>>>>>> 63c49ca6626b90231cdfe9f04f66f676e9de9d27
+        This is a test using input partitioning, partitioned as follows
+        - postalCode is a valid Canadian postal code
+        - postalCOde is non-empty
         """
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
@@ -159,10 +112,32 @@ class FrontEndUserUpdatePageTest(BaseCase):
         # Assert that error message is correct
         self.assert_text(msg, "#message")
 
-    def test_r3_4(self, *_):
+        # Invalid postalCode partition
+        # Get error message to check against
+        try:
+            updateUser(self.uuid, postalCode=" ")
+        except ValueError as e:
+            msg = e
+        print(msg)
+
+        # Input invalid postal code
+        self.type("#postalCode", " ")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(0.5)
+
+        # Assert that error message is correct
+        self.assert_text(msg, "#message")
+
+    def test_r3_3(self, *_):
         """
-        Test that username follows the requirements above
-        From setup code, the username is Frontend UpUser
+        Test that input errors are reported correctly
+        This is a test using output partitioning, partitioned
+        as follows
+        - Invalid username error
+        - shippingAddress is alphanumeric
+        From setup code, the username is Frontend UpUser and
+        shippingAddress is 560 Kingston Dr
         """
         # Set session token
         self.open(base_url + f'/_test/{self.uuid}')
@@ -181,6 +156,23 @@ class FrontEndUserUpdatePageTest(BaseCase):
 
         # Input invalid username
         self.type("#username", "!2")
+        # click enter button
+        self.click('input[type="submit"]')
+        self.wait(0.5)
+
+        # Assert that error message is correct
+        self.assert_text(msg, "#message")
+
+        # Invalid shippingAddress partition (can only be alphanumeric)
+        # Get error message to check against
+        try:
+            updateUser(self.uuid, shippingAddress="560 $horeline_drive")
+        except ValueError as e:
+            msg = e
+        print(msg)
+
+        # Input invalid shipping address
+        self.type("#shippingAddress", "560 $horeline_drive")
         # click enter button
         self.click('input[type="submit"]')
         self.wait(0.5)
