@@ -28,7 +28,8 @@
 │   │   ├── test_login.py               -- Tests for Login page
 |   |   ├── test_register.py            -- Tests for register page
 │   │   ├── test_productCreation.py     -- Tests for Create Product page
-│   │   └── test_updateProduct.py       -- Tests for Update Product page
+│   │   ├── test_updateProduct.py       -- Tests for Update Product page
+│   │   └── test_updateUser.py          -- Tests for Update User page
 │   ├── conftest.py             -- Test configuration code
 │   └── test_backend.py         -- Tests for backend fuctions
 ├── A0-contract.md          -- Team contract
