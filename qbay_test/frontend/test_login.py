@@ -14,6 +14,7 @@ class FrontEndHomePageTest(BaseCase):
         """
         This is a sample front end unit test to login to home page
         and verify if the tickets are correctly listed.
+        This is a functional test as it validates that th user can be logged in
         """
         # Ensure the user is in the database, ignore errors from preexistance
         try:
@@ -40,4 +41,34 @@ class FrontEndHomePageTest(BaseCase):
         # test if the page loads correctly
         self.assert_element("#welcome-header")
         self.assert_text("Welcome Test User!", "#welcome-header")
+        # other available APIs
+
+    def test_login_failure(self, *_):
+        """
+        Test that the login fails on bad credentials
+        This is an output test as the input is merely one which
+        achieves the error message
+        """
+        # Ensure the user is in the database, ignore errors from preexistance
+        try:
+            register("Test User", "user@test.com", "ValidPass1!")
+        except ValueError:
+            pass
+
+        # open login page
+        self.open(base_url + '/user/login')
+        # fill email and password
+        self.type("#email", "user2@test.com")
+        self.type("#password", "BadPassword1!")
+        # click enter button
+        self.click('input[type="submit"]')
+
+        # after clicking on the browser (the line above)
+        # the front-end code is activated
+        # and tries to call get_user function.
+        # The get_user function is supposed to read data from database
+        # and return the value.
+
+        # Check for output error message
+        self.assert_text("Incorrect email or password", "#message")
         # other available APIs
