@@ -118,6 +118,7 @@
  
              </div>
              {% if user is defined %}
+                <p id="balance" style="color: white">Balance = {{user.balance}}</p>
                 <a class="btn" href='/user/logout'>Logout</a>
              {% else %}
                 <a class="btn" href='/user/login'>Login</a>
