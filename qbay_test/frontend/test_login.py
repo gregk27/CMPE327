@@ -10,38 +10,19 @@ This file defines all integration tests for the frontend homepage.
 
 class FrontEndHomePageTest(BaseCase):
 
-    def test_login_success(self, *_):
+    def test_login_html(self, *_):
         """
-        This is a sample front end unit test to login to home page
-        and verify if the tickets are correctly listed.
-        This is a functional test as it validates that th user can be logged in
+        Functional test, asserts that login page contains required elements
         """
-        # Ensure the user is in the database, ignore errors from preexistance
-        try:
-            register("Test User", "user@test.com", "ValidPass1!")
-        except ValueError:
-            pass
 
         # open login page
         self.open(base_url + '/user/login')
-        # fill email and password
-        self.type("#email", "user@test.com")
-        self.type("#password", "ValidPass1!")
-        # click enter button
-        self.click('input[type="submit"]')
 
-        # after clicking on the browser (the line above)
-        # the front-end code is activated
-        # and tries to call get_user function.
-        # The get_user function is supposed to read data from database
-        # and return the value.
-
-        # open home page
-        self.open(base_url)
-        # test if the page loads correctly
-        self.assert_element("#welcome-header")
-        self.assert_text("Welcome Test User!", "#welcome-header")
-        # other available APIs
+        # test if the page has header
+        self.assert_text("Log In", "h1")
+        # test if the page has email and password fields
+        self.assert_element("input[name='email']")
+        self.assert_element("input[name='password']")
 
     def test_login(self, *_):
         """
