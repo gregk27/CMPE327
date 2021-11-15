@@ -6,3 +6,4 @@ sqlalchemy_imageattach
 wand
 validate_email
 seleniumbase
+pymysql
