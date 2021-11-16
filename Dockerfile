@@ -7,3 +7,7 @@ ADD . /app
 ADD wait-for-it.sh /app
 RUN chmod +x /app/wait-for-it.sh
 EXPOSE 8081 
+
+# Install imagemagick with apt, since it's a dependency
+RUN apt update
+RUN apt install imagemagick -y
