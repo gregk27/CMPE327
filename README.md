@@ -2,6 +2,9 @@
 ![Tests](https://github.com/gregk27/CMPE327/actions/workflows/pytest.yml/badge.svg)
 ![Linting](https://github.com/gregk27/CMPE327/actions/workflows/style_check.yml/badge.svg)
 
+## Docker Image
+The application is available as a docker image from https://hub.docker.com/r/aggregateddevelopment/qbay
+
 ## Filestructure
 ```
 .
