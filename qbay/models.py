@@ -120,7 +120,7 @@ class Review(db.Model):
                           nullable=False)
     userId = db.Column(db.String(36), ForeignKey('user.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    content = db.Column(db.String(65535), nullable=False)
+    content = db.Column(db.String(32767), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
 
     product = relationship('Product', back_populates='reviews')
