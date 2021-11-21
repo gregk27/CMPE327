@@ -35,10 +35,11 @@
 
 1. Are all the user input fileds in your application covered in all the test cases above? Any successful exploit?
 The test cases covered all the input fields for the frontend pages, there were no successful exploits in any of the trials
+this due to the fact that the website uses input validation in order to prevent malicious queries from being injected.
 
 2. We did two rounds of scanning. Why the results are different? What is the purpose of adding in the session id?
 The two rounds of testing ensured that the program was not vulnerable to sql injection attacks. The purpose of adding in
 session id was to access the fields that could only be accessed after a successful login.
 
 3.  Summarize the injection payload used based on the logs, and breifly discuss the purpose.
-The injection payload used based on the logs 
+The injection payload used based on the logs is a general injection payload.
