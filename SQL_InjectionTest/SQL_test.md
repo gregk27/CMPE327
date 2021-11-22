@@ -42,4 +42,5 @@ The two rounds of testing ensured that the program was not vulnerable to sql inj
 session id was to access the fields that could only be accessed after a successful login.
 
 3.  Summarize the injection payload used based on the logs, and breifly discuss the purpose.
-The injection payload used based on the logs is a general injection payload.
+Based on the logs, sqlmap used a generic injection payload consisting of multiple injection types including boolean-based and Union-based blind SQLi. Since the website uses sqlalchemy, the frontend
+is protected against most injection payloads.
