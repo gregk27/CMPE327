@@ -35,9 +35,14 @@ The application is available as a docker image from https://hub.docker.com/r/agg
 │   │   └── test_updateUser.py          -- Tests for Update User page
 │   ├── conftest.py             -- Test configuration code
 │   └── test_backend.py         -- Tests for backend fuctions
+├── SQL_InjectionTest
+│   └── SQL_test.md             -- Results and analysis of SQL inejection testing
 ├── A0-contract.md          -- Team contract
+├── docker-compose.yml
+├── DOCKERFILE
 ├── README.md
-└── requirements.txt        -- pip dependencies
+├── requirements.txt        -- pip dependencies
+└── wait-for-it.sh          -- Utility script to wait for MySQL startup in compose
 ```
 
 ## Code Format
@@ -88,3 +93,11 @@ Add seleniumBase as dependency in `requirements.txt`
 Create tests for frontend pages in `qbay_test/frontend`, these tests employ Selenium Webdriver to test interactions with frontend pages.
 
 Testing for this stage includes passing linting and pytests for backend and frontend.
+
+## [A5 - Attack testing and Deployment](https://github.com/CISC-CMPE-327/Information-2021/blob/main/a5_deploy.md)
+With the system mostly complete, it's time to run some final tests and deploy the application.
+
+Add configuration files to deploy application with docker, the built image is published as [aggregateddevelopment/qbay](https://hub.docker.com/r/aggregateddevelopment/qbay).<br/>
+Create configuration file for docker compose to deploy MySQL, PHPMyAdmin, and Application stack.
+
+Run tests using SQLMap and pwnxss tools to analyse SQL injection and XSS vulerabilities. SQL inejection results and analysis can be found in `SQL_InjectionTest/SQL_test.md`. XSS results and analysis can be found in `qbay_test/vulnerabilities/XSS_test.md`.
