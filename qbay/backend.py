@@ -477,7 +477,7 @@ def purchaseProduct(userID, productID):
     product = Product.query.filter_by(id=productID).first()
 
     # Make sure the user isn't buying their own product
-    if(user.id == product.owner.id):
+    if(user.id == product.user.id):
         raise ValueError("You cannot buy your own products")
 
     # Check that the user can afford the product
@@ -485,7 +485,7 @@ def purchaseProduct(userID, productID):
         raise ValueError("You cannot afford the product")
 
     # Transfer funds and mark as sold
-    product.owner.balance += product.price
+    product.user.balance += product.price
     user.balance -= product.price
     product.sold = True
     db.session.commit()
