@@ -49,6 +49,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(2000), nullable=False)
     lastModifiedDate = db.Column(db.DateTime, nullable=False)
+    sold = db.Column(db.Boolean, nullable=False, default=False)
     # brand = db.Column(db.String(128))
     # size = db.Column(db.Float)
     # width = db.Column(db.Float)
