@@ -457,3 +457,35 @@ def updateUser(userID, **kwargs):
 
     db.session.commit()
     return True
+
+
+def purchaseProduct(userID, productID):
+    """
+    Have a user purchase a product
+    If the user has sufficient funds, they will be transferred to the product's
+    owner, and the product will be marked as sold
+        Parameter:
+            userID: ID of user buying the product
+            productId: ID of the product being sold
+        Returns:
+            Nothing
+        Throws:
+            ValueError with error message on failure
+    """
+    # Get the user and product
+    user = User.query.filter_by(id=userID).first()
+    product = Product.query.filter_by(id=productID).first()
+
+    # Make sure the user isn't buying their own product
+    if(user.id == product.user.id):
+        raise ValueError("You cannot buy your own products")
+
+    # Check that the user can afford the product
+    if(user.balance < product.price):
+        raise ValueError("You cannot afford the product")
+
+    # Transfer funds and mark as sold
+    product.user.balance += product.price
+    user.balance -= product.price
+    product.sold = True
+    db.session.commit()

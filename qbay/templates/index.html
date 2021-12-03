@@ -17,9 +17,12 @@
     {% for product in otherProducts %}
     <div>
         <h4>
-            {{ product.productName }} 
-            <span style="float:right; margin-right:5em">${{ product.price }}</span>
-            <span style="float:right; margin-right:2em">Seller: {{ product.user.username }}</span>
+            <form action="?product={{product.id}}" method='post'>
+                {{ product.productName }} 
+                <input type="submit" class="buy-btn" value="Buy" style="float:right;"/>
+                <span style="float:right; margin-right:5em">${{ product.price }}</span>
+                <span style="float:right; margin-right:1em">Seller: {{ product.user.username }}</span>
+            </form>
         </h4>
     </div> 
     {% endfor %}
@@ -30,6 +33,7 @@
             {{ product.productName }} 
             <a href='/product/update/{{product.productName}}' style="float:right">update</a>
             <span style="float:right; margin-right:5em">${{ product.price }}</span>
+            
         </h4>
     </div>
     {% endfor %}
@@ -41,5 +45,16 @@
     <p id="postal">Postal Code: {{user.postalCode}}</p>
 </div>
 <a href="/user/modify">Update Profile</a>
+
+<style>
+
+.buy-btn {
+    background-color: rgb(142, 55, 140);
+    color: white;
+    border-radius: 7px;
+};
+
+</style>
+
 
 {% endblock %}
