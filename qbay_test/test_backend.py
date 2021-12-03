@@ -1,5 +1,5 @@
 from qbay.models import db, User, Product, Session
-from qbay.backend import updateProduct, register, \
+from qbay.backend import purchaseProduct, updateProduct, register, \
     queryUser, createProduct, login, updateUser
 import datetime as dt
 import hashlib
@@ -622,3 +622,38 @@ def test_r5_4_updateProduct(target, changedVals, expected):
         assert updateProduct(prod.id, **newVals) is expected
     except ValueError:
         assert not expected
+
+
+def test_placing_order():
+    '''
+    Test that a user can place an order so long that the order is not for their
+    own product or costs more than their current balance.
+    '''
+    # Register test users, if exists will just return false
+    register('Test0', 'test0@test.com', 'Password1!')
+    register('Test1', 'test1@test.com', 'Password1!')
+
+    # Create test products, if exists will just return false
+    createProduct(productName='testProduct', description='This is a test description',
+                  price=10.0, last_modified_date=dt.datetime(2021, 10, 8),
+                  owner_email='test0@test.com')
+    createProduct(productName='p1', description='This is a test description',
+                  price=1000.0, last_modified_date=dt.datetime(2021, 10, 8),
+                  owner_email='test1@test.com')
+    createProduct(productName='testProductPass', description='This is a test description',
+                  price=10.0, last_modified_date=dt.datetime(2021, 10, 8),
+                  owner_email='test1@test.com')
+
+    with pytest.raises(ValueError):
+        # User buying their own product
+        purchaseProduct(User.query.filter_by(username='Test0').first().id,
+                        Product.query.filter_by(productName='testProduct').first().id)
+
+    with pytest.raises(ValueError):
+         # User buying a product greater than their balance
+        purchaseProduct(User.query.filter_by(username='Test0').first().id,
+                        Product.query.filter_by(productName='p1').first().id)
+
+    # User buys a product that is not their own and is less than their balance (Passing case)
+    assert purchaseProduct(User.query.filter_by(username='Test0').first().id,
+                           Product.query.filter_by(productName='testProductPass').first().id) is True

@@ -409,7 +409,7 @@ def updateUser(userID, **kwargs):
     Update an existing user
         Parameter:
             userId (string): ID of the user being updated
-            any named paramters corresponding to properties of User model
+            any named parameters corresponding to properties of User model
         Returns:
             True if update is a success, otherwise False
     """
@@ -489,3 +489,4 @@ def purchaseProduct(userID, productID):
     user.balance -= product.price
     product.sold = True
     db.session.commit()
+    return True
