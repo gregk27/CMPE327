@@ -2,7 +2,8 @@ from flask import render_template, request, session, redirect
 from qbay.models import User, Product, Session
 from qbay.backend import (login, register, validateEmail,
                           validateUser, validatePswd,
-                          createProduct, updateProduct, updateUser)
+                          createProduct, updateProduct, updateUser,
+                          purchaseProduct)
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -85,7 +86,7 @@ def login_form():
                                "email or password")
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @authenticate
 def home(user):
     # authentication is done in the wrapper function
@@ -93,6 +94,9 @@ def home(user):
     # by using @authenticate, we don't need to re-write
     # the login checking code all the time for other
     # front-end portals
+    if request.method == 'POST':
+        product = request.args.get('product')
+        purchaseProduct(user.id, product)
 
     # Get products from other users
     otherProducts = Product.query.filter(Product.userId != user.id).all()
