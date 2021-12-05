@@ -486,6 +486,7 @@ def purchaseProduct(userID, productID):
 
     # Transfer funds and mark as sold
     product.user.balance += product.price
+    product.buyer = user
     user.balance -= product.price
     product.sold = True
     db.session.commit()
