@@ -669,4 +669,10 @@ def test_placing_order():
     # their balance (Passing case)
     user = User.query.filter_by(username='Test0').first()
     prod = Product.query.filter_by(productName='tpPass').first()
+    origOwnerBalance = user.balance
+    origBuyerBalance = prod.user.balance
     assert purchaseProduct(user.id, prod.id) is True
+    assert prod.sold is True
+    assert prod.buyer == user
+    assert origOwnerBalance + prod.price == prod.user.balance
+    assert origBuyerBalance - prod.price == user.balance
