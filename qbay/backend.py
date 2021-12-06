@@ -409,7 +409,7 @@ def updateUser(userID, **kwargs):
     Update an existing user
         Parameter:
             userId (string): ID of the user being updated
-            any named paramters corresponding to properties of User model
+            any named parameters corresponding to properties of User model
         Returns:
             True if update is a success, otherwise False
     """
@@ -455,5 +455,39 @@ def updateUser(userID, **kwargs):
             raise ValueError("Invalid postal code")
         kwargs.pop('postalCode')
 
+    db.session.commit()
+    return True
+
+
+def purchaseProduct(userID, productID):
+    """
+    Have a user purchase a product
+    If the user has sufficient funds, they will be transferred to the product's
+    owner, and the product will be marked as sold
+        Parameter:
+            userID: ID of user buying the product
+            productId: ID of the product being sold
+        Returns:
+            Nothing
+        Throws:
+            ValueError with error message on failure
+    """
+    # Get the user and product
+    user = User.query.filter_by(id=userID).first()
+    product = Product.query.filter_by(id=productID).first()
+
+    # Make sure the user isn't buying their own product
+    if(user.id == product.user.id):
+        raise ValueError("You cannot buy your own products")
+
+    # Check that the user can afford the product
+    if(user.balance < product.price):
+        raise ValueError("You cannot afford the product")
+
+    # Transfer funds and mark as sold
+    product.user.balance += product.price
+    product.buyer = user
+    user.balance -= product.price
+    product.sold = True
     db.session.commit()
     return True
