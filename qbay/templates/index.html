@@ -30,24 +30,18 @@
     {% for product in user.products %}
     <div>
         <h4>
+            
             {{ product.productName }} 
+            {% if product.sold == True %}
+            <div style="float:right; margin-left:1em">SOLD</div>
+            {% endif %}
             <a href='/product/update/{{product.productName}}' style="float:right">update</a>
             <span style="float:right; margin-right:5em">${{ product.price }}</span>
             
         </h4>
     </div>
     {% endfor %}
-    <h3>Purchase History</h3>
-    {% for product in user.products %}
-    <div>
-        <h4>
-            {{ product.productName }} 
-            <a href='/product/update/{{product.productName}}' style="float:right">update</a>
-            <span style="float:right; margin-right:5em">${{ product.price }}</span>
-            
-        </h4>
-    </div>
-    {% endfor %}
+
 </div>
 <br/><br/>
 <div>
