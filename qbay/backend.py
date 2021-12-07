@@ -405,7 +405,6 @@ def validatePostalCode(postalCode):
 
 
 def updateUser(userID, **kwargs):
-    print(kwargs)
     """
     Update an existing user
         Parameter:
@@ -487,7 +486,7 @@ def purchaseProduct(userID, productID):
 
     # Transfer funds and mark as sold
     product.user.balance += product.price
-    Product.buyer = user
+    product.buyer = user
     product.buyerId = user.id
     user.balance -= product.price
     product.sold = True

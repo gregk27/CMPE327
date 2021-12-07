@@ -100,7 +100,7 @@ def home(user):
 
     # Get products from other users
     otherProducts = Product.query.filter(Product.userId != user.id,
-                                         Product.sold == False).all()
+                                         Product.sold.is_(False)).all()
     purchased = Product.query.filter(Product.buyerId == user.id)
     return render_template('index.html', user=user,
                            otherProducts=otherProducts, purchased=purchased)
