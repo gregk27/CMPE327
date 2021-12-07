@@ -99,9 +99,11 @@ def home(user):
         purchaseProduct(user.id, product)
 
     # Get products from other users
-    otherProducts = Product.query.filter(Product.userId != user.id).all()
+    otherProducts = Product.query.filter(Product.userId != user.id,
+                                         Product.sold.is_(False)).all()
+    purchased = Product.query.filter(Product.buyerId == user.id)
     return render_template('index.html', user=user,
-                           otherProducts=otherProducts)
+                           otherProducts=otherProducts, purchased=purchased)
 
 
 @app.route('/user/register', methods=['GET'])
@@ -259,7 +261,6 @@ def update_post_user(user):
     username = request.form.get('username')
     shippingAddress = request.form.get('shippingAddress')
     postalCode = request.form.get('postalCode')
-
     # updateUser will return true on success
     try:
         if(updateUser(user.id, username=username,
