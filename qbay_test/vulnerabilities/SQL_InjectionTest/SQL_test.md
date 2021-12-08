@@ -32,6 +32,8 @@
 |----|-------------------------------------|---------------|-----------------------------|-----------------------------|
 |Scan| http://192.168.2.40:8081/           |    price      |             17              |             0               |
 |----|-------------------------------------|---------------|-----------------------------|-----------------------------|
+|Scan| http://192.168.2.40:8081/           |    buy        |             17              |             0               |
+|----|-------------------------------------|---------------|-----------------------------|-----------------------------|
 
 1. Are all the user input fileds in your application covered in all the test cases above? Any successful exploit?
 The test cases covered all the input fields for the frontend pages, there were no successful exploits in any of the trials
