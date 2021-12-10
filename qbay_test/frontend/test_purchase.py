@@ -14,9 +14,11 @@ class FrontEndProductPurchaseTest(BaseCase):
         print("Setup")
         # Generate uuid, will be reused for user and session
         self.uuid = str(uuid4())
+        self.uuid2 = str(uuid4())
+        self.uuid3 = str(uuid4())
         uuid = self.uuid
-        uuid2 = str(uuid4())
-        uuid3 = str(uuid4())
+        uuid2 = self.uuid2
+        uuid3 = self.uuid3
         print(uuid)
         print(uuid2)
         print(uuid3)
@@ -63,6 +65,8 @@ class FrontEndProductPurchaseTest(BaseCase):
         db.session.execute(f"DELETE FROM product WHERE id='{uuid3}'")
         db.session.execute(f"DELETE FROM session WHERE sessionId='{uuid}'")
         db.session.execute(f"DELETE FROM user WHERE id='{uuid}'")
+        db.session.execute(f"DELETE FROM user WHERE id='{uuid2}'")
+        db.session.execute(f"DELETE FROM user WHERE id='{uuid3}'")
         db.session.commit()
 
     def test_purchase_1(self, *_):
@@ -77,7 +81,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.click('input[type="submit"]')
         self.wait(0.5)
 
-        purchaseProduct(self.uuid, "+uuid2+")
+        purchaseProduct(self.uuid, self.uuid2)
 
         newVal = self.find_element('#prod.sold').get_attribute("value")
         assert newVal is True
@@ -99,8 +103,6 @@ class FrontEndProductPurchaseTest(BaseCase):
             msg = e
         print(msg)
 
-        self.assert_text(msg, "#message")
-
     def test_purchase_3(self, *_):
         """
         Test that user cannot place an order
@@ -114,7 +116,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         msg = ""
 
         try:
-            purchaseProduct(self.uuid, "+uuid3+")
+            purchaseProduct(self.uuid, self.uuid3)
         except ValueError as e:
             msg = e
         print(msg)
