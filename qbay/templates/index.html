@@ -5,41 +5,99 @@
 {% endblock %}
 
 {% block content %}
-<h2 id="welcome-header">Welcome {{ user.username }}!</h2>
-
-<div style="height:4em">
-    <h2 style="width:fit-content; float:left">Here are all available products</h2>
-    <a class="btn btn-primary" style="float:right" id='product-create' href='/product/create'>Sell a Product</a>
-</div>
-<br/>
-<div id="products">
-    <h3>Available products</h3>
-    {% for product in otherProducts %}
-    <div>
-        <h4>
-            {{ product.productName }} 
-            <span style="float:right; margin-right:5em">${{ product.price }}</span>
-            <span style="float:right; margin-right:2em">Seller: {{ product.user.username }}</span>
-        </h4>
-    </div> 
-    {% endfor %}
-    <h3>Your Products</h3>
-    {% for product in user.products %}
-    <div>
-        <h4>
-            {{ product.productName }} 
-            <a href='/product/update/{{product.productName}}' style="float:right">update</a>
-            <span style="float:right; margin-right:5em">${{ product.price }}</span>
-        </h4>
-    </div>
-    {% endfor %}
+<div id='products'>
+<div style="height:4em;">
+    <h2 id="welcome-header" style="float:left; color: black; margin-top: 10px">Welcome {{ user.username }}!</h2>
+    <a class="btn btn-primary mb1 black bg-aqua" style="float:right;" id='product-create' href='/product/create'>Sell a Product</a>
 </div>
 <br/><br/>
-<div>
-    <h3>Shipping Information</h3>
-    <p id="shipping">Shipping address: {{user.shippingAddress}}</p>
-    <p id="postal">Postal Code: {{user.postalCode}}</p>
+    <div>
+        <h3 style="color:black">Available products</h3>
+        {% for product in otherProducts %}
+        <div>
+            <h4 style="color:black">
+                <form action="?product={{product.id}}" method='post'>
+                    {{ product.productName }}
+                    {% if product.price > user.balance %}
+                    <input type="submit" class="disabled-btn" value="Buy" style="float:right; color:black" disabled="disabled"/>
+                    <span style="float:right; margin-right:5em">${{ product.price }}</span>
+                    <span style="float:right; margin-right:1em">Seller: {{ product.user.username }}</span>
+                    {% else %}
+                    <input type="submit" class="buy-btn" value="Buy" style="float:right;"/>
+                    <span style="float:right; margin-right:5em">${{ product.price }}</span>
+                    <span style="float:right; margin-right:1em">Seller: {{ product.user.username }}</span>
+                    {% endif %}
+                </form>
+            </h4>
+        </div> 
+        {% endfor %}
+    </div>
+    <br/><br/>
+    <div>
+        <h3 style="color:black">Your Products For Sale</h3>
+        {% for product in user.products %}
+        <div>
+            <h4 style="color:black">
+                {{ product.productName }} 
+                {% if product.sold == True %}
+                <div style="float:right;">SOLD</div>
+                <span style="float:right; margin-right:3em;">+ ${{ product.price }}</span>
+                {% endif %}
+                {% if product.sold == False %}
+                <a href='/product/update/{{product.productName}}' style="float:right">update</a>
+                <span style="float:right; margin-right:2em">${{ product.price }}</span>
+                {% endif %}
+            </h4>
+        </div>
+        {% endfor %}
+    </div>
+    <br/><br/>
+    <div>
+        <h3 style="color:black">Purchase History</h3>
+        {% for product in purchased %}
+        <div>
+            <h4 style="color:black">
+                {{ product.productName }} 
+                <div style="float:right; margin-left:1em">- {{product.price}}$</div>
+            </h4>
+        </div>
+        {% endfor %}
+    </div>  
+    <br/><br/>
+    <div style="color:black">
+        <h3 style="color:black">Shipping Information</h3>
+        <p id="shipping" style="color:black">Shipping address: {{user.shippingAddress}}</p>
+        <p id="postal" style="color:black" >Postal Code: {{user.postalCode}}</p>
+    </div>
+    <a href="/user/modify">Update Profile</a>
+    <br/><br/>
 </div>
-<a href="/user/modify">Update Profile</a>
+
+<style>
+
+.buy-btn {
+    background-color: rgb(199, 74, 197);
+    color: white;
+    border-radius: 7px;
+};
+
+.disabled-btn {
+    background-color: rgb(68, 33, 68);
+    color: white;
+    border-radius: 7px;
+};
+
+
+</style>
+
+
+<script>
+
+    //this is to prevent re-submission of payment on refresh
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+
 
 {% endblock %}

@@ -5,16 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<h4 id='message'>{{message}}</h4>
+<h4 id='message' style="color:black">{{message}}</h4>
 <form method="post">
   <div class="form-group">
-    <label for="name">Name</label>
-    <input class="form-control" name="name" id="name" required>
-	<label for="desc">Description</label>
-    <textarea class="form-control" name="desc" id="desc" required></textarea>
-    <label for="price">Price</label>
-    <input class="form-control" type="number" name="price" id="price" step="0.01" required>
+    <label for="name" style="color:black">Name</label>
+    <input class="form-control" style="color:black" name="name" id="name" required>
+	  <label for="desc" style="color:black">Description</label>
+    <textarea class="form-control" style="color:black" name="desc" id="desc" required></textarea>
+    <label for="price" style="color:black">Price</label>
+    <input class="form-control" style="color:black" type="number" name="price" id="price" step="0.01" required>
     <input class="btn btn-primary" type="submit" id="btn-submit" value="Create">
   </div>
 </form>
+<a href="/">Back</a>
 {% endblock %}
