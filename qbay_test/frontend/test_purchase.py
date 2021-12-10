@@ -15,34 +15,52 @@ class FrontEndProductPurchaseTest(BaseCase):
         # Generate uuid, will be reused for user and session
         self.uuid = str(uuid4())
         uuid = self.uuid
+        uuid2 = str(uuid4())
+        uuid3 = str(uuid4())
         print(uuid)
+        print(uuid2)
+        print(uuid3)
         s = db.session
         # Clean up databases
         s.execute("DELETE FROM product WHERE productName='Frontend buyTest'")
-        s.execute("DELETE FROM user WHERE email='front.buyProd@test.com'")
+        s.execute("DELETE FROM user WHERE username='Test0'")
         # Set up the database, use SQL queries so no dependency on backend
         # or other pages
         db.session.execute("\
             INSERT INTO user (id, username, email, password, balance)\
-            VALUES ('"+uuid+"', 'Frontend buyProd', 'front.buyProd@test.com',\
+            VALUES ('"+uuid+"', 'Test0', 'test0@test.com',\
                     '', 500)")
         db.session.execute("\
             INSERT INTO product (id, productName, userId, ownerEmail,\
                  price, description, lastModifiedDate, sold)\
-            VALUES ('"+uuid+"', 'Frontend ProdUp Test', '"+uuid+"',\
-                'front.buyProd@test.com', 1000, 'Product to test frontend',\
-                CURRENT_TIMESTAMP, false),\
-                   ('"+uuid+"', 'Frontend ProdUp Test 2', 'ProdSeller1',\
-                'front.buyProd@test.com', 500, 'Product to test frontend',\
+            VALUES('"+uuid+"', 'P1', '"+uuid+"',\
+                'front.buyProd@test.com', 300, 'Product to test frontend',\
+                CURRENT_TIMESTAMP, false)")
+        db.session.execute("\
+                    INSERT INTO product (id, productName, userId, ownerEmail,\
+                         price, description, lastModifiedDate, sold)\
+                    VALUES ('"+uuid2+"', 'P2', '"+uuid2+"',\
+                'front.buyProd2@test.com', 300"
+                                                        ", 'Product to test frontend',\
+                CURRENT_TIMESTAMP, false)")
+        db.session.execute("\
+                    INSERT INTO product (id, productName, userId, ownerEmail,\
+                                 price, description, lastModifiedDate, sold)\
+                    VALUES('"+uuid3+"', 'P3', '"+uuid3+"', \
+                'front.buyProd3@test.com', 1000, 'Product to test frontend', \
                 CURRENT_TIMESTAMP, false)")
         db.session.execute("\
             INSERT INTO session (sessionId, userId, ipAddress)\
             VALUES ('"+uuid+"', '"+uuid+"', '127.0.0.1')")
         db.session.commit()
         print("Session registered")
+        print(uuid)
+        print(uuid4())
         yield
         print("TEARDOWN")
         db.session.execute(f"DELETE FROM product WHERE id='{uuid}'")
+        db.session.execute(f"DELETE FROM product WHERE id='{uuid2}'")
+        db.session.execute(f"DELETE FROM product WHERE id='{uuid3}'")
         db.session.execute(f"DELETE FROM session WHERE sessionId='{uuid}'")
         db.session.execute(f"DELETE FROM user WHERE id='{uuid}'")
         db.session.commit()
@@ -55,12 +73,11 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.open(base_url + f'/_test/{self.uuid}')
         # Open home page
         self.open(base_url + '/')
-
         # Click buy button
         self.click('input[type="submit"]')
         self.wait(0.5)
 
-        purchaseProduct(self.uuid, '1234')
+        purchaseProduct(self.uuid, "+uuid2+")
 
         newVal = self.find_element('#prod.sold').get_attribute("value")
         assert newVal is True
@@ -97,7 +114,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         msg = ""
 
         try:
-            purchaseProduct(self.uuid, "4567")
+            purchaseProduct(self.uuid, "+uuid3+")
         except ValueError as e:
             msg = e
         print(msg)
