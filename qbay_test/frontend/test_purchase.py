@@ -3,7 +3,7 @@ from seleniumbase import BaseCase
 from uuid import uuid4
 
 from qbay_test.conftest import base_url
-from qbay.models import db
+from qbay.models import Product, db
 from qbay.backend import purchaseProduct
 
 
@@ -53,7 +53,7 @@ class FrontEndProductPurchaseTest(BaseCase):
                          price, description, lastModifiedDate, sold)\
                     VALUES ('"+uuid2+"', 'P2', '"+uuid2+"',\
                 'front.buyProd2@test.com', 300, 'Product to test frontend',\
-                CURRENT_TIMESTAMP, false)")
+                CURRENT_TIMESTAMP, true)")
         db.session.execute("\
                     INSERT INTO product (id, productName, userId, ownerEmail,\
                                  price, description, lastModifiedDate, sold)\
@@ -87,9 +87,14 @@ class FrontEndProductPurchaseTest(BaseCase):
         # Open home page
         self.open(base_url + '/')
 
+        # Click buy button
+        self.click('input[type="submit"]')
         self.wait(0.5)
 
-        assert purchaseProduct(self.uuid, self.uuid2) is True
+        # Check if the product has been sold
+        Prod = Product.query.filter_by(id=self.uuid2).first()
+
+        assert Prod.sold is True
 
     def test_purchase_2(self, *_):
         """
@@ -108,6 +113,10 @@ class FrontEndProductPurchaseTest(BaseCase):
             msg = e
         print(msg)
 
+        # Try clicking the buy button
+        self.click('input[type="submit"]')
+        self.wait(0.5)
+
     def test_purchase_3(self, *_):
         """
         Test that user cannot place an order
@@ -125,3 +134,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         except ValueError as e:
             msg = e
         print(msg)
+       
+        # Try clicking the buy button
+        self.click('input[type="submit"]')
+        self.wait(0.5)
