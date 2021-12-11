@@ -26,6 +26,8 @@ class FrontEndProductPurchaseTest(BaseCase):
         # Clean up databases
         s.execute("DELETE FROM product WHERE productName='Frontend buyTest'")
         s.execute("DELETE FROM user WHERE username='Test0'")
+        s.execute("DELETE FROM user WHERE username='Test1'")
+        s.execute("DELETE FROM user WHERE username='Test2'")
         # Set up the database, use SQL queries so no dependency on backend
         # or other pages
         db.session.execute("\
@@ -50,8 +52,7 @@ class FrontEndProductPurchaseTest(BaseCase):
                     INSERT INTO product (id, productName, userId, ownerEmail,\
                          price, description, lastModifiedDate, sold)\
                     VALUES ('"+uuid2+"', 'P2', '"+uuid2+"',\
-                'front.buyProd2@test.com', 300"
-                                                        ", 'Product to test frontend',\
+                'front.buyProd2@test.com', 300, 'Product to test frontend',\
                 CURRENT_TIMESTAMP, false)")
         db.session.execute("\
                     INSERT INTO product (id, productName, userId, ownerEmail,\
