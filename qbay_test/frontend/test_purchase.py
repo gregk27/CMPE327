@@ -31,6 +31,14 @@ class FrontEndProductPurchaseTest(BaseCase):
         db.session.execute("\
             INSERT INTO user (id, username, email, password, balance)\
             VALUES ('"+uuid+"', 'Test0', 'test0@test.com',\
+                    '', 1000)")
+        db.session.execute("\
+            INSERT INTO user (id, username, email, password, balance)\
+            VALUES ('"+uuid2+"', 'Test1', 'testSeller1@test.com',\
+                    '', 500)")
+        db.session.execute("\
+            INSERT INTO user (id, username, email, password, balance)\
+            VALUES ('"+uuid3+"', 'Test3', 'testSeller2@test.com',\
                     '', 500)")
         db.session.execute("\
             INSERT INTO product (id, productName, userId, ownerEmail,\
@@ -77,14 +85,10 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.open(base_url + f'/_test/{self.uuid}')
         # Open home page
         self.open(base_url + '/')
-        # Click buy button
-        self.click('input[type="submit"]')
+
         self.wait(0.5)
 
-        purchaseProduct(self.uuid, self.uuid2)
-
-        newVal = self.find_element('#prod.sold').get_attribute("value")
-        assert newVal is True
+        assert purchaseProduct(self.uuid, self.uuid2) is True
 
     def test_purchase_2(self, *_):
         """
@@ -120,5 +124,3 @@ class FrontEndProductPurchaseTest(BaseCase):
         except ValueError as e:
             msg = e
         print(msg)
-
-        self.assert_text(msg, "#message")
