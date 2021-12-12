@@ -41,13 +41,13 @@ class FrontEndProductUpdatePageTest(BaseCase):
                     '', 500)")
         db.session.execute("\
             INSERT INTO product (id, productName, userId, ownerEmail,\
-                 price, description, lastModifiedDate)\
+                 price, description, lastModifiedDate, sold)\
             VALUES ('"+uuid+"', 'Frontend ProdUp Test', '"+uuid+"',\
                 'front.upProd@test.com', 1000, 'Product to test frontend',\
-                CURRENT_TIMESTAMP),\
+                CURRENT_TIMESTAMP, false),\
                    ('"+str(uuid4())+"', 'Frontend ProdUp Test 2', '"+uuid+"',\
                 'front.upProd@test.com', 1000, 'Product to test frontend',\
-                CURRENT_TIMESTAMP)")
+                CURRENT_TIMESTAMP, false)")
         db.session.execute("\
             INSERT INTO session (sessionId, userId, ipAddress)\
             VALUES ('"+uuid+"', '"+uuid+"', '127.0.0.1')")

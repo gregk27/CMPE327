@@ -22,7 +22,8 @@ class User(db.Model):
     postalCode = db.Column(db.String(36))
 
     sessions = relationship('Session', back_populates='user')
-    products = relationship('Product', back_populates='user')
+    products = relationship('Product', back_populates='user',
+                            foreign_keys="Product.userId")
     reviews = relationship('Review', back_populates='user')
     buyTransactions = relationship('Transaction', back_populates='customer',
                                    foreign_keys="Transaction.customerId")
@@ -49,6 +50,8 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(2000), nullable=False)
     lastModifiedDate = db.Column(db.DateTime, nullable=False)
+    sold = db.Column(db.Boolean, nullable=False, default=False)
+    buyerId = db.Column(db.String(36), ForeignKey('user.id'), default=None)
     # brand = db.Column(db.String(128))
     # size = db.Column(db.Float)
     # width = db.Column(db.Float)
@@ -61,9 +64,10 @@ class Product(db.Model):
     # bidder = db.Column(db.String(64))
     image = image_attachment('ProductPicture')
 
-    user = relationship('User', back_populates='products')
+    user = relationship('User', back_populates='products', foreign_keys=userId)
     reviews = relationship('Review', back_populates='product')
     transaction = relationship('Transaction', back_populates='product')
+    buyer = relationship('User', foreign_keys=buyerId)
     __tablename__ = "product"
 
 
