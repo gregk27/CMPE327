@@ -1,0 +1,570 @@
+<base href="http://127.0.0.1:8081">
+<html lang="en" class="perfect-scrollbar-on"><head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+     <link rel="apple-touch-icon" sizes="76x76" href="https://l1nna.com/black-assets/img/apple-icon.png">
+     <link rel="icon" type="image/x-icon" href="https://l1nna.com/images/favicon.ico">
+ 
+     <title>Profile</title>
+ 
+     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+     <!--     Fonts and icons     -->
+     <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet">
+     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+     <!-- Nucleo Icons -->
+     <link href="https://l1nna.com/black-assets/css/nucleo-icons.css" rel="stylesheet">
+     <!-- CSS Files -->
+     <link href="https://l1nna.com/black-assets/css/blk-design-system.css?v=1.0.0" rel="stylesheet">
+     <!-- CSS Just for demo purpose, don't include it in your project -->
+     <link href="https://l1nna.com/black-assets/demo/demo.css" rel="stylesheet">
+ 
+     <!--   Core JS Files   -->
+     <script src="https://l1nna.com/black-assets/js/core/jquery.min.js" type="text/javascript"></script>
+     <script src="https://l1nna.com/black-assets/js/core/popper.min.js" type="text/javascript"></script>
+     <script src="https://l1nna.com/black-assets/js/core/bootstrap.min.js" type="text/javascript"></script>
+     <script src="https://l1nna.com/black-assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+     <!--  Plugin for Switches, full documentation here: http://www.jque.re/plugins/version3/bootstrap.switch/ -->
+     <script src="https://l1nna.com/black-assets/js/plugins/bootstrap-switch.js"></script>
+     <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+     <script src="https://l1nna.com/black-assets/js/plugins/nouislider.min.js" type="text/javascript"></script>
+     <!-- Chart JS -->
+     <script src="https://l1nna.com/black-assets/js/plugins/chartjs.min.js"></script><style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style>
+     <!--  Plugin for the DatePicker, full documentation here: https://github.com/uxsolutions/bootstrap-datepicker -->
+     <script src="https://l1nna.com/black-assets/js/plugins/moment.min.js"></script>
+     <script src="https://l1nna.com/black-assets/js/plugins/bootstrap-datetimepicker.js" type="text/javascript"></script>
+     <!-- Black Dashboard DEMO methods, don't include it in your project! -->
+     <script src="https://l1nna.com/black-assets/demo/demo.js"></script>
+     <!-- Control Center for Black UI Kit: parallax effects, scripts for the example pages etc -->
+     <script src="https://l1nna.com/black-assets/js/blk-design-system.min.js?v=1.0.0" type="text/javascript"></script>
+ 
+ 
+     <style>
+         label{
+             color: rgba(255, 255, 255, 0.8);
+         }
+     </style>
+ 
+ </head>
+ 
+ <body class="index-page" style="background-color:#f9f9f9">
+ 
+     <noscript>
+         <div id='noscript'>
+             We require JavaScript.<br>
+             Please enable it to proceed.
+         </div>
+     </noscript>
+ 
+     <nav class="navbar navbar-expand-lg fixed-top " style="background-color: rgb(94, 92, 240)">
+         <div class="container">
+             <div class="navbar-translate">
+                 <a class="navbar-brand" href="" rel="tooltip" title="" data-placement="bottom" data-original-title="Designed and Coded by Creative Tim">
+                     <span>
+                         <img src="https://l1nna.com/images/favicon.ico" style="height: 30px;vertical-align: middle;">
+                         QA327
+                     </span>
+                 </a>
+                 <button class="navbar-toggler navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                     <span class="navbar-toggler-bar bar1"></span>
+                     <span class="navbar-toggler-bar bar2"></span>
+                     <span class="navbar-toggler-bar bar3"></span>
+                 </button>
+             </div>
+ 
+             <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                 <div class="navbar-collapse-header">
+                     <div class="row">
+                         <div class="col-6 collapse-brand">
+                             <a>
+                                 L1NNA
+                             </a>
+                         </div>
+                         <div class="col-6 collapse-close text-right">
+                             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                                 <i class="tim-icons icon-simple-remove"></i>
+                             </button>
+                         </div>
+                     </div>
+                 </div>
+ 
+ 
+ 
+             </div>
+             
+                <p id="balance" style="color: white">Balance = 1000.0$</p>
+                <a class="btn btn-primary" href="/user/logout">Logout</a>
+             
+         </div>
+     </nav>
+ 
+     <div class="wrapper" style="padding-top:100px; background-color: #f9f9f9; overflow: hidden; ">
+         <div class="main">
+             <div class="container">
+                 <div class="row justify-content-center">
+                     <div class="col-lg-8">
+                         
+<div id="products">
+<div style="height:4em;">
+    <h2 id="welcome-header" style="float:left; color: black; margin-top: 10px">Welcome Test0!</h2>
+    <a class="btn btn-primary mb1 black bg-aqua" style="float:right;" id="product-create" href="/product/create">Sell a Product</a>
+</div>
+<br><br>
+    <div>
+        <h3 style="color:black">Available products</h3>
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=3a76655f-c8de-47a0-9b23-3ba56916e605" method="post">
+                    p1
+                    
+                    <input type="submit" class="buy-btn" id="3a76655f-c8de-47a0-9b23-3ba56916e605" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=91e42c02-b387-41e8-96a1-5221209c09bf" method="post">
+                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    
+                    <input type="submit" class="buy-btn" id="91e42c02-b387-41e8-96a1-5221209c09bf" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=ba3fbca4-9ded-4c9e-af6b-8b244823df97" method="post">
+                    p0
+                    
+                    <input type="submit" class="buy-btn" id="ba3fbca4-9ded-4c9e-af6b-8b244823df97" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=c1844e1a-2f99-4035-b058-314589a8d666" method="post">
+                    aaaaaaaaaaaaaaaaaaaaa
+                    
+                    <input type="submit" class="buy-btn" id="c1844e1a-2f99-4035-b058-314589a8d666" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=2823db60-1233-4f20-b43a-190015a047ab" method="post">
+                    p2
+                    
+                    <input type="submit" class="buy-btn" id="2823db60-1233-4f20-b43a-190015a047ab" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$100.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=5c4156a6-6085-4b77-9240-c7d5049f0b84" method="post">
+                    p3
+                    
+                    <input type="submit" class="buy-btn" id="5c4156a6-6085-4b77-9240-c7d5049f0b84" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=93769f50-7fd2-4e1a-9c67-f7c6bfe6e0b0" method="post">
+                    p4
+                    
+                    <input type="submit" class="buy-btn" id="93769f50-7fd2-4e1a-9c67-f7c6bfe6e0b0" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=717666aa-c627-4aa8-90b7-511d47c27958" method="post">
+                    p5
+                    
+                    <input type="submit" class="buy-btn" id="717666aa-c627-4aa8-90b7-511d47c27958" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=e82904f6-54f3-4326-ade4-13de6644b03a" method="post">
+                    p5
+                    
+                    <input type="submit" class="buy-btn" id="e82904f6-54f3-4326-ade4-13de6644b03a" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=164e6868-607d-46b9-a1db-aca8799c616a" method="post">
+                    New Name R5 1
+                    
+                    <input type="submit" class="buy-btn" id="164e6868-607d-46b9-a1db-aca8799c616a" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$1000.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R5 1</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=76ef0bd8-f2ca-4429-a5f8-b7379db5332f" method="post">
+                    New Name R5 2
+                    
+                    <input type="submit" class="buy-btn" id="76ef0bd8-f2ca-4429-a5f8-b7379db5332f" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R5 2</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=a9c48b14-0f62-42bb-b3b2-57761c4d55c4" method="post">
+                    Test Product R4 0
+                    
+                    <input type="submit" class="buy-btn" id="a9c48b14-0f62-42bb-b3b2-57761c4d55c4" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 0</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=e115b66a-a075-407c-834c-27bc0a557293" method="post">
+                    Test Product R4 1A
+                    
+                    <input type="submit" class="buy-btn" id="e115b66a-a075-407c-834c-27bc0a557293" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 1A</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=15ea4f2d-7f5e-4c96-824a-58302ceb8653" method="post">
+                    Test Product R4 2
+                    
+                    <input type="submit" class="buy-btn" id="15ea4f2d-7f5e-4c96-824a-58302ceb8653" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 2</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=da700a86-e6a5-4ab5-897f-f7e137e137d2" method="post">
+                    Test Product R4 3
+                    
+                    <input type="submit" class="buy-btn" id="da700a86-e6a5-4ab5-897f-f7e137e137d2" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 3</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=71d31574-5b47-4de3-8a62-06a0c69946b0" method="post">
+                    Test Product R4 3B
+                    
+                    <input type="submit" class="buy-btn" id="71d31574-5b47-4de3-8a62-06a0c69946b0" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 3B</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=070c5b10-4640-4eef-8a5e-f09d18795ee4" method="post">
+                    Test Product R4 4
+                    
+                    <input type="submit" class="buy-btn" id="070c5b10-4640-4eef-8a5e-f09d18795ee4" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 4</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=11d32721-0168-4cde-bcaa-7aff827b27a5" method="post">
+                    Test Product R4 5A
+                    
+                    <input type="submit" class="buy-btn" id="11d32721-0168-4cde-bcaa-7aff827b27a5" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 5A</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=e53dddbe-0824-4976-bda1-70260bdd12f1" method="post">
+                    Test Product R4 5B
+                    
+                    <input type="submit" class="buy-btn" id="e53dddbe-0824-4976-bda1-70260bdd12f1" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 5B</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=14f3bd56-7021-4d94-9ef4-43c738bfff2c" method="post">
+                    Test Product R4 6A
+                    
+                    <input type="submit" class="buy-btn" id="14f3bd56-7021-4d94-9ef4-43c738bfff2c" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 6A</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=c56847fa-e2d0-438f-8411-fc0c23373f18" method="post">
+                    Test Product R4 6B
+                    
+                    <input type="submit" class="buy-btn" id="c56847fa-e2d0-438f-8411-fc0c23373f18" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$500.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User R4 6B</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=1fe257e7-371b-41d9-9cf4-05959603182a" method="post">
+                    tp
+                    
+                    <input type="submit" class="buy-btn" id="1fe257e7-371b-41d9-9cf4-05959603182a" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=71391551-9a74-4215-a105-90e6fa7039be" method="post">
+                    p1
+                    
+                    <input type="submit" class="buy-btn" id="71391551-9a74-4215-a105-90e6fa7039be" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$1000.0</span>
+                    <span style="float:right; margin-right:1em">Seller: </span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=fa883b41-218b-42c4-bd16-22099d64a76b" method="post">
+                    p1
+                    
+                    <input type="submit" class="buy-btn" id="fa883b41-218b-42c4-bd16-22099d64a76b" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=84d65a29-4152-4d16-beca-7ea39695c02b" method="post">
+                    p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1p1
+                    
+                    <input type="submit" class="buy-btn" id="84d65a29-4152-4d16-beca-7ea39695c02b" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=235a714b-b411-4471-b334-6d7e7e0db62a" method="post">
+                    Product
+                    
+                    <input type="submit" class="buy-btn" id="235a714b-b411-4471-b334-6d7e7e0db62a" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=4977479b-4da7-4526-8e48-241185f6dfdb" method="post">
+                    p2
+                    
+                    <input type="submit" class="buy-btn" id="4977479b-4da7-4526-8e48-241185f6dfdb" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$100.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=61856f32-b79b-4ff7-80e4-999d583cd825" method="post">
+                    Product Pass
+                    
+                    <input type="submit" class="buy-btn" id="61856f32-b79b-4ff7-80e4-999d583cd825" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$10.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test User</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+        <div>
+            <h4 style="color:black">
+                <form action="?product=999090d0-0382-4992-9b85-d17df1e098f8" method="post">
+                    P3
+                    
+                    <input type="submit" class="buy-btn" id="999090d0-0382-4992-9b85-d17df1e098f8" value="Buy" style="float:right;">
+                    <span style="float:right; margin-right:5em">$1000.0</span>
+                    <span style="float:right; margin-right:1em">Seller: Test3</span>
+                    
+                </form>
+            </h4>
+        </div> 
+        
+    </div>
+    <br><br>
+    <div>
+        <h3 style="color:black">Your Products For Sale</h3>
+        
+        <div>
+            <h4 style="color:black">
+                P1 
+                
+                
+                <a href="/product/update/P1" style="float:right">update</a>
+                <span style="float:right; margin-right:2em">$300.0</span>
+                
+            </h4>
+        </div>
+        
+    </div>
+    <br><br>
+    <div>
+        <h3 style="color:black">Purchase History</h3>
+        
+    </div>  
+    <br><br>
+    <div style="color:black">
+        <h3 style="color:black">Shipping Information</h3>
+        <p id="shipping" style="color:black">Shipping address: None</p>
+        <p id="postal" style="color:black">Postal Code: None</p>
+    </div>
+    <a href="/user/modify">Update Profile</a>
+    <br><br>
+</div>
+
+<style>
+
+.buy-btn {
+    background-color: rgb(199, 74, 197);
+    color: white;
+    border-radius: 7px;
+};
+
+.disabled-btn {
+    background-color: rgb(68, 33, 68);
+    color: white;
+    border-radius: 7px;
+};
+
+
+</style>
+
+
+<script>
+
+    //this is to prevent re-submission of payment on refresh
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+
+
+
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+ 
+ 
+     <script>
+         $(document).ready(function () {
+             blackKit.initDatePicker();
+             blackKit.initSliders();
+         });
+     </script>
+ 
+ 
+ </body></html>
