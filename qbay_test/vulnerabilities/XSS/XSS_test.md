@@ -1,5 +1,8 @@
 <center> <h1>XSS Test Report</h1> </center>
 
+
+November 22nd, 2021:
+
 ## No Authentication
 
 |      | Route/URL                      | Parameter | XSS successful? |
@@ -34,3 +37,36 @@ After the user logged, the browser stores the following cookie with authenticati
 ## 2. Are all the possible XSS (script injection) links/routes covered in the table above? (think about any links that will render user inputs, such as URL paramer, cookies, flask flash calls). If not, are those link/pages vulnerable to XSS?
 Although this tool may prove useful for a quick XSS vulnerability scan, it is not thorough nor affective against any level of defence. Simple payloads such as "alert()" will not make it through. Although QBAY passed all of the tests, this does not mean that it is not vulnerable. Higher level XSS with input field filter bypas techniques might reveal possible XSS vulnerabilities. All possible routes and links were covered, but not every input field. The team manually tested the input fields with common XSS attacks that were not covered by PWNXSS. There were no indications of possible vulnerabilities. XSS through Flask flash calls is not possible due to the way we configured the failed input responses. We do not pass the user input to the DOM, we simply supply a standard generic error message to indicate which input field was incorrectly supplied.
 </br>
+
+
+Decenber 7th, 2021:
+
+## No Authentication
+
+|      | Route/URL                      | Parameter | XSS successful? |
+|:----:|--------------------------------|:---------:|:--------------------------:|
+| Scan  | http://127.0.0.1:8081/         |  login  |             NO             |
+| Scan  | http://127.0.0.1:8081/user/login    | email  |             NO           |
+| Scan  | http://127.0.0.1:8081/user/login    | password  |             NO           |  
+| Scan | http://127.0.0.1:8081/user/register | email |             NO             |
+| Scan | http://127.0.0.1:8081/user/register | name |             NO             |
+| Scan | http://127.0.0.1:8081/user/register | password |             NO             |
+
+
+## With Authentication
+
+|      | Route/URL                      | Parameter | XSS successful? |
+|:----:|--------------------------------|:---------:|:--------------------------:|
+| Scan | http://127.0.0.1:8081/?product=      | N/A  |    NO             |  
+| Scan | http://127.0.0.1:8081/user/logout       | N/A  |    NO             |  
+| Scan | http://127.0.0.1:8081/user/modify | username  |             NO             |
+| Scan | http://127.0.0.1:8081/user/modify | shipping  |             NO             |
+| Scan | http://127.0.0.1:8081/user/modify | postal  |             NO             |
+| Scan | http://127.0.0.1:8081/product/create | name |             NO             |  
+| Scan | http://127.0.0.1:8081/product/create | description |           NO           |  
+| Scan | http://127.0.0.1:8081/product/create | price |             NO             |  
+
+
+The frontend suffered various changes to now offer product purchasing capabilities. These changes do not appear to expose QBAY to any additional XSS vulnerabilities. The only additional route that was added was the product purchasing query parameter. Forms with POST requests are vulnerable to reflected cross-site scripting. However, PWNXSS does not show any possible vulenrabilities. 
+
+
