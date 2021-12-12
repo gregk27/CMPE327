@@ -88,7 +88,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.open(base_url + '/')
 
         # Click buy button
-        self.click('input[type="submit" and id="self.uuid2"]')
+        self.click("#P2 input[type=submit]")
         self.wait(0.5)
 
         # Check if the product has been sold
