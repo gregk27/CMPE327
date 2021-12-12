@@ -89,7 +89,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.wait(5)
 
         # Click buy button
-        self.click("#"+self.uuid2+" input[type=submit]")
+        self.click("#prod-"+self.uuid2+" input[type=submit]")
         self.wait(0.5)
 
         # Check if the product has been sold
@@ -102,8 +102,8 @@ class FrontEndProductPurchaseTest(BaseCase):
 
         # Test that product listed in purchase history (and not available)
         self.wait(5)
-        self.assert_element("#purchases #"+self.uuid2)
-        self.assert_element_absent("#available #"+self.uuid2)
+        self.assert_element("#purchases #prod-"+self.uuid2)
+        self.assert_element_absent("#available #prod-"+self.uuid2)
 
     def test_purchase_2(self, *_):
         """
@@ -115,7 +115,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.open(base_url + '/')
 
         # Assert the product does not have a buy buttton
-        self.assert_element_absent("#"+self.uuid2+" input[type=submit]")
+        self.assert_element_absent("#prod-"+self.uuid+" input[type=submit]")
 
     def test_purchase_3(self, *_):
         """
@@ -130,5 +130,5 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.wait(5)
 
         # Assert that the buy button is disabled for the expensive product
-        self.assert_attribute('#'+self.uuid3+' input[type="submit"]',
+        self.assert_attribute('#prod-'+self.uuid3+' input[type="submit"]',
                               "disabled", 'true')

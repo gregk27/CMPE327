@@ -14,7 +14,7 @@
     <div id="available">
         <h3 style="color:black">Available products</h3>
         {% for product in otherProducts %}
-        <div id="{{product.id}}">
+        <div id="prod-{{product.id}}">
             <h4 style="color:black">
                 <form action="?product={{product.id}}" method='post'>
                     {{ product.productName }}
@@ -36,7 +36,7 @@
     <div id="ownProducts">
         <h3 style="color:black">Your Products For Sale</h3>
         {% for product in user.products %}
-        <div id="{{product.id}}">
+        <div id="prod-{{product.id}}">
             <h4 style="color:black">
                 {{ product.productName }} 
                 {% if product.sold == True %}
@@ -55,7 +55,7 @@
     <div id="purchases">
         <h3 style="color:black">Purchase History</h3>
         {% for product in purchased %}
-        <div id="{{product.id}}">
+        <div id="prod-{{product.id}}">
             <h4 style="color:black">
                 {{ product.productName }} 
                 <div style="float:right; margin-left:1em">- {{product.price}}$</div>
