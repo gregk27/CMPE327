@@ -19,11 +19,11 @@
                 <form action="?product={{product.id}}" method='post'>
                     {{ product.productName }}
                     {% if product.price > user.balance %}
-                    <input type="submit" class="disabled-btn" value="Buy" style="float:right; color:black" disabled="disabled"/>
+                    <input type="submit" class="disabled-btn" id="{{product.productName}}" value="Buy" style="float:right; color:black" disabled="disabled"/>
                     <span style="float:right; margin-right:5em">${{ product.price }}</span>
                     <span style="float:right; margin-right:1em">Seller: {{ product.user.username }}</span>
                     {% else %}
-                    <input type="submit" class="buy-btn" value="Buy" style="float:right;"/>
+                    <input type="submit" class="buy-btn" id="{{product.productName}}" value="Buy" style="float:right;"/>
                     <span style="float:right; margin-right:5em">${{ product.price }}</span>
                     <span style="float:right; margin-right:1em">Seller: {{ product.user.username }}</span>
                     {% endif %}

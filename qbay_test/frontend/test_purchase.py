@@ -53,7 +53,7 @@ class FrontEndProductPurchaseTest(BaseCase):
                          price, description, lastModifiedDate, sold)\
                     VALUES ('"+uuid2+"', 'P2', '"+uuid2+"',\
                 'front.buyProd2@test.com', 300, 'Product to test frontend',\
-                CURRENT_TIMESTAMP, true)")
+                CURRENT_TIMESTAMP, false)")
         db.session.execute("\
                     INSERT INTO product (id, productName, userId, ownerEmail,\
                                  price, description, lastModifiedDate, sold)\
@@ -88,7 +88,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         self.open(base_url + '/')
 
         # Click buy button
-        self.click('input[type="submit"]')
+        self.click('input[type="submit" and id="self.uuid2"]')
         self.wait(0.5)
 
         # Check if the product has been sold
@@ -134,7 +134,7 @@ class FrontEndProductPurchaseTest(BaseCase):
         except ValueError as e:
             msg = e
         print(msg)
-       
+
         # Try clicking the buy button
         self.click('input[type="submit"]')
         self.wait(0.5)
