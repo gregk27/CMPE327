@@ -11,15 +11,15 @@
     <a class="btn btn-primary mb1 black bg-aqua" style="float:right;" id='product-create' href='/product/create'>Sell a Product</a>
 </div>
 <br/><br/>
-    <div>
+    <div id="available">
         <h3 style="color:black">Available products</h3>
         {% for product in otherProducts %}
-        <div>
+        <div id="prod-{{product.id}}">
             <h4 style="color:black">
                 <form action="?product={{product.id}}" method='post'>
                     {{ product.productName }}
                     {% if product.price > user.balance %}
-                    <input type="submit" class="disabled-btn" value="Buy" style="float:right; color:black" disabled="disabled"/>
+                    <input type="submit" class="disabled-btn" id="{{product.productName}}" value="Buy" style="float:right; color:black" disabled="disabled"/>
                     <span style="float:right; margin-right:5em">${{ product.price }}</span>
                     <span style="float:right; margin-right:1em">Seller: {{ product.user.username }}</span>
                     {% else %}
@@ -33,10 +33,10 @@
         {% endfor %}
     </div>
     <br/><br/>
-    <div>
+    <div id="ownProducts">
         <h3 style="color:black">Your Products For Sale</h3>
         {% for product in user.products %}
-        <div>
+        <div id="prod-{{product.id}}">
             <h4 style="color:black">
                 {{ product.productName }} 
                 {% if product.sold == True %}
@@ -52,10 +52,10 @@
         {% endfor %}
     </div>
     <br/><br/>
-    <div>
+    <div id="purchases">
         <h3 style="color:black">Purchase History</h3>
         {% for product in purchased %}
-        <div>
+        <div id="prod-{{product.id}}">
             <h4 style="color:black">
                 {{ product.productName }} 
                 <div style="float:right; margin-left:1em">- {{product.price}}$</div>
