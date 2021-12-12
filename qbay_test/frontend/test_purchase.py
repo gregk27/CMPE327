@@ -115,17 +115,8 @@ class FrontEndProductPurchaseTest(BaseCase):
         # Open home page
         self.open(base_url + '/')
 
-        msg = ""
-
-        try:
-            purchaseProduct(self.uuid, self.uuid)
-        except ValueError as e:
-            msg = e
-        print(msg)
-
-        # Try clicking the buy button
-        self.click('input[type="submit"]')
-        self.wait(0.5)
+        # Assert the product does not have a buy buttton
+        self.assert_element_absent("#"+self.uuid2+" input[type=submit]")
 
     def test_purchase_3(self, *_):
         """
