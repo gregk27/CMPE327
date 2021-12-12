@@ -87,14 +87,24 @@ class FrontEndProductPurchaseTest(BaseCase):
         # Open home page
         self.open(base_url + '/')
 
+        self.wait(5)
+
         # Click buy button
-        self.click("#P2 input[type=submit]")
+        self.click("#"+self.uuid2+" input[type=submit]")
         self.wait(0.5)
 
         # Check if the product has been sold
         Prod = Product.query.filter_by(id=self.uuid2).first()
 
         assert Prod.sold is True
+
+        # Refresh home page
+        self.open(base_url + '/')
+
+        # Test that product listed in purchase history (and not available)
+        self.wait(5)
+        self.assert_element("#purchases #"+self.uuid2)
+        self.assert_element_absent("#available #"+self.uuid2)
 
     def test_purchase_2(self, *_):
         """
