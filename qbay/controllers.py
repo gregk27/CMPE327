@@ -2,7 +2,8 @@ from flask import render_template, request, session, redirect
 from qbay.models import User, Product, Session
 from qbay.backend import (login, register, validateEmail,
                           validateUser, validatePswd,
-                          createProduct, updateProduct, updateUser)
+                          createProduct, updateProduct, updateUser,
+                          purchaseProduct)
 from qbay import app
 
 app.secret_key = 'KEY'
@@ -85,7 +86,7 @@ def login_form():
                                "email or password")
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @authenticate
 def home(user):
     # authentication is done in the wrapper function
@@ -93,11 +94,16 @@ def home(user):
     # by using @authenticate, we don't need to re-write
     # the login checking code all the time for other
     # front-end portals
+    if request.method == 'POST':
+        product = request.args.get('product')
+        purchaseProduct(user.id, product)
 
     # Get products from other users
-    otherProducts = Product.query.filter(Product.userId != user.id).all()
+    otherProducts = Product.query.filter(Product.userId != user.id,
+                                         Product.sold.is_(False)).all()
+    purchased = Product.query.filter(Product.buyerId == user.id)
     return render_template('index.html', user=user,
-                           otherProducts=otherProducts)
+                           otherProducts=otherProducts, purchased=purchased)
 
 
 @app.route('/user/register', methods=['GET'])
@@ -255,7 +261,6 @@ def update_post_user(user):
     username = request.form.get('username')
     shippingAddress = request.form.get('shippingAddress')
     postalCode = request.form.get('postalCode')
-
     # updateUser will return true on success
     try:
         if(updateUser(user.id, username=username,
