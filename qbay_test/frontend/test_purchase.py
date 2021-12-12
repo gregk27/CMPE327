@@ -4,7 +4,6 @@ from uuid import uuid4
 
 from qbay_test.conftest import base_url
 from qbay.models import Product, db
-from qbay.backend import purchaseProduct
 
 
 class FrontEndProductPurchaseTest(BaseCase):
