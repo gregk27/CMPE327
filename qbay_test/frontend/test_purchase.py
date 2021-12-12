@@ -58,7 +58,7 @@ class FrontEndProductPurchaseTest(BaseCase):
                     INSERT INTO product (id, productName, userId, ownerEmail,\
                                  price, description, lastModifiedDate, sold)\
                     VALUES('"+uuid3+"', 'P3', '"+uuid3+"', \
-                'front.buyProd3@test.com', 1000, 'Product to test frontend', \
+                'front.buyProd3@test.com', 1100, 'Product to test frontend', \
                 CURRENT_TIMESTAMP, false)")
         db.session.execute("\
             INSERT INTO session (sessionId, userId, ipAddress)\
@@ -128,14 +128,8 @@ class FrontEndProductPurchaseTest(BaseCase):
         # Open home page
         self.open(base_url + '/')
 
-        msg = ""
+        self.wait(5)
 
-        try:
-            purchaseProduct(self.uuid, self.uuid3)
-        except ValueError as e:
-            msg = e
-        print(msg)
-
-        # Try clicking the buy button
-        self.click('input[type="submit"]')
-        self.wait(0.5)
+        # Assert that the buy button is disabled for the expensive product
+        self.assert_attribute('#'+self.uuid3+' input[type="submit"]',
+                              "disabled", 'true')
